@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tahfiz Pro - Portal Santri</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --emerald-dark: #051A18;
+            --emerald-medium: #0A2D2A;
+            --emerald-light: #164E48;
+            --gold: #C59B27;
+            --gold-light: #F0D58C;
+            --paper: #FAF8F5;
+            --card: #FFFFFF;
+            --ink: #1F2827;
+            --ink-soft: #63706F;
+            --border: #E5DDD0;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .arch-header {
+            position: relative;
+            background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald-medium) 70%, var(--emerald-light) 100%);
+            border-radius: 0 0 35px 35px;
+            padding: 2.5rem 1.5rem 3rem;
+            color: var(--paper);
+            box-shadow: 0 10px 25px rgba(5, 26, 24, 0.15);
+            overflow: hidden;
+        }
+        .header-pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.08;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z M30 10 L50 30 L30 50 L10 30 Z' fill='%23C59B27' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+        .arch-header::after {
+            content: "";
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='10'%3E%3Cpath d='M0 10 L10 0 L20 10 L30 0 L40 10' stroke='%23C59B27' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+            background-repeat: repeat-x;
+            opacity: 0.7;
+        }
+        .glass-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            box-shadow: 0 6px 20px rgba(5, 26, 24, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--emerald-light);
+            box-shadow: 0 10px 28px rgba(5, 26, 24, 0.08);
+        }
+        .glow-btn {
+            background: linear-gradient(135deg, var(--emerald-light) 0%, var(--emerald-medium) 100%);
+            color: var(--paper);
+            box-shadow: 0 4px 15px rgba(5, 26, 24, 0.2);
+            transition: all 0.3s ease;
+        }
+        .glow-btn:hover {
+            background: linear-gradient(135deg, #1d6159 0%, #0d3834 100%);
+            box-shadow: 0 6px 20px rgba(5, 26, 24, 0.35);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            box-shadow: 0 6px 30px rgba(5, 26, 24, 0.06);
+        }
+        .arabic-font {
+            font-family: 'Amiri', serif;
+        }
+        .login-bg {
+            background: radial-gradient(circle at 50% 0%, var(--emerald-medium), var(--emerald-dark) 85%);
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto pb-28">
+
+    <!-- LOGIN SCREEN (Displays if session is not active) -->
+    <div id="login-screen" class="fixed inset-0 login-bg z-[100] flex flex-col justify-center px-6">
+        <div class="glass-card rounded-[32px] p-8 border-emerald-900/30 shadow-2xl relative overflow-hidden bg-white">
+            <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20 Z' fill='%23051A18'/%3E%3C/svg%3E&quot;); background-repeat: repeat;"></div>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-[#FEFCF7] border border-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-800 text-2xl shadow-sm">
+                    <i class="fas fa-quran"></i>
+                </div>
+                <h2 class="text-xl font-extrabold text-emerald-950">Portal Santri Tahfiz</h2>
+                <p class="text-xs text-gray-500 mt-1 font-medium">Masuk untuk menyetor dan melihat laporan murajaah</p>
+            </div>
+
+            <!-- Login form -->
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Username</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="text" id="login-username" placeholder="Masukkan username" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Password</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="password" id="login-password" placeholder="Masukkan password" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
+                    </div>
+                </div>
+            </div>
+
+            <div id="login-error" class="hidden text-xs text-red-500 bg-red-50 p-3 rounded-xl mb-4 font-semibold text-center flex items-center justify-center gap-1.5 border border-red-100">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="login-error-text">Kredensial tidak valid</span>
+            </div>
+
+            <button onclick="handleLogin()" class="w-full glow-btn p-4 rounded-2xl font-bold tracking-wide text-sm flex items-center justify-center gap-2">
+                <span>Masuk Sekarang</span>
+                <i id="login-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
+            </button>
+        </div>
+        <p class="text-center text-white/30 text-[10px] mt-6 tracking-wide">Tahfiz Pro PWA Portal © 2026</p>
+    </div>
+
+    <!-- MAIN PORTAL DASHBOARD (Shown when logged in) -->
+    <div id="dashboard-screen" class="hidden">
+        
+        <!-- Header Section (Premium Islamic Patterns) -->
+        <header class="arch-header text-center">
+            <!-- Pattern Overlay -->
+            <div class="header-pattern"></div>
+            
+            <div class="flex justify-between items-center mb-3 relative z-10">
+                <span id="display-school" class="text-[9px] bg-white/10 border border-white/10 px-3 py-1 rounded-full text-emerald-300 font-bold uppercase tracking-wider">Sekolah</span>
+                
+                <!-- Logout Button -->
+                <button onclick="handleLogout()" class="w-9 h-9 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center text-white transition-all active:scale-95 shadow-sm" title="Keluar">
+                    <i class="fas fa-sign-out-alt text-sm"></i>
+                </button>
+            </div>
+            
+            <h1 id="display-name" class="text-2xl font-extrabold tracking-tight text-white mb-1.5 relative z-10">Nama Siswa</h1>
+            <p class="text-xs text-[#F0D58C] arabic-font font-bold relative z-10">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+        </header>
+
+        <div class="px-4">
+            <!-- Stat Dashboard Widget -->
+            <section class="glass-card rounded-[28px] p-5 -mt-6 relative z-10">
+                
+                <!-- Juz target selector -->
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider pl-1">Target Hafalan</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs text-gray-400">Juz</span>
+                        <select id="target-juz" onchange="changeTargetJuz()" class="text-xs font-bold py-1 px-3.5 bg-[#FEFCF7] border border-gray-200 rounded-lg text-emerald-800 focus:outline-none">
+                            <!-- Populated in JS (1-30) -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="text-center py-2">
+                    <p class="text-gray-400 text-[10px] font-semibold uppercase tracking-widest mb-0.5">Total Ayat Disetor (Juz <span id="display-target-juz">30</span>)</p>
+                    <div class="flex items-baseline justify-center gap-1.5 mb-2.5">
+                        <h2 class="text-5xl font-black tracking-tighter text-emerald-800" id="stat-total">0</h2>
+                        <span class="text-xs font-bold text-gray-400">/ <span id="display-max-verses">564</span> Ayat</span>
+                    </div>
+                    
+                    <!-- Target Percentage -->
+                    <div class="flex justify-between items-center text-[10px] text-gray-500 mb-1.5 px-1 font-bold">
+                        <span>Progress Juz</span>
+                        <span id="target-percentage">0%</span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-gray-100 rounded-full h-2.5 p-[1px] border border-gray-200/50">
+                        <div id="progress-bar" class="bg-gradient-to-r from-emerald-600 to-amber-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Submissions / Muraja'ah History -->
+            <section class="space-y-4 mt-6">
+                <div class="flex justify-between items-center pl-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Riwayat Murajaah</h3>
+                    <span class="text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded text-emerald-800 font-bold uppercase tracking-wider border border-emerald-100">Log Aktif</span>
+                </div>
+                
+                <div id="logs" class="space-y-3">
+                    <!-- Loading state -->
+                    <div class="text-center py-10 text-gray-400">
+                        <i class="fas fa-circle-notch animate-spin text-2xl mb-2 text-emerald-600"></i>
+                        <p class="text-xs">Memuat data murajaah...</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Modal Input Setoran -->
+        <div id="modal-input" class="fixed inset-0 bg-[#051a18]/70 backdrop-blur-sm z-50 flex items-end justify-center hidden">
+            <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 pb-8 border border-gray-200 border-b-0 overflow-y-auto max-h-[90vh]">
+                <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4"></div>
+                <h2 class="font-bold text-lg text-center text-emerald-900 mb-4">Setor Murajaah Baru</h2>
+                
+                <div class="space-y-3.5 mb-5">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="col-span-1">
+                            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1 pl-1">Juz</label>
+                            <select id="setor-juz" onchange="updateSurahDropdown()" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-gray-800 text-sm font-bold focus:outline-none focus:border-emerald-600">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1 pl-1">Nama Surah</label>
+                            <select id="surah-select" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-emerald-600">
+                                <!-- Populated dynamically based on selected Juz -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1 pl-1">Dari Ayat</label>
+                            <input type="number" id="ayat-start" placeholder="1" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-emerald-600">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1 pl-1">Sampai Ayat</label>
+                            <input type="number" id="ayat-end" placeholder="10" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-emerald-600">
+                        </div>
+                    </div>
+
+                    <!-- Audio Recording Section -->
+                    <div>
+                        <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1 pl-1">Rekaman Suara (Opsional)</label>
+                        <div class="bg-[#FEFCF7] border border-gray-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[85px] relative">
+                            
+                            <!-- Not Recording State -->
+                            <div id="record-state-idle" class="flex flex-col items-center gap-1.5">
+                                <button type="button" onclick="startRecording()" class="w-11 h-11 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 hover:bg-emerald-100 flex items-center justify-center transition-all duration-200 active:scale-95">
+                                    <i class="fas fa-microphone text-base"></i>
+                                </button>
+                                <span class="text-[9px] text-emerald-800/60 uppercase tracking-wider font-bold">Mulai Rekam Suara</span>
+                            </div>
+                            
+                            <!-- Recording State -->
+                            <div id="record-state-active" class="flex flex-col items-center gap-1.5 hidden">
+                                <div class="flex items-center gap-2 relative">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                                    <span class="w-2 h-2 rounded-full bg-red-500 absolute"></span>
+                                    <span id="record-timer" class="text-xs font-semibold font-mono text-red-500 pl-4">00:00</span>
+                                </div>
+                                <button type="button" onclick="stopRecording()" class="w-11 h-11 rounded-full bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 flex items-center justify-center transition-all duration-200 active:scale-95">
+                                    <i class="fas fa-stop text-sm"></i>
+                                </button>
+                                <span class="text-[9px] text-red-500/60 uppercase tracking-wider font-bold">Hentikan</span>
+                            </div>
+                            
+                            <!-- Preview State -->
+                            <div id="record-state-preview" class="flex flex-col items-center w-full gap-2 hidden">
+                                <audio id="audio-preview" controls class="w-full h-8 bg-transparent rounded-lg"></audio>
+                                <button type="button" onclick="deleteRecording()" class="text-[9px] text-red-500 hover:text-red-700 flex items-center gap-1 font-bold transition-colors mt-0.5">
+                                    <i class="fas fa-trash-alt"></i> Hapus & Rekam Ulang
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="closeInputModal()" class="w-1/3 bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl font-bold transition-all text-center text-xs text-gray-600">Batal</button>
+                    <button onclick="addLog()" class="w-2/3 glow-btn p-3 rounded-xl font-bold tracking-wide text-xs flex items-center justify-center gap-2">
+                        <span id="btn-submit-text">Kirim Setoran</span>
+                        <i id="btn-submit-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass-nav px-8 py-3 flex justify-between items-center rounded-full z-40">
+            <button onclick="location.reload()" class="text-emerald-700 flex flex-col items-center gap-0.5 transition-colors duration-200">
+                <i class="fas fa-home text-base"></i>
+                <span class="text-[8px] font-bold uppercase tracking-wider">Home</span>
+            </button>
+            
+            <button onclick="openInputModal()" class="glow-btn w-13 h-13 rounded-full -mt-9 border-[4px] border-white flex items-center justify-center shadow-md">
+                <i class="fas fa-plus text-base"></i>
+            </button>
+            
+            <a href="/admin.html" class="text-gray-400 hover:text-emerald-700 flex flex-col items-center gap-0.5 transition-colors duration-200">
+                <i class="fas fa-user-shield text-base"></i>
+                <span class="text-[8px] font-bold uppercase tracking-wider">Admin</span>
+            </a>
+        </nav>
+        
+    </div>
+
+    <script>
+        const API = "/api";
+        
+        const JUZ_VERSES = {
+            1: 148, 2: 111, 3: 126, 4: 131, 5: 124, 6: 110, 7: 149, 8: 142, 9: 159, 10: 127,
+            11: 151, 12: 170, 13: 154, 14: 227, 15: 185, 16: 271, 17: 190, 18: 202, 19: 338, 20: 171,
+            21: 178, 22: 169, 23: 357, 24: 175, 25: 246, 26: 195, 27: 399, 28: 137, 29: 431, 30: 564
+        };
+
+        // All 114 Surahs mapping with verse count
+        const QURAN_SURAHS = [
+            {no:1,name:"Al-Fatihah",verses:7},{no:2,name:"Al-Baqarah",verses:286},{no:3,name:"Ali 'Imran",verses:200},
+            {no:4,name:"An-Nisa'",verses:176},{no:5,name:"Al-Ma'idah",verses:120},{no:6,name:"Al-An'am",verses:165},
+            {no:7,name:"Al-A'raf",verses:206},{no:8,name:"Al-Anfal",verses:75},{no:9,name:"At-Tawbah",verses:129},
+            {no:10,name:"Yunus",verses:109},{no:11,name:"Hud",verses:123},{no:12,name:"Yusuf",verses:111},
+            {no:13,name:"Ar-Ra'd",verses:43},{no:14,name:"Ibrahim",verses:52},{no:15,name:"Al-Hijr",verses:99},
+            {no:16,name:"An-Nahl",verses:128},{no:17,name:"Al-Isra'",verses:111},{no:18,name:"Al-Kahf",verses:110},
+            {no:19,name:"Maryam",verses:98},{no:20,name:"Ta-Ha",verses:135},{no:21,name:"Al-Anbiya'",verses:112},
+            {no:22,name:"Al-Hajj",verses:78},{no:23,name:"Al-Mu'minun",verses:118},{no:24,name:"An-Nur",verses:64},
+            {no:25,name:"Al-Furqan",verses:77},{no:26,name:"Asy-Syu'ara'",verses:227},{no:27,name:"An-Naml",verses:93},
+            {no:28,name:"Al-Qasas",verses:88},{no:29,name:"Al-Ankabut",verses:69},{no:30,name:"Ar-Rum",verses:60},
+            {no:31,name:"Luqman",verses:34},{no:32,name:"As-Sajdah",verses:30},{no:33,name:"Al-Ahzab",verses:73},
+            {no:34,name:"Saba'",verses:54},{no:35,name:"Fatir",verses:45},{no:36,name:"Yasin",verses:83},
+            {no:37,name:"As-Saffat",verses:182},{no:38,name:"Sad",verses:88},{no:39,name:"Az-Zumar",verses:75},
+            {no:40,name:"Ghafir",verses:85},{no:41,name:"Fussilat",verses:54},{no:42,name:"Asy-Syura",verses:53},
+            {no:43,name:"Az-Zukhruf",verses:89},{no:44,name:"Ad-Dukhan",verses:59},{no:45,name:"Al-Jasiyah",verses:37},
+            {no:46,name:"Al-Ahqaf",verses:35},{no:47,name:"Muhammad",verses:38},{no:48,name:"Al-Fath",verses:29},
+            {no:49,name:"Al-Hujurat",verses:18},{no:50,name:"Qaf",verses:45},{no:51,name:"Adz-Dzariyat",verses:60},
+            {no:52,name:"At-Tur",verses:49},{no:53,name:"An-Najm",verses:62},{no:54,name:"Al-Qamar",verses:55},
+            {no:55,name:"Ar-Rahman",verses:78},{no:56,name:"Al-Waqi'ah",verses:96},{no:57,name:"Al-Hadid",verses:29},
+            {no:58,name:"Al-Mujadilah",verses:22},{no:59,name:"Al-Hasyr",verses:24},{no:60,name:"Al-Mumtahanah",verses:13},
+            {no:61,name:"As-Saff",verses:14},{no:62,name:"Al-Jumu'ah",verses:11},{no:63,name:"Al-Munafiqun",verses:11},
+            {no:64,name:"At-Taghabun",verses:18},{no:65,name:"At-Talaq",verses:12},{no:66,name:"At-Tahrim",verses:12},
+            {no:67,name:"Al-Mulk",verses:30},{no:68,name:"Al-Qalam",verses:52},{no:69,name:"Al-Haqqah",verses:52},
+            {no:70,name:"Al-Ma'arij",verses:44},{no:71,name:"Nuh",verses:28},{no:72,name:"Al-Jinn",verses:28},
+            {no:73,name:"Al-Muzzammil",verses:20},{no:74,name:"Al-Muddaththir",verses:56},{no:75,name:"Al-Qiyamah",verses:40},
+            {no:76,name:"Al-Insan",verses:31},{no:77,name:"Al-Mursalat",verses:50},{no:78,name:"An-Naba'",verses:40},
+            {no:79,name:"An-Nazi'at",verses:46},{no:80,name:"'Abasa",verses:42},{no:81,name:"At-Takwir",verses:29},
+            {no:82,name:"Al-Infitar",verses:19},{no:83,name:"Al-Mutaffifin",verses:36},{no:84,name:"Al-Insyiqaq",verses:25},
+            {no:85,name:"Al-Buruj",verses:22},{no:86,name:"At-Tariq",verses:17},{no:87,name:"Al-A'la",verses:19},
+            {no:88,name:"Al-Ghasyiyah",verses:26},{no:89,name:"Al-Fajr",verses:30},{no:90,name:"Al-Balad",verses:20},
+            {no:91,name:"Asy-Syams",verses:15},{no:92,name:"Al-Lail",verses:21},{no:93,name:"Ad-Dhuha",verses:11},
+            {no:94,name:"Al-Insyirah",verses:8},{no:95,name:"At-Tin",verses:8},{no:96,name:"Al-'Alaq",verses:19},
+            {no:97,name:"Al-Qadr",verses:5},{no:98,name:"Al-Bayyinah",verses:8},{no:99,name:"Az-Zalzalah",verses:8},
+            {no:100,name:"Al-'Adiyat",verses:11},{no:101,name:"Al-Qari'ah",verses:11},{no:102,name:"At-Takatsur",verses:8},
+            {no:103,name:"Al-'Asr",verses:3},{no:104,name:"Al-Humazah",verses:9},{no:105,name:"Al-Fil",verses:5},
+            {no:106,name:"Quraisy",verses:4},{no:107,name:"Al-Ma'un",verses:7},{no:108,name:"Al-Kautsar",verses:3},
+            {no:109,name:"Al-Kafirun",verses:6},{no:110,name:"An-Nasr",verses:3},{no:111,name:"Al-Lahab",verses:5},
+            {no:112,name:"Al-Ikhlas",verses:4},{no:113,name:"Al-Falaq",verses:5},{no:114,name:"An-Nas",verses:6}
+        ];
+
+        // Maps each Juz (1-30) to containing Surah numbers
+        const JUZ_MAPPING = {
+            1: [1, 2],
+            2: [2],
+            3: [2, 3],
+            4: [3, 4],
+            5: [4],
+            6: [4, 5],
+            7: [5, 6],
+            8: [6, 7],
+            9: [7, 8],
+            10: [8, 9],
+            11: [9, 10, 11],
+            12: [11, 12],
+            13: [12, 13, 14],
+            14: [15, 16],
+            15: [17, 18],
+            16: [18, 19, 20],
+            17: [21, 22],
+            18: [23, 24, 25],
+            19: [25, 26, 27],
+            20: [27, 28, 29],
+            21: [29, 30, 31, 32, 33],
+            22: [33, 34, 35, 36],
+            23: [36, 37, 38, 39],
+            24: [39, 40, 41],
+            25: [41, 42, 43, 44, 45],
+            26: [46, 47, 48, 49, 50, 51],
+            27: [51, 52, 53, 54, 55, 56, 57],
+            28: [58, 59, 60, 61, 62, 63, 64, 65, 66],
+            29: [67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77],
+            30: Array.from({length: 37}, (_, i) => i + 78) // 78 to 114
+        };
+
+        let currentStudent = null;
+
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let audioBase64 = null;
+        let recordTimerInterval = null;
+        let recordStartTime = 0;
+
+        function checkSession() {
+            const session = localStorage.getItem('current_student');
+            if (session) {
+                currentStudent = JSON.parse(session);
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard-screen').classList.remove('hidden');
+                initSelectors();
+                initSurahChangeHandler();
+                render();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('dashboard-screen').classList.add('hidden');
+            }
+        }
+
+        async function handleLogin() {
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
+            const loginError = document.getElementById('login-error');
+            const loginErrorText = document.getElementById('login-error-text');
+            const spinner = document.getElementById('login-spinner');
+            
+            if (!usernameInput || !passwordInput) {
+                loginErrorText.innerText = "Username dan password tidak boleh kosong!";
+                loginError.classList.remove('hidden');
+                return;
+            }
+
+            loginError.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            try {
+                const res = await fetch(`${API}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usernameInput, password: passwordInput })
+                });
+
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || "Gagal masuk");
+                }
+
+                localStorage.setItem('current_student', JSON.stringify(data.student));
+                checkSession();
+
+            } catch (err) {
+                loginErrorText.innerText = err.message;
+                loginError.classList.remove('hidden');
+            } finally {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('current_student');
+            currentStudent = null;
+            location.reload();
+        }
+
+        function initSelectors() {
+            const targetSelect = document.getElementById('target-juz');
+            const setorSelect = document.getElementById('setor-juz');
+            
+            targetSelect.innerHTML = '';
+            setorSelect.innerHTML = '';
+            
+            for (let i = 1; i <= 30; i++) {
+                targetSelect.innerHTML += `<option value="${i}">Juz ${i}</option>`;
+                setorSelect.innerHTML += `<option value="${i}">Juz ${i}</option>`;
+            }
+            
+            let target = localStorage.getItem('target_juz');
+            if (!target) {
+                target = "30";
+                localStorage.setItem('target_juz', target);
+            }
+            targetSelect.value = target;
+            setorSelect.value = target;
+            document.getElementById('display-target-juz').innerText = target;
+            document.getElementById('display-max-verses').innerText = JUZ_VERSES[target];
+            
+            // Populates surah list for the default selected Juz
+            updateSurahDropdown();
+        }
+
+        // Populate Surahs Select Dropdown filtered by the selected Juz
+        function updateSurahDropdown() {
+            const selectedJuz = parseInt(document.getElementById('setor-juz').value);
+            const select = document.getElementById('surah-select');
+            select.innerHTML = '<option value="">Pilih Surah</option>';
+            
+            const allowedSurahNumbers = JUZ_MAPPING[selectedJuz] || [];
+            const filteredSurahs = QURAN_SURAHS.filter(s => allowedSurahNumbers.includes(s.no));
+            
+            filteredSurahs.forEach(s => {
+                select.innerHTML += `<option value="${s.name}" data-verses="${s.verses}">${s.no}. ${s.name} (${s.verses} ayat)</option>`;
+            });
+
+            // Reset ayat inputs
+            const startInput = document.getElementById('ayat-start');
+            const endInput = document.getElementById('ayat-end');
+            startInput.value = "";
+            endInput.value = "";
+            startInput.placeholder = "1";
+            endInput.placeholder = "10";
+        }
+
+        // Listen for surah selection to dynamically preset verse counts
+        function initSurahChangeHandler() {
+            const select = document.getElementById('surah-select');
+            select.addEventListener('change', (e) => {
+                const selectedOption = e.target.options[e.target.selectedIndex];
+                const verses = selectedOption.getAttribute('data-verses');
+                
+                const startInput = document.getElementById('ayat-start');
+                const endInput = document.getElementById('ayat-end');
+                
+                if (verses) {
+                    const maxVal = parseInt(verses);
+                    startInput.max = maxVal;
+                    endInput.max = maxVal;
+                    startInput.value = "1";
+                    endInput.value = maxVal;
+                    startInput.placeholder = "1";
+                    endInput.placeholder = maxVal;
+                } else {
+                    startInput.value = "";
+                    endInput.value = "";
+                    startInput.placeholder = "1";
+                    endInput.placeholder = "10";
+                }
+            });
+        }
+
+        function changeTargetJuz() {
+            const selected = document.getElementById('target-juz').value;
+            localStorage.setItem('target_juz', selected);
+            document.getElementById('display-target-juz').innerText = selected;
+            document.getElementById('display-max-verses').innerText = JUZ_VERSES[selected];
+            document.getElementById('setor-juz').value = selected;
+            updateSurahDropdown();
+            render();
+        }
+
+        function openInputModal() {
+            document.getElementById('modal-input').classList.remove('hidden');
+            updateSurahDropdown(); // sync surah with setor-juz on open
+        }
+
+        function closeInputModal() {
+            document.getElementById('modal-input').classList.add('hidden');
+            deleteRecording();
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    const previewPlayer = document.getElementById('audio-preview');
+                    previewPlayer.src = audioUrl;
+                    
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = () => {
+                        audioBase64 = reader.result;
+                    };
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    document.getElementById('record-state-active').classList.add('hidden');
+                    document.getElementById('record-state-preview').classList.remove('hidden');
+                };
+
+                mediaRecorder.start();
+                recordStartTime = Date.now();
+                updateRecordTimer();
+                recordTimerInterval = setInterval(updateRecordTimer, 1000);
+                
+                document.getElementById('record-state-idle').classList.add('hidden');
+                document.getElementById('record-state-active').classList.remove('hidden');
+            } catch (err) {
+                console.error("Gagal akses mic", err);
+                alert("Gagal mengakses mikrofon! Mohon beri izin akses di browser Anda.");
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                clearInterval(recordTimerInterval);
+            }
+        }
+
+        function deleteRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            clearInterval(recordTimerInterval);
+            audioChunks = [];
+            audioBase64 = null;
+            document.getElementById('audio-preview').src = '';
+            
+            document.getElementById('record-state-preview').classList.add('hidden');
+            document.getElementById('record-state-active').classList.add('hidden');
+            document.getElementById('record-state-idle').classList.remove('hidden');
+        }
+
+        function updateRecordTimer() {
+            const elapsed = Math.floor((Date.now() - recordStartTime) / 1000);
+            const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const secs = String(elapsed % 60).padStart(2, '0');
+            document.getElementById('record-timer').innerText = `${mins}:${secs}`;
+        }
+
+        async function addLog() {
+            const surah = document.getElementById('surah-select').value;
+            const start = parseInt(document.getElementById('ayat-start').value);
+            const end = parseInt(document.getElementById('ayat-end').value);
+            const juz = parseInt(document.getElementById('setor-juz').value);
+            
+            if(!surah || isNaN(start) || isNaN(end) || start <= 0 || end <= 0 || start > end) {
+                alert('Silakan pilih surah dan isi rentang ayat dengan benar!');
+                return;
+            }
+            
+            document.getElementById('btn-submit-text').innerText = "Mengirim...";
+            document.getElementById('btn-submit-spinner').classList.remove('hidden');
+            
+            const payload = { 
+                student_id: currentStudent.unique_id, 
+                surah, 
+                ayat_start: start, 
+                ayat_end: end, 
+                jumlah_ayat: (end - start) + 1, 
+                tgl: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                audio_base64: audioBase64,
+                juz: juz
+            };
+            
+            try {
+                await fetch(`${API}/logs`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                document.getElementById('surah-select').value = '';
+                document.getElementById('ayat-start').value = '';
+                document.getElementById('ayat-end').value = '';
+                
+                closeInputModal();
+                render();
+            } catch (err) {
+                console.error("Gagal menambahkan log", err);
+                alert("Gagal mengirim setoran.");
+            } finally {
+                document.getElementById('btn-submit-text').innerText = "Kirim Setoran";
+                document.getElementById('btn-submit-spinner').classList.add('hidden');
+            }
+        }
+
+        async function render() {
+            if (!currentStudent) return;
+            
+            document.getElementById('display-name').innerText = currentStudent.name;
+            document.getElementById('display-school').innerText = currentStudent.school;
+            
+            const currentTargetJuz = parseInt(localStorage.getItem('target_juz') || "30");
+            
+            try {
+                const res = await fetch(`${API}/logs/${currentStudent.unique_id}`);
+                const logs = await res.json();
+                
+                let totalTargetJuzVerses = 0;
+                const logsContainer = document.getElementById('logs');
+                
+                if (logs.length === 0) {
+                    logsContainer.innerHTML = `
+                        <div class="glass-card rounded-2xl p-6 text-center text-gray-400">
+                            <i class="fas fa-book-open text-2xl mb-2 text-emerald-700/40"></i>
+                            <p class="text-xs">Belum ada murajaah yang disetor.</p>
+                            <p class="text-[10px] mt-1 text-gray-400/80">Mulai setor dengan menekan tombol + dibawah.</p>
+                        </div>
+                    `;
+                } else {
+                    logsContainer.innerHTML = logs.map(l => {
+                        const itemJuz = l.juz ? parseInt(l.juz) : 30;
+                        if (itemJuz === currentTargetJuz) {
+                            totalTargetJuzVerses += l.jumlah_ayat;
+                        }
+                        
+                        return `
+                            <div class="glass-card rounded-2xl p-4.5 flex justify-between items-center">
+                                <div class="border-l-3 border-emerald-600 pl-3">
+                                    <div class="flex items-center gap-1.5">
+                                        <h4 class="font-bold text-xs tracking-wide text-gray-800">${l.surah}</h4>
+                                        <span class="text-[9px] bg-emerald-50 text-emerald-800 border border-emerald-100 font-bold px-1.5 py-0.5 rounded-md">Juz ${itemJuz}</span>
+                                        ${l.audio_path ? '<i class="fas fa-volume-up text-emerald-600 text-[10px]" title="Ada rekaman suara"></i>' : ''}
+                                    </div>
+                                    <p class="text-[10px] text-gray-500 mt-0.5">Ayat ${l.ayat_start} - ${l.ayat_end}</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-extrabold text-emerald-800 text-xs">+${l.jumlah_ayat} Ayat</div>
+                                    <div class="text-[9px] text-gray-400 mt-0.5">${l.tgl}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                
+                document.getElementById('stat-total').innerText = totalTargetJuzVerses;
+                const maxVerses = JUZ_VERSES[currentTargetJuz];
+                const percentage = Math.min(Math.round((totalTargetJuzVerses / maxVerses) * 100), 100);
+                document.getElementById('target-percentage').innerText = `${percentage}%`;
+                document.getElementById('progress-bar').style.width = `${percentage}%`;
+                
+            } catch(e) {
+                console.error("Gagal memuat log", e);
+            }
+        }
+
+        window.onload = function() {
+            checkSession();
+        };
+    </script>
+</body>
+</html>

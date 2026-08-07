@@ -1,0 +1,5 @@
+node_modules/
+tahfiz.db
+tahfiz.db-journal
+.DS_Store
+.env

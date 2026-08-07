@@ -2,7 +2,7 @@
 
 Aplikasi web berbasis Node.js (Express) & SQLite yang dirancang untuk mempermudah pencatatan, penyetoran, dan pemantauan murajaah hafalan Al-Qur'an santri secara real-time. Dilengkapi dengan fitur rekaman suara langsung dari browser santri dan dashboard monitoring ustadz yang interaktif.
 
-Aplikasi dirancang dengan estetika visual **Ultra Premium** bertema emerald green (hijau tua Islami), cream ramah mata, dan emas, serta dihiasi ornamen pola geometris (pattern) SVG di bagian header.
+Aplikasi dirancang sederhana agar dapat diimplementasikan siapa saja dengan tingkat kesulitan rendah
 
 ---
 

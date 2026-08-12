@@ -30,7 +30,7 @@
             position: relative;
             background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald-medium) 70%, var(--emerald-light) 100%);
             border-radius: 28px;
-            padding: 2.5rem 1.5rem;
+            padding: 2rem 1.5rem;
             color: var(--paper);
             box-shadow: 0 10px 25px rgba(5, 26, 24, 0.15);
             overflow: hidden;
@@ -89,6 +89,12 @@
         .arabic-font {
             font-family: 'Amiri', serif;
         }
+        .tab-active {
+            background-color: var(--emerald-medium) !important;
+            color: #ffffff !important;
+            border-color: var(--emerald-medium) !important;
+            box-shadow: 0 4px 12px rgba(5, 26, 24, 0.2);
+        }
         @media print {
             .no-print { display: none !important; }
             body { background: white; color: black; }
@@ -137,7 +143,7 @@
     <div class="max-w-6xl mx-auto px-4 py-6 pb-24">
 
         <!-- Header Section -->
-        <header class="arch-header mb-8">
+        <header class="arch-header mb-6">
             <div class="header-pattern"></div>
             
             <div class="flex justify-between items-center mb-3 relative z-10">
@@ -155,39 +161,144 @@
             <p class="text-xs text-[#F0D58C] arabic-font font-bold relative z-10">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
         </header>
 
-        <!-- Stats & Registration Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <!-- SUB-PAGE / TAB NAVIGATION -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 no-print">
+            <div class="flex items-center bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm gap-1">
+                <button id="tab-btn-grading" onclick="switchTab('grading')" class="tab-active px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Penilaian & Monitoring Setoran</span>
+                </button>
+                <button id="tab-btn-students" onclick="switchTab('students')" class="bg-transparent text-gray-500 hover:text-emerald-800 px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Sub-Halaman: Kelola & Registrasi Santri</span>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="window.print()" class="text-xs bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
+                    <i class="fas fa-print text-emerald-600"></i> Cetak Laporan PDF
+                </button>
+                <a href="/" class="btn-green-outline px-4 py-2.5 rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-sm">
+                    <i class="fas fa-home"></i> Portal Santri
+                </a>
+            </div>
+        </div>
+
+        <!-- TAB 1: SUB-HALAMAN PENILAIAN & MONITORING (FOKUS MENILAI) -->
+        <div id="tab-content-grading" class="space-y-6">
             
-            <div class="lg:col-span-2 space-y-6">
-                <!-- Stats Cards -->
-                <section class="grid grid-cols-3 gap-4">
-                    <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
-                        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Santri</span>
-                        <h3 class="text-2xl font-black text-emerald-950 mt-0.5" id="stat-students">0</h3>
+            <!-- Quick Summary Stats -->
+            <section class="grid grid-cols-3 gap-4">
+                <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
+                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Santri Aktif</span>
+                    <h3 class="text-2xl font-black text-emerald-950 mt-0.5" id="stat-students">0</h3>
+                </div>
+                <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
+                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Setoran</span>
+                    <h3 class="text-2xl font-black text-emerald-950 mt-0.5" id="stat-submissions">0</h3>
+                </div>
+                <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
+                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Ayat Disetor</span>
+                    <h3 class="text-2xl font-black text-emerald-950 mt-0.5" id="stat-verses">0</h3>
+                </div>
+            </section>
+
+            <!-- Submissions Table & Grading Section -->
+            <main class="glass-card rounded-[32px] p-6 md:p-8">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-lg font-extrabold tracking-wide text-emerald-900">Penilaian Setoran Murajaah</h2>
+                        <button onclick="fetchData()" class="w-9 h-9 border border-gray-200 hover:border-emerald-600 rounded-xl flex items-center justify-center text-emerald-800 hover:text-emerald-600 transition-all active:scale-95 bg-[#FEFCF7] no-print" title="Refresh Data">
+                            <i id="refresh-icon" class="fas fa-sync-alt text-xs"></i>
+                        </button>
                     </div>
-                    <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
-                        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Setor</span>
-                        <h3 class="text-2xl font-black text-emerald-950 mt-0.5" id="stat-submissions">0</h3>
+                    
+                    <div class="w-full md:w-80 relative no-print">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Cari nama, sekolah, surah, juz..." class="w-full pl-11 pr-4 py-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-600">
                     </div>
-                    <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
-                        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Ayat</span>
-                        <h3 class="text-2xl font-black text-emerald-950 mt-0.5" id="stat-verses">0</h3>
+                </div>
+
+                <!-- Submissions Table -->
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full border-collapse text-left">
+                        <thead>
+                            <tr class="border-b border-gray-200/60 text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+                                <th class="py-4 px-4">Nama Santri</th>
+                                <th class="py-4 px-4 text-center">Juz</th>
+                                <th class="py-4 px-4">Surah & Rentang</th>
+                                <th class="py-4 px-4 text-center">Rekaman Suara</th>
+                                <th class="py-4 px-4">Penilaian Ustadz (Grade & Catatan)</th>
+                                <th class="py-4 px-4 text-right">Aksi Penilaian</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-gray-100 text-sm text-gray-800">
+                            <tr>
+                                <td colspan="6" class="text-center py-12 text-gray-400">
+                                    <i class="fas fa-circle-notch animate-spin text-2xl mb-2 text-emerald-600"></i>
+                                    <p class="text-xs">Memuat laporan setoran...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+
+        </div>
+
+        <!-- TAB 2: SUB-HALAMAN KELOLA & REGISTRASI SANTRI (HALAMAN TERPISAH) -->
+        <div id="tab-content-students" class="hidden space-y-8">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Registration Form Card -->
+                <section class="glass-card rounded-3xl p-6 h-fit no-print">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-emerald-100">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-emerald-950 mb-1">Daftarkan Santri Baru</h2>
+                    <p class="text-xs text-gray-500 mb-5">Buat kredensial login (username & password) untuk santri baru agar bisa setor hafalan.</p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap Santri</label>
+                            <input type="text" id="reg-name" placeholder="Ahmad Fauzi" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Lembaga / Sekolah</label>
+                            <input type="text" id="reg-school" placeholder="SDIT Al-Hikmah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Username Login</label>
+                            <input type="text" id="reg-username" placeholder="fauzi123" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Password Access</label>
+                            <input type="text" id="reg-password" placeholder="fauzi789" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+
+                        <div id="reg-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
+                        <div id="reg-success" class="hidden text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center font-bold"></div>
+
+                        <button onclick="registerStudent()" class="w-full btn-primary-green p-3.5 rounded-xl font-bold text-sm tracking-wide">
+                            <i class="fas fa-save mr-1.5"></i> Simpan & Daftarkan
+                        </button>
                     </div>
                 </section>
 
                 <!-- Student Accounts List Table -->
-                <section class="glass-card rounded-3xl p-6">
+                <section class="glass-card rounded-3xl p-6 lg:col-span-2">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-base font-bold text-emerald-950 flex items-center gap-2">
-                            <i class="fas fa-id-card-alt text-emerald-700"></i>
-                            <span>Daftar Akun Santri (Kredensial Login)</span>
-                        </h2>
-                        <button onclick="window.print()" class="text-xs bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-700 font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 no-print">
-                            <i class="fas fa-print text-emerald-600"></i> Cetak PDF
-                        </button>
+                        <div>
+                            <h2 class="text-base font-bold text-emerald-950 flex items-center gap-2">
+                                <i class="fas fa-id-card-alt text-emerald-700"></i>
+                                <span>Daftar Akun Santri Terdaftar</span>
+                            </h2>
+                            <p class="text-xs text-gray-500">Daftar kredensial username & password santri</p>
+                        </div>
                     </div>
                     
-                    <div class="overflow-x-auto custom-scrollbar max-h-72">
+                    <div class="overflow-x-auto custom-scrollbar max-h-96">
                         <table class="w-full border-collapse text-left text-xs">
                             <thead>
                                 <tr class="border-b border-gray-100 text-gray-400 font-bold uppercase pb-2">
@@ -206,88 +317,10 @@
                         </table>
                     </div>
                 </section>
+
             </div>
-
-            <!-- Registration Form Card -->
-            <section class="glass-card rounded-3xl p-6 h-fit no-print">
-                <h2 class="text-base font-bold text-emerald-950 mb-1 flex items-center gap-2">
-                    <i class="fas fa-user-plus text-emerald-700"></i>
-                    <span>Daftarkan Santri Baru</span>
-                </h2>
-                <p class="text-xs text-gray-500 mb-5">Buat username & password untuk akses santri</p>
-
-                <div class="space-y-3.5">
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap</label>
-                        <input type="text" id="reg-name" placeholder="Ahmad Fauzi" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Lembaga / Sekolah</label>
-                        <input type="text" id="reg-school" placeholder="SDIT Al-Hikmah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Username Login</label>
-                        <input type="text" id="reg-username" placeholder="fauzi123" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Password</label>
-                        <input type="text" id="reg-password" placeholder="fauzi789" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
-                    </div>
-
-                    <div id="reg-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
-                    <div id="reg-success" class="hidden text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center font-bold"></div>
-
-                    <button onclick="registerStudent()" class="w-full btn-primary-green p-3.5 rounded-xl font-bold text-sm tracking-wide">Daftarkan Santri</button>
-                </div>
-            </section>
 
         </div>
-
-        <!-- Submissions Table & Grading Section -->
-        <main class="glass-card rounded-[32px] p-6 md:p-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-                <div class="flex items-center gap-3">
-                    <h2 class="text-lg font-extrabold tracking-wide text-emerald-900">Laporan & Penilaian Setoran Murajaah</h2>
-                    <button onclick="fetchData()" class="w-9 h-9 border border-gray-200 hover:border-emerald-600 rounded-xl flex items-center justify-center text-emerald-800 hover:text-emerald-600 transition-all active:scale-95 bg-[#FEFCF7] no-print" title="Refresh Data">
-                        <i id="refresh-icon" class="fas fa-sync-alt text-xs"></i>
-                    </button>
-                </div>
-                
-                <div class="flex w-full md:w-auto gap-3 no-print">
-                    <div class="w-full md:w-72 relative">
-                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Cari nama, sekolah, surah, juz..." class="w-full pl-11 pr-4 py-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-600">
-                    </div>
-                    <a href="/" class="btn-green-outline px-5 py-2.5 rounded-xl flex items-center gap-1.5 text-sm font-semibold shadow-sm shrink-0">
-                        <i class="fas fa-home text-xs"></i> Portal Santri
-                    </a>
-                </div>
-            </div>
-
-            <!-- Submissions Table -->
-            <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full border-collapse text-left">
-                    <thead>
-                        <tr class="border-b border-gray-200/60 text-gray-400 text-[10px] font-bold uppercase tracking-wider">
-                            <th class="py-4 px-4">Nama Santri</th>
-                            <th class="py-4 px-4 text-center">Juz</th>
-                            <th class="py-4 px-4">Surah & Rentang</th>
-                            <th class="py-4 px-4 text-center">Rekaman</th>
-                            <th class="py-4 px-4">Penilaian Ustadz (Grade & Catatan)</th>
-                            <th class="py-4 px-4 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body" class="divide-y divide-gray-100 text-sm text-gray-800">
-                        <tr>
-                            <td colspan="6" class="text-center py-12 text-gray-400">
-                                <i class="fas fa-circle-notch animate-spin text-2xl mb-2 text-emerald-600"></i>
-                                <p class="text-xs">Memuat laporan setoran...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </main>
 
     </div>
 
@@ -329,6 +362,25 @@
     <script>
         const API = "/api";
         let allLogs = [];
+
+        function switchTab(tabName) {
+            const btnGrading = document.getElementById('tab-btn-grading');
+            const btnStudents = document.getElementById('tab-btn-students');
+            const contentGrading = document.getElementById('tab-content-grading');
+            const contentStudents = document.getElementById('tab-content-students');
+
+            if (tabName === 'grading') {
+                btnGrading.className = 'tab-active px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                btnStudents.className = 'bg-transparent text-gray-500 hover:text-emerald-800 px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                contentGrading.classList.remove('hidden');
+                contentStudents.classList.add('hidden');
+            } else {
+                btnStudents.className = 'tab-active px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                btnGrading.className = 'bg-transparent text-gray-500 hover:text-emerald-800 px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                contentStudents.classList.remove('hidden');
+                contentGrading.classList.add('hidden');
+            }
+        }
 
         async function fetchData() {
             const refreshIcon = document.getElementById('refresh-icon');
@@ -376,7 +428,7 @@
                 if (students.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-gray-400 italic">Belum ada akun santri. Daftarkan di kanan.</td>
+                            <td colspan="5" class="text-center py-4 text-gray-400 italic">Belum ada akun santri. Daftarkan di sisi kiri.</td>
                         </tr>
                     `;
                     return;
@@ -384,11 +436,11 @@
 
                 tbody.innerHTML = students.map(s => `
                     <tr class="hover:bg-gray-50/50">
-                        <td class="py-2 px-3 font-semibold text-gray-900">${escapeHtml(s.name)}</td>
-                        <td class="py-2 px-3 text-gray-500">${escapeHtml(s.school)}</td>
-                        <td class="py-2 px-3"><code class="bg-gray-100 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold">${escapeHtml(s.username)}</code></td>
-                        <td class="py-2 px-3 font-mono text-gray-600">${escapeHtml(s.password)}</td>
-                        <td class="py-2 px-3 text-right text-gray-400 font-mono">${escapeHtml(s.unique_id)}</td>
+                        <td class="py-2.5 px-3 font-semibold text-gray-900">${escapeHtml(s.name)}</td>
+                        <td class="py-2.5 px-3 text-gray-500">${escapeHtml(s.school)}</td>
+                        <td class="py-2.5 px-3"><code class="bg-gray-100 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold">${escapeHtml(s.username)}</code></td>
+                        <td class="py-2.5 px-3 font-mono text-gray-600">${escapeHtml(s.password)}</td>
+                        <td class="py-2.5 px-3 text-right text-gray-400 font-mono">${escapeHtml(s.unique_id)}</td>
                     </tr>
                 `).join('');
             } catch(e) {

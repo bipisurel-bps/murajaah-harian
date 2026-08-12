@@ -29,8 +29,8 @@
         .arch-header {
             position: relative;
             background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald-medium) 70%, var(--emerald-light) 100%);
-            border-radius: 0 0 35px 35px;
-            padding: 2.5rem 1.5rem 3rem;
+            border-radius: 28px;
+            padding: 2.5rem 1.5rem;
             color: var(--paper);
             box-shadow: 0 10px 25px rgba(5, 26, 24, 0.15);
             overflow: hidden;
@@ -43,15 +43,6 @@
             pointer-events: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z M30 10 L50 30 L30 50 L10 30 Z' fill='%23C59B27' fill-rule='evenodd'/%3E%3C/svg%3E");
             background-repeat: repeat;
-        }
-        .arch-header::after {
-            content: "";
-            position: absolute;
-            left: 0; right: 0; bottom: 0;
-            height: 10px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='10'%3E%3Cpath d='M0 10 L10 0 L20 10 L30 0 L40 10' stroke='%23C59B27' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-            background-repeat: repeat-x;
-            opacity: 0.7;
         }
         .glass-card {
             background: var(--card);
@@ -95,44 +86,80 @@
             background: rgba(5, 26, 24, 0.08);
             border-radius: 10px;
         }
-        audio::-webkit-media-controls-enclosure {
-            background-color: #FEFCF7;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-        }
-        audio::-webkit-media-controls-panel {
-            background-color: #FEFCF7;
-        }
         .arabic-font {
             font-family: 'Amiri', serif;
         }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+            .glass-card { border: 1px solid #ccc; box-shadow: none; }
+        }
     </style>
 </head>
-<body class="max-w-6xl mx-auto pb-24">
+<body>
 
-    <!-- Header Section (Islamic Geometric Pattern) -->
-    <header class="arch-header mb-8 px-6">
-        <!-- Pattern Overlay -->
-        <div class="header-pattern"></div>
-        
-        <div class="flex justify-between items-center mb-3 relative z-10">
-            <span class="bg-white/10 border border-white/10 px-3 py-1 rounded-full text-[#F0D58C] text-[9px] font-bold uppercase tracking-wider">Ustadz Panel</span>
-            <span class="flex items-center gap-1.5 text-xs text-emerald-300 font-bold">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Monitoring Aktif
-            </span>
+    <!-- ADMIN LOGIN GATE -->
+    <div id="admin-gate" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#051A18,#0A2D2A,#164E48);display:flex;align-items:center;justify-content:center;font-family:Outfit,sans-serif">
+        <div style="background:white;padding:40px;border-radius:24px;text-align:center;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+            <div style="font-size:48px;margin-bottom:12px">&#x1f6e1;</div>
+            <h2 style="margin:0 0 8px;color:#051A18;font-size:22px;font-weight:800">Akses Ustadz</h2>
+            <p style="color:#63706F;font-size:13px;margin:0 0 24px">Masukkan password untuk masuk dashboard</p>
+            <input type="password" id="admin-pass-input" placeholder="Password admin" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:15px;text-align:center;outline:none" onkeydown="if(event.key==='Enter')checkAdminPass()">
+            <button onclick="checkAdminPass()" style="width:100%;margin-top:16px;padding:14px;background:#C59B27;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">Masuk Sekarang</button>
+            <p id="admin-gate-error" style="color:#dc2626;font-size:12px;margin:12px 0 0;display:none;font-weight:600">Password salah!</p>
         </div>
-        <h1 class="text-3xl font-extrabold tracking-tight text-white mb-1.5 relative z-10">Monitoring Murajaah Santri</h1>
-        <p class="text-xs text-[#F0D58C] arabic-font font-bold relative z-10">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-    </header>
-
-    <div class="px-4">
+    </div>
+    
+    <script>
+        function checkAdminPass(){
+            var p=document.getElementById("admin-pass-input").value;
+            fetch("/api/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:p})})
+            .then(function(r){return r.json()})
+            .then(function(d){
+                if(d.token){
+                    document.getElementById("admin-gate").style.display="none";
+                    sessionStorage.setItem("admin_token",d.token);
+                    fetchData();
+                }else{
+                    document.getElementById("admin-gate-error").style.display="block";
+                }
+            });
+        }
         
-        <!-- Grid layout for Student Registration & Stats -->
+        window.addEventListener('DOMContentLoaded', function() {
+            if (sessionStorage.getItem("admin_token")) {
+                document.getElementById("admin-gate").style.display="none";
+            }
+        });
+    </script>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="max-w-6xl mx-auto px-4 py-6 pb-24">
+
+        <!-- Header Section -->
+        <header class="arch-header mb-8">
+            <div class="header-pattern"></div>
+            
+            <div class="flex justify-between items-center mb-3 relative z-10">
+                <span class="bg-white/10 border border-white/10 px-3 py-1 rounded-full text-[#F0D58C] text-[9px] font-bold uppercase tracking-wider">Ustadz Panel</span>
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center gap-1.5 text-xs text-emerald-300 font-bold">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Monitoring Aktif
+                    </span>
+                    <button onclick="sessionStorage.removeItem('admin_token'); location.reload();" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-full font-semibold transition-all no-print">
+                        Keluar
+                    </button>
+                </div>
+            </div>
+            <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight text-white mb-1.5 relative z-10">Monitoring Murajaah Santri</h1>
+            <p class="text-xs text-[#F0D58C] arabic-font font-bold relative z-10">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+        </header>
+
+        <!-- Stats & Registration Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             
-            <!-- Left 2 Cols: Stats Panel & Students Accounts List -->
-            <div class="lg:col-span-2 space-y-8">
-                <!-- Stats Row -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Stats Cards -->
                 <section class="grid grid-cols-3 gap-4">
                     <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
                         <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Santri</span>
@@ -148,12 +175,17 @@
                     </div>
                 </section>
 
-                <!-- Student Accounts List -->
+                <!-- Student Accounts List Table -->
                 <section class="glass-card rounded-3xl p-6">
-                    <h2 class="text-base font-bold text-emerald-950 mb-4 flex items-center gap-2">
-                        <i class="fas fa-id-card-alt text-emerald-700"></i>
-                        <span>Daftar Akun Santri (Kredensial Login)</span>
-                    </h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-base font-bold text-emerald-950 flex items-center gap-2">
+                            <i class="fas fa-id-card-alt text-emerald-700"></i>
+                            <span>Daftar Akun Santri (Kredensial Login)</span>
+                        </h2>
+                        <button onclick="window.print()" class="text-xs bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-700 font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 no-print">
+                            <i class="fas fa-print text-emerald-600"></i> Cetak PDF
+                        </button>
+                    </div>
                     
                     <div class="overflow-x-auto custom-scrollbar max-h-72">
                         <table class="w-full border-collapse text-left text-xs">
@@ -166,9 +198,9 @@
                                     <th class="py-2.5 px-3 text-right">Unique ID</th>
                                 </tr>
                             </thead>
-                            <tbody id="student-accounts-body" class="divide-y divide-gray-50 text-gray-700">
+                            <tbody id="student-accounts-body" class="divide-y divide-gray-100 text-gray-800">
                                 <tr>
-                                    <td colspan="5" class="text-center py-6 text-gray-400 italic">Memuat daftar akun...</td>
+                                    <td colspan="5" class="text-center py-6 text-gray-400">Memuat akun santri...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -176,32 +208,33 @@
                 </section>
             </div>
 
-            <!-- Right 1 Col: Student Registration Panel -->
-            <section class="glass-card rounded-3xl p-6">
-                <h2 class="text-base font-bold text-emerald-950 mb-4 flex items-center gap-2">
+            <!-- Registration Form Card -->
+            <section class="glass-card rounded-3xl p-6 h-fit no-print">
+                <h2 class="text-base font-bold text-emerald-950 mb-1 flex items-center gap-2">
                     <i class="fas fa-user-plus text-emerald-700"></i>
-                    <span>Registrasi Santri Baru</span>
+                    <span>Daftarkan Santri Baru</span>
                 </h2>
-                
-                <div class="space-y-4">
+                <p class="text-xs text-gray-500 mb-5">Buat username & password untuk akses santri</p>
+
+                <div class="space-y-3.5">
                     <div>
-                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap</label>
-                        <input type="text" id="reg-name" placeholder="Ahmad Fauzi" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-emerald-700 transition-colors">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap</label>
+                        <input type="text" id="reg-name" placeholder="Ahmad Fauzi" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
                     </div>
                     <div>
-                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Asal Sekolah / Lembaga</label>
-                        <input type="text" id="reg-school" placeholder="MBS Al-Amin" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-emerald-700 transition-colors">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Lembaga / Sekolah</label>
+                        <input type="text" id="reg-school" placeholder="SDIT Al-Hikmah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
                     </div>
                     <div>
-                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Username Unik</label>
-                        <input type="text" id="reg-username" placeholder="fauzi123" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-emerald-700 transition-colors">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Username Login</label>
+                        <input type="text" id="reg-username" placeholder="fauzi123" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
                     </div>
                     <div>
-                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Password</label>
-                        <input type="text" id="reg-password" placeholder="fauzi789" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-emerald-700 transition-colors">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Password</label>
+                        <input type="text" id="reg-password" placeholder="fauzi789" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
                     </div>
 
-                    <div id="reg-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center"></div>
+                    <div id="reg-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
                     <div id="reg-success" class="hidden text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center font-bold"></div>
 
                     <button onclick="registerStudent()" class="w-full btn-primary-green p-3.5 rounded-xl font-bold text-sm tracking-wide">Daftarkan Santri</button>
@@ -210,23 +243,21 @@
 
         </div>
 
-        <!-- Filters & Table Panel for Submissions -->
+        <!-- Submissions Table & Grading Section -->
         <main class="glass-card rounded-[32px] p-6 md:p-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                 <div class="flex items-center gap-3">
-                    <h2 class="text-lg font-extrabold tracking-wide text-emerald-900">Laporan Setoran Murajaah</h2>
-                    <button onclick="fetchData()" class="w-9 h-9 border border-gray-200 hover:border-emerald-600 rounded-xl flex items-center justify-center text-emerald-800 hover:text-emerald-600 transition-all active:scale-95 bg-[#FEFCF7]" title="Refresh Data">
+                    <h2 class="text-lg font-extrabold tracking-wide text-emerald-900">Laporan & Penilaian Setoran Murajaah</h2>
+                    <button onclick="fetchData()" class="w-9 h-9 border border-gray-200 hover:border-emerald-600 rounded-xl flex items-center justify-center text-emerald-800 hover:text-emerald-600 transition-all active:scale-95 bg-[#FEFCF7] no-print" title="Refresh Data">
                         <i id="refresh-icon" class="fas fa-sync-alt text-xs"></i>
                     </button>
                 </div>
                 
-                <div class="flex w-full md:w-auto gap-3">
-                    <!-- Search Bar -->
+                <div class="flex w-full md:w-auto gap-3 no-print">
                     <div class="w-full md:w-72 relative">
                         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Cari nama, sekolah, juz..." class="w-full pl-11 pr-4 py-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm placeholder-gray-400 text-gray-800 focus:outline-none focus:border-emerald-600 transition-colors">
+                        <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Cari nama, sekolah, surah, juz..." class="w-full pl-11 pr-4 py-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-600">
                     </div>
-                    <!-- Go Home -->
                     <a href="/" class="btn-green-outline px-5 py-2.5 rounded-xl flex items-center gap-1.5 text-sm font-semibold shadow-sm shrink-0">
                         <i class="fas fa-home text-xs"></i> Portal Santri
                     </a>
@@ -239,27 +270,60 @@
                     <thead>
                         <tr class="border-b border-gray-200/60 text-gray-400 text-[10px] font-bold uppercase tracking-wider">
                             <th class="py-4 px-4">Nama Santri</th>
-                            <th class="py-4 px-4">Lembaga/Sekolah</th>
                             <th class="py-4 px-4 text-center">Juz</th>
-                            <th class="py-4 px-4">Surah</th>
-                            <th class="py-4 px-4">Rentang Ayat</th>
-                            <th class="py-4 px-4 text-center">Jumlah</th>
-                            <th class="py-4 px-4 text-center">Rekaman Suara</th>
-                            <th class="py-4 px-4 text-right">Tanggal Setor</th>
+                            <th class="py-4 px-4">Surah & Rentang</th>
+                            <th class="py-4 px-4 text-center">Rekaman</th>
+                            <th class="py-4 px-4">Penilaian Ustadz (Grade & Catatan)</th>
+                            <th class="py-4 px-4 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="table-body" class="divide-y divide-gray-100 text-sm text-gray-800">
-                        <!-- Dynamic Rows go here -->
                         <tr>
-                            <td colspan="8" class="text-center py-12 text-gray-400">
+                            <td colspan="6" class="text-center py-12 text-gray-400">
                                 <i class="fas fa-circle-notch animate-spin text-2xl mb-2 text-emerald-600"></i>
-                                <p class="text-xs">Memuat laporan...</p>
+                                <p class="text-xs">Memuat laporan setoran...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </main>
+
+    </div>
+
+    <!-- Modal Penilaian Ustadz -->
+    <div id="modal-grade" class="fixed inset-0 bg-[#051a18]/70 backdrop-blur-sm z-50 flex items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 border border-gray-200 shadow-2xl">
+            <h3 class="font-bold text-lg text-emerald-900 mb-1">Beri Nilai & Catatan Ustadz</h3>
+            <p id="grade-modal-subtitle" class="text-xs text-gray-500 mb-4">Setoran Santri</p>
+            
+            <input type="hidden" id="grade-log-id">
+            
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Nilai / Predikat Kelancaran</label>
+                    <select id="grade-select" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-emerald-600">
+                        <option value="Mumtaz ✨">Mumtaz ✨ (Sangat Baik / Sangat Lancar)</option>
+                        <option value="Jayyid Jiddan 🌟">Jayyid Jiddan 🌟 (Baik Sekali)</option>
+                        <option value="Jayyid 👍">Jayyid 👍 (Baik)</option>
+                        <option value="Perlu Mengulang 🔄">Perlu Mengulang 🔄 (Kurang Lancar)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Catatan Tajwid / Makhraj</label>
+                    <textarea id="grade-note" rows="3" placeholder="Contoh: Tajwid di ayat 5 perlu diperhatikan mad jaiznya..." class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-600"></textarea>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeGradeModal()" class="w-1/3 bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl font-bold text-xs text-gray-600">Batal</button>
+                <button onclick="saveGrade()" class="w-2/3 btn-primary-green p-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2">
+                    <span id="btn-grade-save-text">Simpan Penilaian</span>
+                    <i id="btn-grade-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -268,21 +332,18 @@
 
         async function fetchData() {
             const refreshIcon = document.getElementById('refresh-icon');
-            refreshIcon.classList.add('animate-spin');
+            if (refreshIcon) refreshIcon.classList.add('animate-spin');
             
             try {
-                // Fetch credentials first
                 await fetchStudentsList();
 
                 const res = await fetch(`${API}/admin/all-logs`);
                 allLogs = await res.json();
                 
-                // Calculate Stats
                 const totalSubmissions = allLogs.length;
                 const totalVerses = allLogs.reduce((acc, log) => acc + log.jumlah_ayat, 0);
                 const uniqueStudents = [...new Set(allLogs.map(log => log.student_id))].length;
                 
-                // Render stats
                 document.getElementById('stat-students').innerText = uniqueStudents;
                 document.getElementById('stat-submissions').innerText = totalSubmissions;
                 document.getElementById('stat-verses').innerText = totalVerses;
@@ -293,16 +354,16 @@
                 console.error("Gagal mengambil data admin", err);
                 document.getElementById('table-body').innerHTML = `
                     <tr>
-                        <td colspan="8" class="text-center py-12 text-red-500">
+                        <td colspan="6" class="text-center py-12 text-red-500">
                             <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
-                            <p class="text-xs">Gagal memuat data dari server. Pastikan server backend sedang berjalan.</p>
+                            <p class="text-xs">Gagal memuat data dari server.</p>
                         </td>
                     </tr>
                 `;
             } finally {
-                setTimeout(() => {
-                    refreshIcon.classList.remove('animate-spin');
-                }, 500);
+                if (refreshIcon) {
+                    setTimeout(() => refreshIcon.classList.remove('animate-spin'), 500);
+                }
             }
         }
 
@@ -315,7 +376,7 @@
                 if (students.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-gray-400 italic">Belum ada akun santri. Daftarkan di panel kanan.</td>
+                            <td colspan="5" class="text-center py-4 text-gray-400 italic">Belum ada akun santri. Daftarkan di kanan.</td>
                         </tr>
                     `;
                     return;
@@ -366,7 +427,6 @@
                     throw new Error(data.error || "Gagal mendaftarkan santri");
                 }
 
-                // Clear input fields
                 document.getElementById('reg-name').value = '';
                 document.getElementById('reg-school').value = '';
                 document.getElementById('reg-username').value = '';
@@ -383,12 +443,77 @@
             }
         }
 
+        function openGradeModal(id, name, surah, start, end, currentGrade, currentNote) {
+            document.getElementById('grade-log-id').value = id;
+            document.getElementById('grade-modal-subtitle').innerText = `${name} • ${surah} Ayat ${start}-${end}`;
+            document.getElementById('grade-select').value = currentGrade || "Mumtaz ✨";
+            document.getElementById('grade-note').value = currentNote || "";
+            document.getElementById('modal-grade').classList.remove('hidden');
+        }
+
+        function closeGradeModal() {
+            document.getElementById('modal-grade').classList.add('hidden');
+        }
+
+        async function saveGrade() {
+            const id = document.getElementById('grade-log-id').value;
+            const grade = document.getElementById('grade-select').value;
+            const note = document.getElementById('grade-note').value.trim();
+            
+            const btnText = document.getElementById('btn-grade-save-text');
+            const spinner = document.getElementById('btn-grade-spinner');
+            btnText.innerText = "Menyimpan...";
+            spinner.classList.remove('hidden');
+
+            try {
+                const res = await fetch(`${API}/admin/grade-log`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ log_id: id, grade, note })
+                });
+                
+                if (!res.ok) throw new Error("Gagal menyimpan nilai");
+                
+                closeGradeModal();
+                fetchData();
+            } catch (e) {
+                alert(e.message);
+            } finally {
+                btnText.innerText = "Simpan Penilaian";
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function shareToWhatsApp(l) {
+            const message = `*Laporan Setoran Murajaah Santri*\n\n` +
+                `👤 *Nama*: ${l.name} (${l.school})\n` +
+                `📖 *Surah*: ${l.surah} (Juz ${l.juz || 30})\n` +
+                `🔢 *Ayat*: ${l.ayat_start} - ${l.ayat_end} (+${l.jumlah_ayat} Ayat)\n` +
+                `📅 *Tanggal*: ${l.tgl}\n` +
+                `✨ *Nilai Ustadz*: ${l.grade || 'Belum dinilai'}\n` +
+                `📝 *Catatan*: ${l.note || '-'}\n\n` +
+                `Baarakallahu Fiikum. 🤲✨`;
+            
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        async function deleteLogAdmin(id) {
+            if (!confirm("Apakah Anda yakin ingin menghapus setoran santri ini?")) return;
+            try {
+                const res = await fetch(`${API}/logs/${id}?student_id=admin`, { method: 'DELETE' });
+                if (!res.ok) throw new Error("Gagal menghapus log");
+                fetchData();
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
         function renderTable(logs) {
             const tbody = document.getElementById('table-body');
             if (logs.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" class="text-center py-12 text-gray-400">
+                        <td colspan="6" class="text-center py-12 text-gray-400">
                             <i class="fas fa-folder-open text-3xl mb-2 text-emerald-700/30"></i>
                             <p class="text-xs">Belum ada hafalan yang disetor oleh santri.</p>
                         </td>
@@ -399,21 +524,49 @@
 
             tbody.innerHTML = logs.map(l => {
                 const audioPlayer = l.audio_path 
-                    ? `<audio src="${l.audio_path}" controls class="h-8 w-44 mx-auto block opacity-85 hover:opacity-100 transition-opacity"></audio>`
+                    ? `<audio src="${l.audio_path}" controls class="h-8 w-40 mx-auto block"></audio>`
                     : `<span class="text-xs text-gray-300 italic">Tidak ada rekaman</span>`;
                 
                 const itemJuz = l.juz ? parseInt(l.juz) : 30;
                 
+                const gradeBadge = l.grade 
+                    ? `<span class="inline-block bg-emerald-50 border border-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-1 rounded-lg mb-1">${escapeHtml(l.grade)}</span>`
+                    : `<span class="inline-block bg-gray-100 text-gray-400 text-xs font-semibold px-2 py-0.5 rounded-lg mb-1">Belum dinilai</span>`;
+
+                const noteText = l.note ? `<p class="text-xs text-gray-600 bg-amber-50/60 p-2 rounded-lg border border-amber-100 mt-1">"${escapeHtml(l.note)}"</p>` : '';
+
                 return `
-                    <tr class="hover:bg-emerald-50/20 transition-colors group">
-                        <td class="py-4 px-4 font-bold text-gray-900 group-hover:text-emerald-800 transition-colors">${escapeHtml(l.name)}</td>
-                        <td class="py-4 px-4 text-gray-500">${escapeHtml(l.school)}</td>
-                        <td class="py-4 px-4 text-center font-bold"><span class="bg-emerald-50 text-emerald-800 border border-emerald-100 px-2 py-0.5 rounded-md text-xs">Juz ${itemJuz}</span></td>
-                        <td class="py-4 px-4 font-semibold text-emerald-950">${escapeHtml(l.surah)}</td>
-                        <td class="py-4 px-4 text-gray-600">Ayat ${l.ayat_start} - ${l.ayat_end}</td>
-                        <td class="py-4 px-4 text-center font-bold text-emerald-800">+${l.jumlah_ayat}</td>
+                    <tr class="hover:bg-emerald-50/20 transition-colors">
+                        <td class="py-4 px-4">
+                            <div class="font-bold text-gray-900">${escapeHtml(l.name)}</div>
+                            <div class="text-xs text-gray-400">${escapeHtml(l.school)}</div>
+                        </td>
+                        <td class="py-4 px-4 text-center font-bold">
+                            <span class="bg-emerald-50 text-emerald-800 border border-emerald-100 px-2 py-0.5 rounded-md text-xs">Juz ${itemJuz}</span>
+                        </td>
+                        <td class="py-4 px-4">
+                            <div class="font-bold text-emerald-950">${escapeHtml(l.surah)}</div>
+                            <div class="text-xs text-gray-500">Ayat ${l.ayat_start} - ${l.ayat_end} (+${l.jumlah_ayat} Ayat)</div>
+                            <div class="text-[10px] text-gray-400 mt-0.5">${escapeHtml(l.tgl)}</div>
+                        </td>
                         <td class="py-4 px-4 text-center">${audioPlayer}</td>
-                        <td class="py-4 px-4 text-right text-gray-400 text-xs">${escapeHtml(l.tgl)}</td>
+                        <td class="py-4 px-4 max-w-xs">
+                            ${gradeBadge}
+                            ${noteText}
+                        </td>
+                        <td class="py-4 px-4 text-right">
+                            <div class="flex justify-end gap-1.5 no-print">
+                                <button onclick="openGradeModal(${l.id}, '${escapeHtml(l.name)}', '${escapeHtml(l.surah)}', ${l.ayat_start}, ${l.ayat_end}, '${escapeHtml(l.grade || '')}', '${escapeHtml(l.note || '')}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 p-2 rounded-lg text-xs font-bold transition-all" title="Beri Nilai">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick='shareToWhatsApp(${JSON.stringify(l).replace(/'/g, "&apos;")})' class="bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-lg text-xs font-bold transition-all" title="Kirim WA">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button onclick="deleteLogAdmin(${l.id})" class="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg text-xs font-bold transition-all" title="Hapus">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -430,6 +583,7 @@
                 l.name.toLowerCase().includes(query) || 
                 l.surah.toLowerCase().includes(query) ||
                 l.school.toLowerCase().includes(query) ||
+                (l.grade && l.grade.toLowerCase().includes(query)) ||
                 (l.juz && String(l.juz).includes(query))
             );
             

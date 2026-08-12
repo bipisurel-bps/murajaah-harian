@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tahfiz Pro - Portal Santri</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,13 +26,12 @@
             background-color: var(--paper);
             color: var(--ink);
             min-height: 100vh;
-            overflow-x: hidden;
         }
         .arch-header {
             position: relative;
             background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald-medium) 70%, var(--emerald-light) 100%);
-            border-radius: 0 0 35px 35px;
-            padding: 2.5rem 1.5rem 3rem;
+            border-radius: 28px;
+            padding: 2rem 1.5rem 2.5rem;
             color: var(--paper);
             box-shadow: 0 10px 25px rgba(5, 26, 24, 0.15);
             overflow: hidden;
@@ -45,15 +44,6 @@
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z M30 10 L50 30 L30 50 L10 30 Z' fill='%23C59B27' fill-rule='evenodd'/%3E%3C/svg%3E");
             background-repeat: repeat;
         }
-        .arch-header::after {
-            content: "";
-            position: absolute;
-            left: 0; right: 0; bottom: 0;
-            height: 10px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='10'%3E%3Cpath d='M0 10 L10 0 L20 10 L30 0 L40 10' stroke='%23C59B27' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-            background-repeat: repeat-x;
-            opacity: 0.7;
-        }
         .glass-card {
             background: var(--card);
             border: 1px solid var(--border);
@@ -61,7 +51,6 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .glass-card:hover {
-            transform: translateY(-2px);
             border-color: var(--emerald-light);
             box-shadow: 0 10px 28px rgba(5, 26, 24, 0.08);
         }
@@ -76,11 +65,11 @@
             box-shadow: 0 6px 20px rgba(5, 26, 24, 0.35);
         }
         .glass-nav {
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            box-shadow: 0 6px 30px rgba(5, 26, 24, 0.06);
+            box-shadow: 0 6px 30px rgba(5, 26, 24, 0.08);
         }
         .arabic-font {
             font-family: 'Amiri', serif;
@@ -88,13 +77,18 @@
         .login-bg {
             background: radial-gradient(circle at 50% 0%, var(--emerald-medium), var(--emerald-dark) 85%);
         }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+            .glass-card { border: 1px solid #ccc; box-shadow: none; }
+        }
     </style>
 </head>
-<body class="max-w-md mx-auto pb-28">
+<body class="pb-24">
 
-    <!-- LOGIN SCREEN (Displays if session is not active) -->
-    <div id="login-screen" class="fixed inset-0 login-bg z-[100] flex flex-col justify-center px-6">
-        <div class="glass-card rounded-[32px] p-8 border-emerald-900/30 shadow-2xl relative overflow-hidden bg-white">
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 login-bg z-[100] flex flex-col justify-center px-4">
+        <div class="glass-card max-w-md mx-auto w-full rounded-[32px] p-8 border-emerald-900/30 shadow-2xl relative overflow-hidden bg-white">
             <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20 Z' fill='%23051A18'/%3E%3C/svg%3E&quot;); background-repeat: repeat;"></div>
             
             <div class="text-center mb-6">
@@ -105,7 +99,6 @@
                 <p class="text-xs text-gray-500 mt-1 font-medium">Masuk untuk menyetor dan melihat laporan murajaah</p>
             </div>
 
-            <!-- Login form -->
             <div class="space-y-4 mb-6">
                 <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Username</label>
@@ -136,83 +129,119 @@
         <p class="text-center text-white/30 text-[10px] mt-6 tracking-wide">Tahfiz Pro PWA Portal © 2026</p>
     </div>
 
-    <!-- MAIN PORTAL DASHBOARD (Shown when logged in) -->
-    <div id="dashboard-screen" class="hidden">
+    <!-- MAIN PORTAL DASHBOARD -->
+    <div id="dashboard-screen" class="hidden max-w-6xl mx-auto px-4 pt-4">
         
-        <!-- Header Section (Premium Islamic Patterns) -->
-        <header class="arch-header text-center">
-            <!-- Pattern Overlay -->
+        <!-- Header Section -->
+        <header class="arch-header text-center mb-6">
             <div class="header-pattern"></div>
             
             <div class="flex justify-between items-center mb-3 relative z-10">
                 <span id="display-school" class="text-[9px] bg-white/10 border border-white/10 px-3 py-1 rounded-full text-emerald-300 font-bold uppercase tracking-wider">Sekolah</span>
                 
-                <!-- Logout Button -->
-                <button onclick="handleLogout()" class="w-9 h-9 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center text-white transition-all active:scale-95 shadow-sm" title="Keluar">
-                    <i class="fas fa-sign-out-alt text-sm"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <!-- Daily Streak Badge -->
+                    <div id="streak-badge" class="bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm" title="Daily Murajaah Streak">
+                        <i class="fas fa-fire text-amber-400"></i>
+                        <span id="streak-count">0 Hari</span>
+                    </div>
+
+                    <button onclick="handleLogout()" class="w-9 h-9 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center text-white transition-all active:scale-95 shadow-sm" title="Keluar">
+                        <i class="fas fa-sign-out-alt text-sm"></i>
+                    </button>
+                </div>
             </div>
             
-            <h1 id="display-name" class="text-2xl font-extrabold tracking-tight text-white mb-1.5 relative z-10">Nama Siswa</h1>
+            <h1 id="display-name" class="text-2xl lg:text-3xl font-extrabold tracking-tight text-white mb-1.5 relative z-10">Nama Siswa</h1>
             <p class="text-xs text-[#F0D58C] arabic-font font-bold relative z-10">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
         </header>
 
-        <div class="px-4">
-            <!-- Stat Dashboard Widget -->
-            <section class="glass-card rounded-[28px] p-5 -mt-6 relative z-10">
-                
-                <!-- Juz target selector -->
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider pl-1">Target Hafalan</span>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-xs text-gray-400">Juz</span>
-                        <select id="target-juz" onchange="changeTargetJuz()" class="text-xs font-bold py-1 px-3.5 bg-[#FEFCF7] border border-gray-200 rounded-lg text-emerald-800 focus:outline-none">
-                            <!-- Populated in JS (1-30) -->
-                        </select>
-                    </div>
-                </div>
-
-                <div class="text-center py-2">
-                    <p class="text-gray-400 text-[10px] font-semibold uppercase tracking-widest mb-0.5">Total Ayat Disetor (Juz <span id="display-target-juz">30</span>)</p>
-                    <div class="flex items-baseline justify-center gap-1.5 mb-2.5">
-                        <h2 class="text-5xl font-black tracking-tighter text-emerald-800" id="stat-total">0</h2>
-                        <span class="text-xs font-bold text-gray-400">/ <span id="display-max-verses">564</span> Ayat</span>
-                    </div>
-                    
-                    <!-- Target Percentage -->
-                    <div class="flex justify-between items-center text-[10px] text-gray-500 mb-1.5 px-1 font-bold">
-                        <span>Progress Juz</span>
-                        <span id="target-percentage">0%</span>
+        <!-- 2-Column Responsive Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Target & Progress Analytics -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Stat Dashboard Widget -->
+                <section class="glass-card rounded-[28px] p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider pl-1">Target Hafalan</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xs text-gray-400">Juz</span>
+                            <select id="target-juz" onchange="changeTargetJuz()" class="text-xs font-bold py-1.5 px-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-emerald-800 focus:outline-none">
+                                <!-- Populated 1-30 -->
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- Progress Bar -->
-                    <div class="w-full bg-gray-100 rounded-full h-2.5 p-[1px] border border-gray-200/50">
-                        <div id="progress-bar" class="bg-gradient-to-r from-emerald-600 to-amber-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
-                    </div>
-                </div>
-            </section>
+                    <div class="text-center py-2">
+                        <p class="text-gray-400 text-[10px] font-semibold uppercase tracking-widest mb-0.5">Ayat Unik Disetor (Mutqin Check)</p>
+                        <div class="flex items-baseline justify-center gap-1.5 mb-1">
+                            <h2 class="text-5xl font-black tracking-tighter text-emerald-800" id="stat-unique">0</h2>
+                            <span class="text-xs font-bold text-gray-400">/ <span id="display-max-verses">564</span> Ayat</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mb-3 font-semibold">Total Setoran: <span id="stat-total" class="font-bold text-emerald-700">0</span> Ayat</p>
+                        
+                        <div class="flex justify-between items-center text-[10px] text-gray-500 mb-1.5 px-1 font-bold">
+                            <span>Progress Mutqin (Juz <span id="display-target-juz">30</span>)</span>
+                            <span id="target-percentage" class="text-emerald-700">0%</span>
+                        </div>
 
-            <!-- Submissions / Muraja'ah History -->
-            <section class="space-y-4 mt-6">
-                <div class="flex justify-between items-center pl-2">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Riwayat Murajaah</h3>
-                    <span class="text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded text-emerald-800 font-bold uppercase tracking-wider border border-emerald-100">Log Aktif</span>
+                        <div class="w-full bg-gray-100 rounded-full h-3 p-[1px] border border-gray-200/50">
+                            <div id="progress-bar" class="bg-gradient-to-r from-emerald-600 to-amber-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Surah Progress Card -->
+                <section class="glass-card rounded-[28px] p-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Progress per Surah</h3>
+                        <span class="text-[9px] bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded font-bold">Terdaftar</span>
+                    </div>
+                    <div id="surah-progress-list" class="space-y-2 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
+                        <p class="text-xs text-gray-400">Belum ada setoran surah</p>
+                    </div>
+                </section>
+
+                <!-- Action Buttons: Print PDF & Share WA -->
+                <section class="flex gap-3 no-print">
+                    <button onclick="window.print()" class="flex-1 bg-white border border-gray-200 hover:border-emerald-600 text-gray-700 hover:text-emerald-800 p-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all">
+                        <i class="fas fa-print text-emerald-600"></i> Cetak PDF
+                    </button>
+                    <button onclick="shareToWhatsApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all">
+                        <i class="fab fa-whatsapp text-sm"></i> Kirim WA
+                    </button>
+                </section>
+            </div>
+
+            <!-- Right Column: Setor Form & Submissions Log -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Action Bar & Add Setoran Button -->
+                <div class="glass-card rounded-[24px] p-4 flex justify-between items-center no-print">
+                    <div>
+                        <h3 class="font-extrabold text-emerald-950 text-base">Riwayat Setoran Murajaah</h3>
+                        <p class="text-xs text-gray-500">Daftar setoran hafalan & penilaian dari Ustadz</p>
+                    </div>
+                    <button onclick="openInputModal()" class="glow-btn px-5 py-3 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-md hover:scale-105 active:scale-95 transition-all">
+                        <i class="fas fa-plus"></i> Setor Murajaah
+                    </button>
                 </div>
-                
-                <div id="logs" class="space-y-3">
-                    <!-- Loading state -->
-                    <div class="text-center py-10 text-gray-400">
+
+                <!-- Submissions Logs -->
+                <section id="logs" class="space-y-3.5">
+                    <div class="text-center py-10 text-gray-400 glass-card rounded-[28px]">
                         <i class="fas fa-circle-notch animate-spin text-2xl mb-2 text-emerald-600"></i>
                         <p class="text-xs">Memuat data murajaah...</p>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
+
         </div>
 
         <!-- Modal Input Setoran -->
-        <div id="modal-input" class="fixed inset-0 bg-[#051a18]/70 backdrop-blur-sm z-50 flex items-end justify-center hidden">
-            <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 pb-8 border border-gray-200 border-b-0 overflow-y-auto max-h-[90vh]">
-                <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4"></div>
+        <div id="modal-input" class="fixed inset-0 bg-[#051a18]/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+            <div class="bg-white w-full max-w-md sm:rounded-[32px] rounded-t-[32px] p-6 pb-8 border border-gray-200 overflow-y-auto max-h-[90vh] shadow-2xl">
+                <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4 sm:hidden"></div>
                 <h2 class="font-bold text-lg text-center text-emerald-900 mb-4">Setor Murajaah Baru</h2>
                 
                 <div class="space-y-3.5 mb-5">
@@ -226,7 +255,7 @@
                         <div class="col-span-2">
                             <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1 pl-1">Nama Surah</label>
                             <select id="surah-select" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-emerald-600">
-                                <!-- Populated dynamically based on selected Juz -->
+                                <!-- Populated dynamically -->
                             </select>
                         </div>
                     </div>
@@ -247,7 +276,6 @@
                         <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1 pl-1">Rekaman Suara (Opsional)</label>
                         <div class="bg-[#FEFCF7] border border-gray-200 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[85px] relative">
                             
-                            <!-- Not Recording State -->
                             <div id="record-state-idle" class="flex flex-col items-center gap-1.5">
                                 <button type="button" onclick="startRecording()" class="w-11 h-11 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 hover:bg-emerald-100 flex items-center justify-center transition-all duration-200 active:scale-95">
                                     <i class="fas fa-microphone text-base"></i>
@@ -255,7 +283,6 @@
                                 <span class="text-[9px] text-emerald-800/60 uppercase tracking-wider font-bold">Mulai Rekam Suara</span>
                             </div>
                             
-                            <!-- Recording State -->
                             <div id="record-state-active" class="flex flex-col items-center gap-1.5 hidden">
                                 <div class="flex items-center gap-2 relative">
                                     <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
@@ -268,7 +295,6 @@
                                 <span class="text-[9px] text-red-500/60 uppercase tracking-wider font-bold">Hentikan</span>
                             </div>
                             
-                            <!-- Preview State -->
                             <div id="record-state-preview" class="flex flex-col items-center w-full gap-2 hidden">
                                 <audio id="audio-preview" controls class="w-full h-8 bg-transparent rounded-lg"></audio>
                                 <button type="button" onclick="deleteRecording()" class="text-[9px] text-red-500 hover:text-red-700 flex items-center gap-1 font-bold transition-colors mt-0.5">
@@ -278,7 +304,6 @@
 
                         </div>
                     </div>
-
                 </div>
                 
                 <div class="flex gap-3">
@@ -291,8 +316,8 @@
             </div>
         </div>
 
-        <!-- Bottom Navigation Bar -->
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass-nav px-8 py-3 flex justify-between items-center rounded-full z-40">
+        <!-- Floating Quick Nav for Mobile -->
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass-nav px-8 py-3 flex justify-between items-center rounded-full z-40 lg:hidden no-print">
             <button onclick="location.reload()" class="text-emerald-700 flex flex-col items-center gap-0.5 transition-colors duration-200">
                 <i class="fas fa-home text-base"></i>
                 <span class="text-[8px] font-bold uppercase tracking-wider">Home</span>
@@ -307,7 +332,7 @@
                 <span class="text-[8px] font-bold uppercase tracking-wider">Admin</span>
             </a>
         </nav>
-        
+
     </div>
 
     <script>
@@ -319,7 +344,6 @@
             21: 178, 22: 169, 23: 357, 24: 175, 25: 246, 26: 195, 27: 399, 28: 137, 29: 431, 30: 564
         };
 
-        // All 114 Surahs mapping with verse count
         const QURAN_SURAHS = [
             {no:1,name:"Al-Fatihah",verses:7},{no:2,name:"Al-Baqarah",verses:286},{no:3,name:"Ali 'Imran",verses:200},
             {no:4,name:"An-Nisa'",verses:176},{no:5,name:"Al-Ma'idah",verses:120},{no:6,name:"Al-An'am",verses:165},
@@ -361,47 +385,23 @@
             {no:112,name:"Al-Ikhlas",verses:4},{no:113,name:"Al-Falaq",verses:5},{no:114,name:"An-Nas",verses:6}
         ];
 
-        // Maps each Juz (1-30) to containing Surah numbers
         const JUZ_MAPPING = {
-            1: [1, 2],
-            2: [2],
-            3: [2, 3],
-            4: [3, 4],
-            5: [4],
-            6: [4, 5],
-            7: [5, 6],
-            8: [6, 7],
-            9: [7, 8],
-            10: [8, 9],
-            11: [9, 10, 11],
-            12: [11, 12],
-            13: [12, 13, 14],
-            14: [15, 16],
-            15: [17, 18],
-            16: [18, 19, 20],
-            17: [21, 22],
-            18: [23, 24, 25],
-            19: [25, 26, 27],
-            20: [27, 28, 29],
-            21: [29, 30, 31, 32, 33],
-            22: [33, 34, 35, 36],
-            23: [36, 37, 38, 39],
-            24: [39, 40, 41],
-            25: [41, 42, 43, 44, 45],
-            26: [46, 47, 48, 49, 50, 51],
-            27: [51, 52, 53, 54, 55, 56, 57],
-            28: [58, 59, 60, 61, 62, 63, 64, 65, 66],
+            1: [1, 2], 2: [2], 3: [2, 3], 4: [3, 4], 5: [4], 6: [4, 5], 7: [5, 6], 8: [6, 7], 9: [7, 8], 10: [8, 9],
+            11: [9, 10, 11], 12: [11, 12], 13: [12, 13, 14], 14: [15, 16], 15: [17, 18], 16: [18, 19, 20], 17: [21, 22],
+            18: [23, 24, 25], 19: [25, 26, 27], 20: [27, 28, 29], 21: [29, 30, 31, 32, 33], 22: [33, 34, 35, 36],
+            23: [36, 37, 38, 39], 24: [39, 40, 41], 25: [41, 42, 43, 44, 45], 26: [46, 47, 48, 49, 50, 51],
+            27: [51, 52, 53, 54, 55, 56, 57], 28: [58, 59, 60, 61, 62, 63, 64, 65, 66],
             29: [67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77],
-            30: Array.from({length: 37}, (_, i) => i + 78) // 78 to 114
+            30: Array.from({length: 37}, (_, i) => i + 78)
         };
 
         let currentStudent = null;
-
         let mediaRecorder = null;
         let audioChunks = [];
         let audioBase64 = null;
         let recordTimerInterval = null;
         let recordStartTime = 0;
+        let userLogs = [];
 
         function checkSession() {
             const session = localStorage.getItem('current_student');
@@ -486,11 +486,9 @@
             document.getElementById('display-target-juz').innerText = target;
             document.getElementById('display-max-verses').innerText = JUZ_VERSES[target];
             
-            // Populates surah list for the default selected Juz
             updateSurahDropdown();
         }
 
-        // Populate Surahs Select Dropdown filtered by the selected Juz
         function updateSurahDropdown() {
             const selectedJuz = parseInt(document.getElementById('setor-juz').value);
             const select = document.getElementById('surah-select');
@@ -503,7 +501,6 @@
                 select.innerHTML += `<option value="${s.name}" data-verses="${s.verses}">${s.no}. ${s.name} (${s.verses} ayat)</option>`;
             });
 
-            // Reset ayat inputs
             const startInput = document.getElementById('ayat-start');
             const endInput = document.getElementById('ayat-end');
             startInput.value = "";
@@ -512,7 +509,6 @@
             endInput.placeholder = "10";
         }
 
-        // Listen for surah selection to dynamically preset verse counts
         function initSurahChangeHandler() {
             const select = document.getElementById('surah-select');
             select.addEventListener('change', (e) => {
@@ -551,7 +547,7 @@
 
         function openInputModal() {
             document.getElementById('modal-input').classList.remove('hidden');
-            updateSurahDropdown(); // sync surah with setor-juz on open
+            updateSurahDropdown();
         }
 
         function closeInputModal() {
@@ -676,6 +672,61 @@
             }
         }
 
+        async function deleteMyLog(logId) {
+            if (!confirm("Hapus setoran ini?")) return;
+            var sid = currentStudent ? currentStudent.unique_id : "";
+            try {
+                const res = await fetch(`${API}/logs/${logId}?student_id=${sid}`, { method: "DELETE" });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Gagal menghapus log");
+                render();
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        function calculateStreak(logs) {
+            if (!logs || logs.length === 0) return 0;
+            const dates = [...new Set(logs.map(l => l.tgl))];
+            let streak = 0;
+            const today = new Date();
+            
+            for (let i = 0; i < 30; i++) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                if (dates.includes(dateStr)) {
+                    streak++;
+                } else if (i === 0) {
+                    continue; // allow today if not submitted yet
+                } else {
+                    break;
+                }
+            }
+            return streak;
+        }
+
+        function shareToWhatsApp() {
+            if (!currentStudent) return;
+            const currentTargetJuz = parseInt(localStorage.getItem('target_juz') || "30");
+            const uniqueCount = document.getElementById('stat-unique').innerText;
+            const totalCount = document.getElementById('stat-total').innerText;
+            const pct = document.getElementById('target-percentage').innerText;
+            const streak = document.getElementById('streak-count').innerText;
+            
+            const message = `*Laporan Murajaah Santri - Tahfiz Pro*\n\n` +
+                `👤 *Nama*: ${currentStudent.name}\n` +
+                `🏫 *Sekolah*: ${currentStudent.school}\n` +
+                `📖 *Target Juz*: Juz ${currentTargetJuz}\n` +
+                `🎯 *Progress Mutqin*: ${uniqueCount} / ${JUZ_VERSES[currentTargetJuz]} Ayat (${pct})\n` +
+                `📊 *Total Setoran*: ${totalCount} Ayat\n` +
+                `🔥 *Streak*: ${streak}\n\n` +
+                `Alhamdulillah, mohon doa & bimbingannya selalu. 🤲✨`;
+                
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
         async function render() {
             if (!currentStudent) return;
             
@@ -686,54 +737,134 @@
             
             try {
                 const res = await fetch(`${API}/logs/${currentStudent.unique_id}`);
-                const logs = await res.json();
+                userLogs = await res.json();
                 
+                // Calculate Streak
+                const streak = calculateStreak(userLogs);
+                document.getElementById('streak-count').innerText = `${streak} Hari`;
+
+                // Calculate Mutqin Check (Unique Verses) & Total Verses
+                const uniqueVersesSet = new Set();
                 let totalTargetJuzVerses = 0;
+                
                 const logsContainer = document.getElementById('logs');
                 
-                if (logs.length === 0) {
+                if (userLogs.length === 0) {
                     logsContainer.innerHTML = `
-                        <div class="glass-card rounded-2xl p-6 text-center text-gray-400">
-                            <i class="fas fa-book-open text-2xl mb-2 text-emerald-700/40"></i>
-                            <p class="text-xs">Belum ada murajaah yang disetor.</p>
-                            <p class="text-[10px] mt-1 text-gray-400/80">Mulai setor dengan menekan tombol + dibawah.</p>
+                        <div class="glass-card rounded-[28px] p-8 text-center text-gray-400">
+                            <i class="fas fa-book-open text-3xl mb-3 text-emerald-700/40"></i>
+                            <h4 class="font-bold text-gray-700 mb-1">Belum Ada Setoran Murajaah</h4>
+                            <p class="text-xs text-gray-500">Klik tombol "+ Setor Murajaah" untuk menambahkan setoran pertama Anda.</p>
                         </div>
                     `;
                 } else {
-                    logsContainer.innerHTML = logs.map(l => {
+                    var surahMap = {};
+                    userLogs.forEach(function(l){
+                        var k = l.surah || "Tanpa Nama";
+                        if (!surahMap[k]) surahMap[k] = {surah:k, ayat:0, count:0};
+                        surahMap[k].ayat += l.jumlah_ayat || 0;
+                        surahMap[k].count++;
+                    });
+
+                    var surahList = document.getElementById("surah-progress-list");
+                    if (surahList) {
+                        var items = Object.values(surahMap);
+                        surahList.innerHTML = items.length ? items.map(function(s){
+                            return '<div class="flex justify-between items-center text-xs py-2 border-b border-gray-100/60">'+
+                                '<span class="font-semibold text-gray-800">'+s.surah+'</span>'+
+                                '<span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">'+s.ayat+' ayat ('+s.count+'x)</span>'+
+                                '</div>';
+                        }).join("") : '<p class="text-xs text-gray-400">Belum ada setoran</p>';
+                    }
+
+                    logsContainer.innerHTML = userLogs.map(l => {
                         const itemJuz = l.juz ? parseInt(l.juz) : 30;
+                        
                         if (itemJuz === currentTargetJuz) {
                             totalTargetJuzVerses += l.jumlah_ayat;
+                            for (let a = l.ayat_start; a <= l.ayat_end; a++) {
+                                uniqueVersesSet.add(`${l.surah}:${a}`);
+                            }
                         }
                         
+                        // Grade Badge & Note rendering
+                        let gradeBadge = '';
+                        if (l.grade) {
+                            if (l.grade.includes('Mumtaz')) {
+                                gradeBadge = `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fas fa-star text-amber-500 mr-1"></i>${escapeHtml(l.grade)}</span>`;
+                            } else if (l.grade.includes('Jayyid Jiddan')) {
+                                gradeBadge = `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fas fa-check-circle mr-1"></i>${escapeHtml(l.grade)}</span>`;
+                            } else if (l.grade.includes('Perlu Mengulang')) {
+                                gradeBadge = `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fas fa-redo mr-1"></i>${escapeHtml(l.grade)}</span>`;
+                            } else {
+                                gradeBadge = `<span class="bg-gray-100 text-gray-800 text-[10px] font-bold px-2 py-0.5 rounded-full">${escapeHtml(l.grade)}</span>`;
+                            }
+                        }
+
+                        const ustadzNote = l.note ? `
+                            <div class="mt-2.5 bg-amber-50/70 border border-amber-200/60 rounded-xl p-2.5 text-xs text-amber-900 flex items-start gap-2">
+                                <i class="fas fa-comment-dots text-amber-600 mt-0.5"></i>
+                                <div>
+                                    <span class="font-bold block text-[10px] uppercase text-amber-700">Catatan Ustadz:</span>
+                                    <span>${escapeHtml(l.note)}</span>
+                                </div>
+                            </div>
+                        ` : '';
+
                         return `
-                            <div class="glass-card rounded-2xl p-4.5 flex justify-between items-center">
-                                <div class="border-l-3 border-emerald-600 pl-3">
-                                    <div class="flex items-center gap-1.5">
-                                        <h4 class="font-bold text-xs tracking-wide text-gray-800">${l.surah}</h4>
-                                        <span class="text-[9px] bg-emerald-50 text-emerald-800 border border-emerald-100 font-bold px-1.5 py-0.5 rounded-md">Juz ${itemJuz}</span>
-                                        ${l.audio_path ? '<i class="fas fa-volume-up text-emerald-600 text-[10px]" title="Ada rekaman suara"></i>' : ''}
+                            <div class="glass-card rounded-[24px] p-5">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <h4 class="font-bold text-sm tracking-wide text-gray-900">${escapeHtml(l.surah)}</h4>
+                                            <span class="text-[9px] bg-emerald-50 text-emerald-800 border border-emerald-100 font-bold px-2 py-0.5 rounded-md">Juz ${itemJuz}</span>
+                                            ${gradeBadge}
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1 font-medium">Ayat ${l.ayat_start} - ${l.ayat_end} (${l.jumlah_ayat} Ayat)</p>
                                     </div>
-                                    <p class="text-[10px] text-gray-500 mt-0.5">Ayat ${l.ayat_start} - ${l.ayat_end}</p>
+                                    <div class="text-right">
+                                        <span class="text-xs text-gray-400 font-medium block">${escapeHtml(l.tgl)}</span>
+                                        <button onclick="deleteMyLog(${l.id})" class="text-[10px] text-red-500 hover:text-red-700 font-bold mt-1 inline-flex items-center gap-1 no-print">
+                                            <i class="fas fa-trash-alt text-[9px]"></i> Hapus
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="font-extrabold text-emerald-800 text-xs">+${l.jumlah_ayat} Ayat</div>
-                                    <div class="text-[9px] text-gray-400 mt-0.5">${l.tgl}</div>
-                                </div>
+
+                                ${l.audio_path ? `
+                                    <div class="mt-3 bg-gray-50 p-2.5 rounded-xl border border-gray-100 flex items-center gap-3">
+                                        <i class="fas fa-volume-up text-emerald-700 text-sm pl-1"></i>
+                                        <audio src="${l.audio_path}" controls class="w-full h-8 bg-transparent"></audio>
+                                    </div>
+                                ` : ''}
+
+                                ${ustadzNote}
                             </div>
                         `;
                     }).join('');
                 }
                 
+                const uniqueCount = uniqueVersesSet.size;
+                document.getElementById('stat-unique').innerText = uniqueCount;
                 document.getElementById('stat-total').innerText = totalTargetJuzVerses;
+                
                 const maxVerses = JUZ_VERSES[currentTargetJuz];
-                const percentage = Math.min(Math.round((totalTargetJuzVerses / maxVerses) * 100), 100);
+                const percentage = Math.min(Math.round((uniqueCount / maxVerses) * 100), 100);
                 document.getElementById('target-percentage').innerText = `${percentage}%`;
                 document.getElementById('progress-bar').style.width = `${percentage}%`;
                 
             } catch(e) {
                 console.error("Gagal memuat log", e);
             }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
         window.onload = function() {

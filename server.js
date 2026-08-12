@@ -136,15 +136,22 @@ app.post('/api/logs', (req, res) => {
     });
 });
 
-// Admin Grade & Note Endpoint
+// Admin Grade & Note Endpoint (Fixed & Sanitized)
 app.post('/api/admin/grade-log', (req, res) => {
     const { log_id, grade, note } = req.body;
     if (!log_id) {
-        return res.status(400).json({ error: "ID setoran (log_id) wajib disertakan" });
+        return res.status(400).json({ error: "ID setoran (log_id) wajib disertakan!" });
     }
-    db.run(`UPDATE logs SET grade = ?, note = ? WHERE id = ?`, [grade, note, log_id], (err) => {
-        if (err) res.status(500).json({ error: err.message });
-        else res.json({ message: "Nilai & catatan ustadz berhasil disimpan" });
+    const idNum = parseInt(log_id, 10);
+    const gradeVal = grade || null;
+    const noteVal = note || null;
+
+    db.run(`UPDATE logs SET grade = ?, note = ? WHERE id = ?`, [gradeVal, noteVal, idNum], function(err) {
+        if (err) {
+            console.error("Error updating grade:", err.message);
+            return res.status(500).json({ error: "Gagal memperbarui nilai: " + err.message });
+        }
+        res.json({ message: "Nilai & catatan ustadz berhasil disimpan", updatedId: idNum, changes: this.changes });
     });
 });
 

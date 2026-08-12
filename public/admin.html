@@ -184,7 +184,7 @@
             </div>
         </div>
 
-        <!-- TAB 1: SUB-HALAMAN PENILAIAN & MONITORING (FOKUS MENILAI) -->
+        <!-- TAB 1: SUB-HALAMAN PENILAIAN & MONITORING -->
         <div id="tab-content-grading" class="space-y-6">
             
             <!-- Quick Summary Stats -->
@@ -246,7 +246,7 @@
 
         </div>
 
-        <!-- TAB 2: SUB-HALAMAN KELOLA & REGISTRASI SANTRI (HALAMAN TERPISAH) -->
+        <!-- TAB 2: SUB-HALAMAN KELOLA & REGISTRASI SANTRI -->
         <div id="tab-content-students" class="hidden space-y-8">
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -393,7 +393,7 @@
                 allLogs = await res.json();
                 
                 const totalSubmissions = allLogs.length;
-                const totalVerses = allLogs.reduce((acc, log) => acc + log.jumlah_ayat, 0);
+                const totalVerses = allLogs.reduce((acc, log) => acc + (log.jumlah_ayat || 0), 0);
                 const uniqueStudents = [...new Set(allLogs.map(log => log.student_id))].length;
                 
                 document.getElementById('stat-students').innerText = uniqueStudents;
@@ -495,11 +495,17 @@
             }
         }
 
-        function openGradeModal(id, name, surah, start, end, currentGrade, currentNote) {
-            document.getElementById('grade-log-id').value = id;
-            document.getElementById('grade-modal-subtitle').innerText = `${name} • ${surah} Ayat ${start}-${end}`;
-            document.getElementById('grade-select').value = currentGrade || "Mumtaz ✨";
-            document.getElementById('grade-note').value = currentNote || "";
+        // Safe ID-based modal trigger (fixes single/double quote escaping bugs)
+        function openGradeModal(logId) {
+            const l = allLogs.find(item => Number(item.id) === Number(logId));
+            if (!l) {
+                alert("Data setoran tidak ditemukan!");
+                return;
+            }
+            document.getElementById('grade-log-id').value = l.id;
+            document.getElementById('grade-modal-subtitle').innerText = `${l.name} • ${l.surah} Ayat ${l.ayat_start}-${l.ayat_end}`;
+            document.getElementById('grade-select').value = l.grade || "Mumtaz ✨";
+            document.getElementById('grade-note').value = l.note || "";
             document.getElementById('modal-grade').classList.remove('hidden');
         }
 
@@ -512,6 +518,11 @@
             const grade = document.getElementById('grade-select').value;
             const note = document.getElementById('grade-note').value.trim();
             
+            if (!id) {
+                alert("ID Setoran tidak valid!");
+                return;
+            }
+
             const btnText = document.getElementById('btn-grade-save-text');
             const spinner = document.getElementById('btn-grade-spinner');
             btnText.innerText = "Menyimpan...";
@@ -521,22 +532,31 @@
                 const res = await fetch(`${API}/admin/grade-log`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ log_id: id, grade, note })
+                    body: JSON.stringify({ log_id: parseInt(id, 10), grade, note })
                 });
                 
-                if (!res.ok) throw new Error("Gagal menyimpan nilai");
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || "Gagal menyimpan penilaian");
+                }
                 
                 closeGradeModal();
-                fetchData();
+                await fetchData();
+                alert("Penilaian berhasil disimpan!");
             } catch (e) {
-                alert(e.message);
+                alert("Gagal menyimpan penilaian: " + e.message);
             } finally {
                 btnText.innerText = "Simpan Penilaian";
                 spinner.classList.add('hidden');
             }
         }
 
-        function shareToWhatsApp(l) {
+        // Safe WhatsApp Sharing by Log ID
+        function shareToWhatsApp(logId) {
+            const l = allLogs.find(item => Number(item.id) === Number(logId));
+            if (!l) return;
+
             const message = `*Laporan Setoran Murajaah Santri*\n\n` +
                 `👤 *Nama*: ${l.name} (${l.school})\n` +
                 `📖 *Surah*: ${l.surah} (Juz ${l.juz || 30})\n` +
@@ -608,14 +628,14 @@
                         </td>
                         <td class="py-4 px-4 text-right">
                             <div class="flex justify-end gap-1.5 no-print">
-                                <button onclick="openGradeModal(${l.id}, '${escapeHtml(l.name)}', '${escapeHtml(l.surah)}', ${l.ayat_start}, ${l.ayat_end}, '${escapeHtml(l.grade || '')}', '${escapeHtml(l.note || '')}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 p-2 rounded-lg text-xs font-bold transition-all" title="Beri Nilai">
-                                    <i class="fas fa-edit"></i>
+                                <button onclick="openGradeModal(${l.id})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 p-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1" title="Beri Nilai">
+                                    <i class="fas fa-edit text-xs"></i> <span>Nilai</span>
                                 </button>
-                                <button onclick='shareToWhatsApp(${JSON.stringify(l).replace(/'/g, "&apos;")})' class="bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-lg text-xs font-bold transition-all" title="Kirim WA">
-                                    <i class="fab fa-whatsapp"></i>
+                                <button onclick="shareToWhatsApp(${l.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-lg text-xs font-bold transition-all" title="Kirim WA">
+                                    <i class="fab fa-whatsapp text-xs"></i>
                                 </button>
                                 <button onclick="deleteLogAdmin(${l.id})" class="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg text-xs font-bold transition-all" title="Hapus">
-                                    <i class="fas fa-trash-alt"></i>
+                                    <i class="fas fa-trash-alt text-xs"></i>
                                 </button>
                             </div>
                         </td>

@@ -564,7 +564,7 @@
         async function startRecording() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder = new MediaRecorder(stream, { audioBitsPerSecond: 48000 });
                 audioChunks = [];
 
                 mediaRecorder.ondataavailable = (event) => {

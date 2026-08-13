@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadda Tahfiz Pro - Multi-Tenant Dashboard Ustadz</title>
+    <title>Jadda Tahfiz Pro - Multi-Tenant & Scoped Dashboard Ustadz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -109,7 +109,7 @@
         <div style="background:white;padding:36px 32px;border-radius:24px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
             <div style="font-size:44px;margin-bottom:8px">&#x1f6e1;</div>
             <h2 style="margin:0 0 4px;color:#051A18;font-size:22px;font-weight:800">Akses Dashboard Ustadz</h2>
-            <p style="color:#63706F;font-size:12px;margin:0 0 20px">Login Ustadz Multi-Sekolah & Multi-Kelas</p>
+            <p style="color:#63706F;font-size:12px;margin:0 0 20px">Keamanan Skop Data Terisolasi Per Ustadz & Sekolah</p>
             
             <div style="margin-bottom:12px;text-align:left">
                 <label style="font-size:11px;font-weight:700;color:#63706F;text-transform:uppercase;display:block;margin-bottom:4px">Username (Opsional untuk SuperAdmin)</label>
@@ -190,11 +190,11 @@
         <div class="glass-card rounded-2xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 border border-emerald-100 no-print">
             <div class="flex items-center gap-2">
                 <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold">
-                    <i class="fas fa-filter text-sm"></i>
+                    <i class="fas fa-shield-halved text-sm text-emerald-700"></i>
                 </div>
                 <div>
-                    <h3 class="text-xs font-bold text-emerald-950 uppercase tracking-wider">Filter Wilayah & Kelas</h3>
-                    <p class="text-[11px] text-gray-500">Pilih sekolah dan kelas untuk menyaring data</p>
+                    <h3 class="text-xs font-bold text-emerald-950 uppercase tracking-wider">Skop Keamanan Data</h3>
+                    <p class="text-[11px] text-gray-500" id="scope-status-desc">Data terisolasi sesuai sekolah dan kelas Anda</p>
                 </div>
             </div>
 
@@ -251,7 +251,6 @@
         <!-- TAB 1: PENILAIAN & MONITORING -->
         <div id="tab-content-grading" class="space-y-6">
             
-            <!-- Quick Summary Stats -->
             <section class="grid grid-cols-3 gap-4">
                 <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
                     <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Santri Aktif</span>
@@ -267,7 +266,6 @@
                 </div>
             </section>
 
-            <!-- Search Bar & Grouped Student Accordion View -->
             <main class="space-y-4">
                 <div class="glass-card rounded-[28px] p-5 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
@@ -286,7 +284,6 @@
                     </div>
                 </div>
 
-                <!-- Grouped Accordion Container -->
                 <div id="submissions-container" class="space-y-3.5">
                     <div class="text-center py-12 text-gray-400 glass-card rounded-[28px]">
                         <i class="fas fa-circle-notch animate-spin text-2xl mb-2 text-emerald-600"></i>
@@ -299,10 +296,8 @@
 
         <!-- TAB 2: KELOLA & REGISTRASI SANTRI -->
         <div id="tab-content-students" class="hidden space-y-8">
-            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
-                <!-- Registration Form Card -->
                 <section class="glass-card rounded-3xl p-6 h-fit no-print">
                     <div class="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-emerald-100">
                         <i class="fas fa-user-plus"></i>
@@ -345,7 +340,6 @@
                     </div>
                 </section>
 
-                <!-- Student Accounts List Table -->
                 <section class="glass-card rounded-3xl p-6 lg:col-span-2">
                     <div class="flex justify-between items-center mb-4">
                         <div>
@@ -353,7 +347,7 @@
                                 <i class="fas fa-id-card-alt text-emerald-700"></i>
                                 <span>Daftar Akun Santri</span>
                             </h2>
-                            <p class="text-xs text-gray-500">Daftar akun login & unik ID per sekolah/kelas</p>
+                            <p class="text-xs text-gray-500">Daftar akun login & unik ID terisolasi per sekolah</p>
                         </div>
                     </div>
                     
@@ -376,15 +370,12 @@
                         </table>
                     </div>
                 </section>
-
             </div>
-
         </div>
 
         <!-- TAB 3: KELOLA KELAS / HALAQAHS -->
         <div id="tab-content-classes" class="hidden space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Add Class Form -->
                 <section class="glass-card rounded-3xl p-6 h-fit no-print">
                     <div class="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-emerald-100">
                         <i class="fas fa-chalkboard-teacher"></i>
@@ -419,13 +410,12 @@
                     </div>
                 </section>
 
-                <!-- Class List Table -->
                 <section class="glass-card rounded-3xl p-6 lg:col-span-2">
                     <h2 class="text-base font-bold text-emerald-950 mb-1 flex items-center gap-2">
                         <i class="fas fa-list text-emerald-700"></i>
                         <span>Daftar Kelas / Halaqah</span>
                     </h2>
-                    <p class="text-xs text-gray-500 mb-4">Daftar kelas dan Ustadz pengampu per sekolah</p>
+                    <p class="text-xs text-gray-500 mb-4">Daftar kelas dan Ustadz pengampu</p>
 
                     <div class="overflow-x-auto custom-scrollbar max-h-96">
                         <table class="w-full border-collapse text-left text-xs">
@@ -446,17 +436,16 @@
             </div>
         </div>
 
-        <!-- TAB 4: KELOLA SEKOLAH & USTADZ -->
+        <!-- TAB 4: KELOLA SEKOLAH & USTADZ (SUPERADMIN ONLY) -->
         <div id="tab-content-schools" class="hidden space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 
-                <!-- Add School Form -->
                 <section class="glass-card rounded-3xl p-6 h-fit no-print">
                     <div class="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-emerald-100">
                         <i class="fas fa-university"></i>
                     </div>
-                    <h2 class="text-lg font-bold text-emerald-950 mb-1">Registrasi Sekolah / Pesantren Baru</h2>
-                    <p class="text-xs text-gray-500 mb-5">Tambah tenant sekolah baru ke dalam platform.</p>
+                    <h2 class="text-lg font-bold text-emerald-950 mb-1">Registrasi Sekolah Baru</h2>
+                    <p class="text-xs text-gray-500 mb-5">Hanya SuperAdmin yang berhak menambah tenant sekolah.</p>
 
                     <div class="space-y-4">
                         <div>
@@ -477,7 +466,6 @@
                     </div>
                 </section>
 
-                <!-- Add Ustadz Account Form -->
                 <section class="glass-card rounded-3xl p-6 h-fit no-print">
                     <div class="w-12 h-12 bg-amber-50 text-amber-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-amber-100">
                         <i class="fas fa-user-shield"></i>
@@ -556,24 +544,17 @@
 
     <script>
         const API = "/api";
-
-        // [SECURITY] Inject admin token into all /api/admin/* requests
-        const _origFetch = window.fetch.bind(window);
-        window.fetch = function(url, opts) {
-            opts = opts || {};
-            const token = sessionStorage.getItem('admin_token');
-            const urlStr = (typeof url === 'string') ? url : (url && url.url ? url.url : '');
-            if (token && urlStr.indexOf('/api/admin/') !== -1) {
-                const h = opts.headers || {};
-                opts = Object.assign({}, opts);
-                opts.headers = Object.assign({}, h, { 'Authorization': 'Bearer ' + token });
-            }
-            return _origFetch(url, opts);
-        };
         let allLogs = [];
         let allSchools = [];
         let allClasses = [];
         let currentUser = null;
+
+        function authFetch(url, options = {}) {
+            const token = sessionStorage.getItem("admin_token") || "";
+            const headers = options.headers ? { ...options.headers } : {};
+            headers["x-admin-token"] = token;
+            return fetch(url, { ...options, headers });
+        }
 
         function switchTab(tabName) {
             const tabs = ['grading', 'students', 'classes', 'schools'];
@@ -598,10 +579,31 @@
                 if (storedUser) {
                     currentUser = JSON.parse(storedUser);
                     document.getElementById('header-school-name').innerText = currentUser.school_name || "Multi-Tenant Tahfiz Pro";
-                    document.getElementById('user-role-badge').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> ${currentUser.name || 'Ustadz'}`;
+                    
+                    let roleLabel = currentUser.role || 'USTADZ';
+                    if (roleLabel === 'SUPER_ADMIN') roleLabel = 'SuperAdmin (Akses Penuh)';
+                    else if (roleLabel === 'SCHOOL_ADMIN') roleLabel = 'Admin Sekolah';
+                    else roleLabel = 'Ustadz Pengampu';
+
+                    document.getElementById('user-role-badge').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> ${currentUser.name || 'Ustadz'} [${roleLabel}]`;
+                    document.getElementById('scope-status-desc').innerText = `Terautentikasi sebagai ${currentUser.name} (${roleLabel})`;
+
+                    if (currentUser.role === 'USTADZ') {
+                        const schoolTabBtn = document.getElementById('tab-btn-schools');
+                        if (schoolTabBtn) schoolTabBtn.style.display = 'none';
+                    }
                 }
 
                 await fetchSchools();
+
+                if (currentUser && currentUser.role !== 'SUPER_ADMIN' && currentUser.school_id) {
+                    const filterSchoolSelect = document.getElementById('filter-school-select');
+                    if (filterSchoolSelect) {
+                        filterSchoolSelect.value = currentUser.school_id;
+                        filterSchoolSelect.disabled = true;
+                    }
+                }
+
                 await fetchClasses();
                 await fetchData();
                 await fetchStudentsList();
@@ -612,7 +614,8 @@
 
         async function fetchSchools() {
             try {
-                const res = await fetch(`${API}/admin/schools`);
+                const res = await authFetch(`${API}/admin/schools`);
+                if (!res.ok) throw new Error("Gagal mengambil sekolah");
                 allSchools = await res.json();
                 
                 const filterSchoolSelect = document.getElementById('filter-school-select');
@@ -632,6 +635,13 @@
                 if (classSchoolSelect) classSchoolSelect.innerHTML = selectSchoolHtml;
                 if (ustadzSchoolSelect) ustadzSchoolSelect.innerHTML = selectSchoolHtml;
 
+                if (currentUser && currentUser.school_id) {
+                    if (regSchoolSelect) regSchoolSelect.value = currentUser.school_id;
+                    if (classSchoolSelect) classSchoolSelect.value = currentUser.school_id;
+                    if (ustadzSchoolSelect) ustadzSchoolSelect.value = currentUser.school_id;
+                    updateRegClassOptions();
+                }
+
             } catch(e) {
                 console.error("Gagal memuat list sekolah", e);
             }
@@ -640,7 +650,8 @@
         async function fetchClasses() {
             try {
                 const schoolId = document.getElementById('filter-school-select').value;
-                const res = await fetch(`${API}/admin/classes${schoolId ? '?school_id='+schoolId : ''}`);
+                const res = await authFetch(`${API}/admin/classes${schoolId ? '?school_id='+schoolId : ''}`);
+                if (!res.ok) throw new Error("Gagal mengambil kelas");
                 allClasses = await res.json();
 
                 const filterClassSelect = document.getElementById('filter-class-select');
@@ -658,7 +669,8 @@
 
         async function fetchUstadzList() {
             try {
-                const res = await fetch(`${API}/admin/ustadz`);
+                const res = await authFetch(`${API}/admin/ustadz`);
+                if (!res.ok) return;
                 const ustadzList = await res.json();
                 const classUstadzSelect = document.getElementById('class-ustadz-id');
                 if (classUstadzSelect) {
@@ -701,7 +713,8 @@
                 if (classId) queryParams.push(`class_id=${classId}`);
                 const queryString = queryParams.length ? '?' + queryParams.join('&') : '';
 
-                const res = await fetch(`${API}/admin/all-logs${queryString}`);
+                const res = await authFetch(`${API}/admin/all-logs${queryString}`);
+                if (!res.ok) throw new Error("Gagal mengambil log setoran");
                 allLogs = await res.json();
                 
                 const totalSubmissions = allLogs.length;
@@ -720,7 +733,7 @@
                 document.getElementById('submissions-container').innerHTML = `
                     <div class="glass-card rounded-[28px] p-8 text-center text-red-500">
                         <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
-                        <p class="text-xs">Gagal memuat data dari server.</p>
+                        <p class="text-xs">Gagal memuat data dari server atau akses ditolak.</p>
                     </div>
                 `;
             } finally {
@@ -739,14 +752,15 @@
                 if (classId) queryParams.push(`class_id=${classId}`);
                 const queryString = queryParams.length ? '?' + queryParams.join('&') : '';
 
-                const res = await fetch(`${API}/admin/students${queryString}`);
+                const res = await authFetch(`${API}/admin/students${queryString}`);
+                if (!res.ok) return;
                 const students = await res.json();
                 const tbody = document.getElementById('student-accounts-body');
                 
                 if (students.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-gray-400 italic">Belum ada akun santri. Daftarkan di sisi kiri.</td>
+                            <td colspan="5" class="text-center py-4 text-gray-400 italic">Belum ada akun santri dalam skop Anda. Daftarkan di sisi kiri.</td>
                         </tr>
                     `;
                     return;
@@ -786,7 +800,7 @@
             }
 
             try {
-                const res = await fetch(`${API}/admin/students`, {
+                const res = await authFetch(`${API}/admin/students`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ school_id, class_id, name, username, password })
@@ -829,7 +843,7 @@
             }
 
             try {
-                const res = await fetch(`${API}/admin/schools`, {
+                const res = await authFetch(`${API}/admin/schools`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, code })
@@ -866,7 +880,7 @@
             }
 
             try {
-                const res = await fetch(`${API}/admin/classes`, {
+                const res = await authFetch(`${API}/admin/classes`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ school_id, ustadz_id, name })
@@ -903,7 +917,7 @@
             }
 
             try {
-                const res = await fetch(`${API}/admin/ustadz`, {
+                const res = await authFetch(`${API}/admin/ustadz`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ school_id, name, username, password, role: 'USTADZ' })
@@ -930,7 +944,7 @@
             if (!tbody) return;
 
             if (classes.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-400 italic">Belum ada kelas. Buat kelas di sebelah kiri.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-400 italic">Belum ada kelas dalam skop Anda. Buat kelas di sebelah kiri.</td></tr>`;
                 return;
             }
 
@@ -979,7 +993,6 @@
             const id = document.getElementById('grade-log-id').value;
             const grade = document.getElementById('grade-select').value;
             const note = document.getElementById('grade-note').value.trim();
-            const verified_by = currentUser ? currentUser.id : null;
             
             if (!id) {
                 alert("ID Setoran tidak valid!");
@@ -992,10 +1005,10 @@
             spinner.classList.remove('hidden');
 
             try {
-                const res = await fetch(`${API}/admin/grade-log`, {
+                const res = await authFetch(`${API}/admin/grade-log`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ log_id: parseInt(id, 10), grade, note, verified_by })
+                    body: JSON.stringify({ log_id: parseInt(id, 10), grade, note })
                 });
                 
                 const data = await res.json();
@@ -1037,7 +1050,7 @@
         async function deleteLogAdmin(id) {
             if (!confirm("Apakah Anda yakin ingin menghapus setoran santri ini?")) return;
             try {
-                const res = await fetch(`${API}/admin/logs/${id}`, { method: 'DELETE' });
+                const res = await authFetch(`${API}/logs/${id}?student_id=admin`, { method: 'DELETE' });
                 if (!res.ok) throw new Error("Gagal menghapus log");
                 fetchData();
             } catch (e) {
@@ -1051,13 +1064,12 @@
                 container.innerHTML = `
                     <div class="glass-card rounded-[28px] p-8 text-center text-gray-400">
                         <i class="fas fa-folder-open text-3xl mb-2 text-emerald-700/30"></i>
-                        <p class="text-xs">Belum ada hafalan yang disetor untuk filter ini.</p>
+                        <p class="text-xs">Belum ada hafalan yang disetor untuk skop keamanan ini.</p>
                     </div>
                 `;
                 return;
             }
 
-            // Group logs by student_id
             const grouped = {};
             logs.forEach(l => {
                 const sid = l.student_id;

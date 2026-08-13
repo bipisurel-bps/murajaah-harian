@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tahfiz Pro - Dashboard Ustadz</title>
+    <title>Jadda Tahfiz Pro - Multi-Tenant Dashboard Ustadz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -104,31 +104,54 @@
 </head>
 <body>
 
-    <!-- ADMIN LOGIN GATE -->
+    <!-- ADMIN & USTADZ LOGIN GATE -->
     <div id="admin-gate" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#051A18,#0A2D2A,#164E48);display:flex;align-items:center;justify-content:center;font-family:Outfit,sans-serif">
-        <div style="background:white;padding:40px;border-radius:24px;text-align:center;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
-            <div style="font-size:48px;margin-bottom:12px">&#x1f6e1;</div>
-            <h2 style="margin:0 0 8px;color:#051A18;font-size:22px;font-weight:800">Akses Ustadz</h2>
-            <p style="color:#63706F;font-size:13px;margin:0 0 24px">Masukkan password untuk masuk dashboard</p>
-            <input type="password" id="admin-pass-input" placeholder="Password admin" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:15px;text-align:center;outline:none" onkeydown="if(event.key==='Enter')checkAdminPass()">
-            <button onclick="checkAdminPass()" style="width:100%;margin-top:16px;padding:14px;background:#C59B27;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">Masuk Sekarang</button>
-            <p id="admin-gate-error" style="color:#dc2626;font-size:12px;margin:12px 0 0;display:none;font-weight:600">Password salah!</p>
+        <div style="background:white;padding:36px 32px;border-radius:24px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+            <div style="font-size:44px;margin-bottom:8px">&#x1f6e1;</div>
+            <h2 style="margin:0 0 4px;color:#051A18;font-size:22px;font-weight:800">Akses Dashboard Ustadz</h2>
+            <p style="color:#63706F;font-size:12px;margin:0 0 20px">Login Ustadz Multi-Sekolah & Multi-Kelas</p>
+            
+            <div style="margin-bottom:12px;text-align:left">
+                <label style="font-size:11px;font-weight:700;color:#63706F;text-transform:uppercase;display:block;margin-bottom:4px">Username (Opsional untuk SuperAdmin)</label>
+                <input type="text" id="admin-user-input" placeholder="username_ustadz" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box">
+            </div>
+
+            <div style="margin-bottom:16px;text-align:left">
+                <label style="font-size:11px;font-weight:700;color:#63706F;text-transform:uppercase;display:block;margin-bottom:4px">Password Access</label>
+                <input type="password" id="admin-pass-input" placeholder="Password (default: ustadz123)" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkAdminPass()">
+            </div>
+
+            <button onclick="checkAdminPass()" style="width:100%;padding:14px;background:#C59B27;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">Masuk Dashboard</button>
+            <p id="admin-gate-error" style="color:#dc2626;font-size:12px;margin:12px 0 0;display:none;font-weight:600">Username/Password salah!</p>
         </div>
     </div>
     
     <script>
         function checkAdminPass(){
-            var p=document.getElementById("admin-pass-input").value;
-            fetch("/api/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:p})})
+            var u=document.getElementById("admin-user-input").value.trim();
+            var p=document.getElementById("admin-pass-input").value.trim();
+            document.getElementById("admin-gate-error").style.display="none";
+
+            fetch("/api/admin/login",{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({username:u, password:p})
+            })
             .then(function(r){return r.json()})
             .then(function(d){
                 if(d.token){
                     document.getElementById("admin-gate").style.display="none";
-                    sessionStorage.setItem("admin_token",d.token);
-                    fetchData();
+                    sessionStorage.setItem("admin_token", d.token);
+                    if(d.user) sessionStorage.setItem("admin_user", JSON.stringify(d.user));
+                    fetchInitialData();
                 }else{
+                    document.getElementById("admin-gate-error").innerText = d.error || "Login gagal!";
                     document.getElementById("admin-gate-error").style.display="block";
                 }
+            })
+            .catch(function(err){
+                document.getElementById("admin-gate-error").innerText = "Gagal terhubung ke server!";
+                document.getElementById("admin-gate-error").style.display="block";
             });
         }
         
@@ -147,12 +170,14 @@
             <div class="header-pattern"></div>
             
             <div class="flex justify-between items-center mb-3 relative z-10">
-                <span class="bg-white/10 border border-white/10 px-3 py-1 rounded-full text-[#F0D58C] text-[9px] font-bold uppercase tracking-wider">Ustadz Panel</span>
+                <span class="bg-white/10 border border-white/10 px-3 py-1 rounded-full text-[#F0D58C] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fas fa-university text-xs"></i> <span id="header-school-name">Multi-Tenant Tahfiz Pro</span>
+                </span>
                 <div class="flex items-center gap-3">
-                    <span class="flex items-center gap-1.5 text-xs text-emerald-300 font-bold">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Monitoring Aktif
+                    <span id="user-role-badge" class="flex items-center gap-1.5 text-xs text-emerald-300 font-bold">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Monitoring Ustadz
                     </span>
-                    <button onclick="sessionStorage.removeItem('admin_token'); location.reload();" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-full font-semibold transition-all no-print">
+                    <button onclick="sessionStorage.removeItem('admin_token'); sessionStorage.removeItem('admin_user'); location.reload();" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-full font-semibold transition-all no-print">
                         Keluar
                     </button>
                 </div>
@@ -161,22 +186,61 @@
             <p class="text-xs text-[#F0D58C] arabic-font font-bold relative z-10">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
         </header>
 
+        <!-- GLOBAL TENANT & CLASS FILTER BAR -->
+        <div class="glass-card rounded-2xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 border border-emerald-100 no-print">
+            <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold">
+                    <i class="fas fa-filter text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-emerald-950 uppercase tracking-wider">Filter Wilayah & Kelas</h3>
+                    <p class="text-[11px] text-gray-500">Pilih sekolah dan kelas untuk menyaring data</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <!-- School Select -->
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-gray-500 whitespace-nowrap"><i class="fas fa-school text-emerald-700 mr-1"></i>Sekolah:</label>
+                    <select id="filter-school-select" onchange="onSchoolFilterChange()" class="p-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none focus:border-emerald-700 min-w-[160px]">
+                        <option value="">Semua Sekolah</option>
+                    </select>
+                </div>
+
+                <!-- Class Select -->
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-gray-500 whitespace-nowrap"><i class="fas fa-users-class text-emerald-700 mr-1"></i>Kelas/Halaqah:</label>
+                    <select id="filter-class-select" onchange="fetchData()" class="p-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none focus:border-emerald-700 min-w-[160px]">
+                        <option value="">Semua Kelas</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <!-- SUB-PAGE / TAB NAVIGATION -->
         <div class="flex flex-wrap items-center justify-between gap-3 mb-6 no-print">
-            <div class="flex items-center bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm gap-1">
-                <button id="tab-btn-grading" onclick="switchTab('grading')" class="tab-active px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+            <div class="flex flex-wrap items-center bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm gap-1">
+                <button id="tab-btn-grading" onclick="switchTab('grading')" class="tab-active px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
                     <i class="fas fa-clipboard-check"></i>
-                    <span>Penilaian & Monitoring Setoran</span>
+                    <span>Penilaian & Monitoring</span>
                 </button>
-                <button id="tab-btn-students" onclick="switchTab('students')" class="bg-transparent text-gray-500 hover:text-emerald-800 px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Sub-Halaman: Kelola & Registrasi Santri</span>
+                <button id="tab-btn-students" onclick="switchTab('students')" class="bg-transparent text-gray-500 hover:text-emerald-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Kelola Santri</span>
+                </button>
+                <button id="tab-btn-classes" onclick="switchTab('classes')" class="bg-transparent text-gray-500 hover:text-emerald-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Kelola Kelas / Halaqah</span>
+                </button>
+                <button id="tab-btn-schools" onclick="switchTab('schools')" class="bg-transparent text-gray-500 hover:text-emerald-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                    <i class="fas fa-university"></i>
+                    <span>Kelola Sekolah & Ustadz</span>
                 </button>
             </div>
 
             <div class="flex items-center gap-2">
                 <button onclick="window.print()" class="text-xs bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
-                    <i class="fas fa-print text-emerald-600"></i> Cetak Laporan PDF
+                    <i class="fas fa-print text-emerald-600"></i> Cetak PDF
                 </button>
                 <a href="/" class="btn-green-outline px-4 py-2.5 rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-sm">
                     <i class="fas fa-home"></i> Portal Santri
@@ -184,7 +248,7 @@
             </div>
         </div>
 
-        <!-- TAB 1: SUB-HALAMAN PENILAIAN & MONITORING -->
+        <!-- TAB 1: PENILAIAN & MONITORING -->
         <div id="tab-content-grading" class="space-y-6">
             
             <!-- Quick Summary Stats -->
@@ -233,7 +297,7 @@
 
         </div>
 
-        <!-- TAB 2: SUB-HALAMAN KELOLA & REGISTRASI SANTRI -->
+        <!-- TAB 2: KELOLA & REGISTRASI SANTRI -->
         <div id="tab-content-students" class="hidden space-y-8">
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -244,16 +308,24 @@
                         <i class="fas fa-user-plus"></i>
                     </div>
                     <h2 class="text-lg font-bold text-emerald-950 mb-1">Daftarkan Santri Baru</h2>
-                    <p class="text-xs text-gray-500 mb-5">Buat kredensial login (username & password) untuk santri baru agar bisa setor hafalan.</p>
+                    <p class="text-xs text-gray-500 mb-5">Buat akun login santri terikat ke sekolah & kelas.</p>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap Santri</label>
-                            <input type="text" id="reg-name" placeholder="Ahmad Fauzi" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Sekolah / Pesantren</label>
+                            <select id="reg-school-id" onchange="updateRegClassOptions()" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-emerald-700">
+                                <option value="">Pilih Sekolah...</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Lembaga / Sekolah</label>
-                            <input type="text" id="reg-school" placeholder="SDIT Al-Hikmah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Kelas / Halaqah</label>
+                            <select id="reg-class-id" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-emerald-700">
+                                <option value="">Pilih Kelas...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap Santri</label>
+                            <input type="text" id="reg-name" placeholder="Ahmad Fauzi" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Username Login</label>
@@ -268,7 +340,7 @@
                         <div id="reg-success" class="hidden text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center font-bold"></div>
 
                         <button onclick="registerStudent()" class="w-full btn-primary-green p-3.5 rounded-xl font-bold text-sm tracking-wide">
-                            <i class="fas fa-save mr-1.5"></i> Simpan & Daftarkan
+                            <i class="fas fa-save mr-1.5"></i> Simpan & Daftarkan Santri
                         </button>
                     </div>
                 </section>
@@ -279,9 +351,9 @@
                         <div>
                             <h2 class="text-base font-bold text-emerald-950 flex items-center gap-2">
                                 <i class="fas fa-id-card-alt text-emerald-700"></i>
-                                <span>Daftar Akun Santri Terdaftar</span>
+                                <span>Daftar Akun Santri</span>
                             </h2>
-                            <p class="text-xs text-gray-500">Daftar kredensial username & password santri</p>
+                            <p class="text-xs text-gray-500">Daftar akun login & unik ID per sekolah/kelas</p>
                         </div>
                     </div>
                     
@@ -289,11 +361,11 @@
                         <table class="w-full border-collapse text-left text-xs">
                             <thead>
                                 <tr class="border-b border-gray-100 text-gray-400 font-bold uppercase pb-2">
-                                    <th class="py-2.5 px-3">Nama Lengkap</th>
+                                    <th class="py-2.5 px-3">Nama Santri</th>
                                     <th class="py-2.5 px-3">Sekolah</th>
+                                    <th class="py-2.5 px-3">Kelas</th>
                                     <th class="py-2.5 px-3">Username</th>
                                     <th class="py-2.5 px-3">Password</th>
-                                    <th class="py-2.5 px-3 text-right">Unique ID</th>
                                 </tr>
                             </thead>
                             <tbody id="student-accounts-body" class="divide-y divide-gray-100 text-gray-800">
@@ -307,6 +379,142 @@
 
             </div>
 
+        </div>
+
+        <!-- TAB 3: KELOLA KELAS / HALAQAHS -->
+        <div id="tab-content-classes" class="hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Add Class Form -->
+                <section class="glass-card rounded-3xl p-6 h-fit no-print">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-emerald-100">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-emerald-950 mb-1">Tambah Kelas / Halaqah</h2>
+                    <p class="text-xs text-gray-500 mb-5">Buat kelas baru dan alokasikan Ustadz pengampu.</p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Sekolah / Pesantren</label>
+                            <select id="class-school-id" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-emerald-700">
+                                <option value="">Pilih Sekolah...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Kelas / Halaqah</label>
+                            <input type="text" id="class-name" placeholder="Contoh: Kelas 7A / Halaqah Subuh" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Ustadz / Musyrif Pengampu</label>
+                            <select id="class-ustadz-id" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-emerald-700">
+                                <option value="">Pilih Ustadz...</option>
+                            </select>
+                        </div>
+
+                        <div id="class-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
+                        <div id="class-success" class="hidden text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center font-bold"></div>
+
+                        <button onclick="addClass()" class="w-full btn-primary-green p-3.5 rounded-xl font-bold text-sm tracking-wide">
+                            <i class="fas fa-plus mr-1.5"></i> Simpan Kelas Baru
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Class List Table -->
+                <section class="glass-card rounded-3xl p-6 lg:col-span-2">
+                    <h2 class="text-base font-bold text-emerald-950 mb-1 flex items-center gap-2">
+                        <i class="fas fa-list text-emerald-700"></i>
+                        <span>Daftar Kelas / Halaqah</span>
+                    </h2>
+                    <p class="text-xs text-gray-500 mb-4">Daftar kelas dan Ustadz pengampu per sekolah</p>
+
+                    <div class="overflow-x-auto custom-scrollbar max-h-96">
+                        <table class="w-full border-collapse text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-gray-100 text-gray-400 font-bold uppercase pb-2">
+                                    <th class="py-2.5 px-3">Nama Kelas</th>
+                                    <th class="py-2.5 px-3">Sekolah</th>
+                                    <th class="py-2.5 px-3">Ustadz Pengampu</th>
+                                    <th class="py-2.5 px-3 text-right">Jumlah Santri</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classes-table-body" class="divide-y divide-gray-100 text-gray-800">
+                                <tr><td colspan="4" class="text-center py-6 text-gray-400">Memuat data kelas...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- TAB 4: KELOLA SEKOLAH & USTADZ -->
+        <div id="tab-content-schools" class="hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Add School Form -->
+                <section class="glass-card rounded-3xl p-6 h-fit no-print">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-emerald-100">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-emerald-950 mb-1">Registrasi Sekolah / Pesantren Baru</h2>
+                    <p class="text-xs text-gray-500 mb-5">Tambah tenant sekolah baru ke dalam platform.</p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Sekolah / Pesantren</label>
+                            <input type="text" id="school-name" placeholder="Contoh: SDIT Al-Hidayah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Kode Sekolah (Kode Unik Tenant)</label>
+                            <input type="text" id="school-code" placeholder="Contoh: SDIT-01" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+
+                        <div id="school-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
+                        <div id="school-success" class="hidden text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center font-bold"></div>
+
+                        <button onclick="addSchool()" class="w-full btn-primary-green p-3.5 rounded-xl font-bold text-sm tracking-wide">
+                            <i class="fas fa-building-circle-check mr-1.5"></i> Simpan Sekolah Baru
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Add Ustadz Account Form -->
+                <section class="glass-card rounded-3xl p-6 h-fit no-print">
+                    <div class="w-12 h-12 bg-amber-50 text-amber-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-amber-100">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-emerald-950 mb-1">Buat Akun Ustadz Baru</h2>
+                    <p class="text-xs text-gray-500 mb-5">Daftarkan akun login khusus Ustadz/Musyrif.</p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Sekolah / Pesantren</label>
+                            <select id="ustadz-school-id" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-emerald-700">
+                                <option value="">Pilih Sekolah...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap Ustadz</label>
+                            <input type="text" id="ustadz-name" placeholder="Ustadz Abdullah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Username Ustadz</label>
+                            <input type="text" id="ustadz-username" placeholder="ustadz_abdullah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Password</label>
+                            <input type="text" id="ustadz-password" placeholder="pass123" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-700">
+                        </div>
+
+                        <div id="ustadz-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
+                        <div id="ustadz-success" class="hidden text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center font-bold"></div>
+
+                        <button onclick="addUstadz()" class="w-full bg-amber-600 hover:bg-amber-700 text-white p-3.5 rounded-xl font-bold text-sm tracking-wide shadow-md">
+                            <i class="fas fa-user-plus mr-1.5"></i> Buat Akun Ustadz
+                        </button>
+                    </div>
+                </section>
+
+            </div>
         </div>
 
     </div>
@@ -349,24 +557,121 @@
     <script>
         const API = "/api";
         let allLogs = [];
+        let allSchools = [];
+        let allClasses = [];
+        let currentUser = null;
 
         function switchTab(tabName) {
-            const btnGrading = document.getElementById('tab-btn-grading');
-            const btnStudents = document.getElementById('tab-btn-students');
-            const contentGrading = document.getElementById('tab-content-grading');
-            const contentStudents = document.getElementById('tab-content-students');
+            const tabs = ['grading', 'students', 'classes', 'schools'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const content = document.getElementById(`tab-content-${t}`);
+                if (btn && content) {
+                    if (t === tabName) {
+                        btn.className = 'tab-active px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                        content.classList.remove('hidden');
+                    } else {
+                        btn.className = 'bg-transparent text-gray-500 hover:text-emerald-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                        content.classList.add('hidden');
+                    }
+                }
+            });
+        }
 
-            if (tabName === 'grading') {
-                btnGrading.className = 'tab-active px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
-                btnStudents.className = 'bg-transparent text-gray-500 hover:text-emerald-800 px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
-                contentGrading.classList.remove('hidden');
-                contentStudents.classList.add('hidden');
-            } else {
-                btnStudents.className = 'tab-active px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
-                btnGrading.className = 'bg-transparent text-gray-500 hover:text-emerald-800 px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
-                contentStudents.classList.remove('hidden');
-                contentGrading.classList.add('hidden');
+        async function fetchInitialData() {
+            try {
+                const storedUser = sessionStorage.getItem("admin_user");
+                if (storedUser) {
+                    currentUser = JSON.parse(storedUser);
+                    document.getElementById('header-school-name').innerText = currentUser.school_name || "Multi-Tenant Tahfiz Pro";
+                    document.getElementById('user-role-badge').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> ${currentUser.name || 'Ustadz'}`;
+                }
+
+                await fetchSchools();
+                await fetchClasses();
+                await fetchData();
+                await fetchStudentsList();
+            } catch(e) {
+                console.error("Gagal inisialisasi data", e);
             }
+        }
+
+        async function fetchSchools() {
+            try {
+                const res = await fetch(`${API}/admin/schools`);
+                allSchools = await res.json();
+                
+                const filterSchoolSelect = document.getElementById('filter-school-select');
+                const regSchoolSelect = document.getElementById('reg-school-id');
+                const classSchoolSelect = document.getElementById('class-school-id');
+                const ustadzSchoolSelect = document.getElementById('ustadz-school-id');
+
+                let optionsHtml = '<option value="">Semua Sekolah</option>' + 
+                    allSchools.map(s => `<option value="${s.id}">${escapeHtml(s.name)} (${s.code})</option>`).join('');
+
+                if (filterSchoolSelect) filterSchoolSelect.innerHTML = optionsHtml;
+                
+                let selectSchoolHtml = '<option value="">Pilih Sekolah...</option>' + 
+                    allSchools.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+
+                if (regSchoolSelect) regSchoolSelect.innerHTML = selectSchoolHtml;
+                if (classSchoolSelect) classSchoolSelect.innerHTML = selectSchoolHtml;
+                if (ustadzSchoolSelect) ustadzSchoolSelect.innerHTML = selectSchoolHtml;
+
+            } catch(e) {
+                console.error("Gagal memuat list sekolah", e);
+            }
+        }
+
+        async function fetchClasses() {
+            try {
+                const schoolId = document.getElementById('filter-school-select').value;
+                const res = await fetch(`${API}/admin/classes${schoolId ? '?school_id='+schoolId : ''}`);
+                allClasses = await res.json();
+
+                const filterClassSelect = document.getElementById('filter-class-select');
+                if (filterClassSelect) {
+                    filterClassSelect.innerHTML = '<option value="">Semua Kelas</option>' + 
+                        allClasses.map(c => `<option value="${c.id}">${escapeHtml(c.name)} (${c.school_name || 'Sekolah'})</option>`).join('');
+                }
+
+                renderClassesTable(allClasses);
+                await fetchUstadzList();
+            } catch(e) {
+                console.error("Gagal memuat list kelas", e);
+            }
+        }
+
+        async function fetchUstadzList() {
+            try {
+                const res = await fetch(`${API}/admin/ustadz`);
+                const ustadzList = await res.json();
+                const classUstadzSelect = document.getElementById('class-ustadz-id');
+                if (classUstadzSelect) {
+                    classUstadzSelect.innerHTML = '<option value="">Pilih Ustadz Pengampu...</option>' +
+                        ustadzList.map(u => `<option value="${u.id}">${escapeHtml(u.name)} (${u.school_name})</option>`).join('');
+                }
+            } catch(e) {
+                console.error("Gagal memuat ustadz list", e);
+            }
+        }
+
+        function onSchoolFilterChange() {
+            fetchClasses();
+            fetchData();
+        }
+
+        function updateRegClassOptions() {
+            const schoolId = document.getElementById('reg-school-id').value;
+            const regClassSelect = document.getElementById('reg-class-id');
+            if (!regClassSelect) return;
+
+            const filteredClasses = schoolId 
+                ? allClasses.filter(c => String(c.school_id) === String(schoolId))
+                : allClasses;
+
+            regClassSelect.innerHTML = '<option value="">Pilih Kelas...</option>' + 
+                filteredClasses.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
         }
 
         async function fetchData() {
@@ -374,9 +679,15 @@
             if (refreshIcon) refreshIcon.classList.add('animate-spin');
             
             try {
-                await fetchStudentsList();
+                const schoolId = document.getElementById('filter-school-select').value;
+                const classId = document.getElementById('filter-class-select').value;
 
-                const res = await fetch(`${API}/admin/all-logs`);
+                let queryParams = [];
+                if (schoolId) queryParams.push(`school_id=${schoolId}`);
+                if (classId) queryParams.push(`class_id=${classId}`);
+                const queryString = queryParams.length ? '?' + queryParams.join('&') : '';
+
+                const res = await fetch(`${API}/admin/all-logs${queryString}`);
                 allLogs = await res.json();
                 
                 const totalSubmissions = allLogs.length;
@@ -388,6 +699,7 @@
                 document.getElementById('stat-verses').innerText = totalVerses;
                 
                 renderTable(allLogs);
+                fetchStudentsList();
                 
             } catch (err) {
                 console.error("Gagal mengambil data admin", err);
@@ -406,7 +718,14 @@
 
         async function fetchStudentsList() {
             try {
-                const res = await fetch(`${API}/admin/students`);
+                const schoolId = document.getElementById('filter-school-select').value;
+                const classId = document.getElementById('filter-class-select').value;
+                let queryParams = [];
+                if (schoolId) queryParams.push(`school_id=${schoolId}`);
+                if (classId) queryParams.push(`class_id=${classId}`);
+                const queryString = queryParams.length ? '?' + queryParams.join('&') : '';
+
+                const res = await fetch(`${API}/admin/students${queryString}`);
                 const students = await res.json();
                 const tbody = document.getElementById('student-accounts-body');
                 
@@ -422,10 +741,10 @@
                 tbody.innerHTML = students.map(s => `
                     <tr class="hover:bg-gray-50/50">
                         <td class="py-2.5 px-3 font-semibold text-gray-900">${escapeHtml(s.name)}</td>
-                        <td class="py-2.5 px-3 text-gray-500">${escapeHtml(s.school)}</td>
+                        <td class="py-2.5 px-3 text-gray-500">${escapeHtml(s.school_name || s.school)}</td>
+                        <td class="py-2.5 px-3"><span class="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded font-bold text-[10px]">${escapeHtml(s.class_name || 'Umum')}</span></td>
                         <td class="py-2.5 px-3"><code class="bg-gray-100 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold">${escapeHtml(s.username)}</code></td>
                         <td class="py-2.5 px-3 font-mono text-gray-600">${escapeHtml(s.password)}</td>
-                        <td class="py-2.5 px-3 text-right text-gray-400 font-mono">${escapeHtml(s.unique_id)}</td>
                     </tr>
                 `).join('');
             } catch(e) {
@@ -434,8 +753,9 @@
         }
 
         async function registerStudent() {
+            const school_id = document.getElementById('reg-school-id').value;
+            const class_id = document.getElementById('reg-class-id').value;
             const name = document.getElementById('reg-name').value.trim();
-            const school = document.getElementById('reg-school').value.trim();
             const username = document.getElementById('reg-username').value.trim();
             const password = document.getElementById('reg-password').value.trim();
             
@@ -445,8 +765,8 @@
             errDiv.classList.add('hidden');
             successDiv.classList.add('hidden');
 
-            if (!name || !school || !username || !password) {
-                errDiv.innerText = "Semua kolom pendaftaran wajib diisi!";
+            if (!school_id || !name || !username || !password) {
+                errDiv.innerText = "Sekolah, Nama, Username, dan Password wajib diisi!";
                 errDiv.classList.remove('hidden');
                 return;
             }
@@ -455,7 +775,7 @@
                 const res = await fetch(`${API}/admin/students`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, school, username, password })
+                    body: JSON.stringify({ school_id, class_id, name, username, password })
                 });
 
                 const data = await res.json();
@@ -465,7 +785,6 @@
                 }
 
                 document.getElementById('reg-name').value = '';
-                document.getElementById('reg-school').value = '';
                 document.getElementById('reg-username').value = '';
                 document.getElementById('reg-password').value = '';
 
@@ -478,6 +797,137 @@
                 errDiv.innerText = err.message;
                 errDiv.classList.remove('hidden');
             }
+        }
+
+        async function addSchool() {
+            const name = document.getElementById('school-name').value.trim();
+            const code = document.getElementById('school-code').value.trim();
+            const errDiv = document.getElementById('school-error');
+            const successDiv = document.getElementById('school-success');
+
+            errDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            if (!name || !code) {
+                errDiv.innerText = "Nama dan Kode Sekolah wajib diisi!";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/admin/schools`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, code })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Gagal menambah sekolah");
+
+                document.getElementById('school-name').value = '';
+                document.getElementById('school-code').value = '';
+                successDiv.innerText = `Sekolah "${name}" berhasil ditambahkan!`;
+                successDiv.classList.remove('hidden');
+
+                fetchSchools();
+            } catch(e) {
+                errDiv.innerText = e.message;
+                errDiv.classList.remove('hidden');
+            }
+        }
+
+        async function addClass() {
+            const school_id = document.getElementById('class-school-id').value;
+            const name = document.getElementById('class-name').value.trim();
+            const ustadz_id = document.getElementById('class-ustadz-id').value;
+            const errDiv = document.getElementById('class-error');
+            const successDiv = document.getElementById('class-success');
+
+            errDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            if (!school_id || !name) {
+                errDiv.innerText = "Sekolah dan Nama Kelas wajib diisi!";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/admin/classes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ school_id, ustadz_id, name })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Gagal menambah kelas");
+
+                document.getElementById('class-name').value = '';
+                successDiv.innerText = `Kelas "${name}" berhasil ditambahkan!`;
+                successDiv.classList.remove('hidden');
+
+                fetchClasses();
+            } catch(e) {
+                errDiv.innerText = e.message;
+                errDiv.classList.remove('hidden');
+            }
+        }
+
+        async function addUstadz() {
+            const school_id = document.getElementById('ustadz-school-id').value;
+            const name = document.getElementById('ustadz-name').value.trim();
+            const username = document.getElementById('ustadz-username').value.trim();
+            const password = document.getElementById('ustadz-password').value.trim();
+            const errDiv = document.getElementById('ustadz-error');
+            const successDiv = document.getElementById('ustadz-success');
+
+            errDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            if (!school_id || !name || !username || !password) {
+                errDiv.innerText = "Semua field akun Ustadz wajib diisi!";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/admin/ustadz`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ school_id, name, username, password, role: 'USTADZ' })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Gagal membuat akun Ustadz");
+
+                document.getElementById('ustadz-name').value = '';
+                document.getElementById('ustadz-username').value = '';
+                document.getElementById('ustadz-password').value = '';
+
+                successDiv.innerText = `Akun Ustadz "${name}" berhasil dibuat!`;
+                successDiv.classList.remove('hidden');
+
+                fetchUstadzList();
+            } catch(e) {
+                errDiv.innerText = e.message;
+                errDiv.classList.remove('hidden');
+            }
+        }
+
+        function renderClassesTable(classes) {
+            const tbody = document.getElementById('classes-table-body');
+            if (!tbody) return;
+
+            if (classes.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-400 italic">Belum ada kelas. Buat kelas di sebelah kiri.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = classes.map(c => `
+                <tr class="hover:bg-gray-50/50">
+                    <td class="py-2.5 px-3 font-bold text-gray-900">${escapeHtml(c.name)}</td>
+                    <td class="py-2.5 px-3 text-gray-500">${escapeHtml(c.school_name || 'Umum')}</td>
+                    <td class="py-2.5 px-3 text-emerald-800 font-medium">${escapeHtml(c.ustadz_name || 'Belum Ditentukan')}</td>
+                    <td class="py-2.5 px-3 text-right font-bold text-gray-700">${c.student_count || 0} Santri</td>
+                </tr>
+            `).join('');
         }
 
         function toggleStudentAccordion(studentId) {
@@ -515,6 +965,7 @@
             const id = document.getElementById('grade-log-id').value;
             const grade = document.getElementById('grade-select').value;
             const note = document.getElementById('grade-note').value.trim();
+            const verified_by = currentUser ? currentUser.id : null;
             
             if (!id) {
                 alert("ID Setoran tidak valid!");
@@ -530,7 +981,7 @@
                 const res = await fetch(`${API}/admin/grade-log`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ log_id: parseInt(id, 10), grade, note })
+                    body: JSON.stringify({ log_id: parseInt(id, 10), grade, note, verified_by })
                 });
                 
                 const data = await res.json();
@@ -554,8 +1005,11 @@
             const l = allLogs.find(item => Number(item.id) === Number(logId));
             if (!l) return;
 
+            const schoolName = l.school_name || l.legacy_school || 'Jadda Tahfiz';
+            const className = l.class_name ? ` (${l.class_name})` : '';
+
             const message = `*Laporan Setoran Murajaah Santri*\n\n` +
-                `👤 *Nama*: ${l.name} (${l.school})\n` +
+                `👤 *Nama*: ${l.name} - ${schoolName}${className}\n` +
                 `📖 *Surah*: ${l.surah} (Juz ${l.juz || 30})\n` +
                 `🔢 *Ayat*: ${l.ayat_start} - ${l.ayat_end} (+${l.jumlah_ayat} Ayat)\n` +
                 `📅 *Tanggal*: ${l.tgl}\n` +
@@ -583,7 +1037,7 @@
                 container.innerHTML = `
                     <div class="glass-card rounded-[28px] p-8 text-center text-gray-400">
                         <i class="fas fa-folder-open text-3xl mb-2 text-emerald-700/30"></i>
-                        <p class="text-xs">Belum ada hafalan yang disetor oleh santri.</p>
+                        <p class="text-xs">Belum ada hafalan yang disetor untuk filter ini.</p>
                     </div>
                 `;
                 return;
@@ -597,7 +1051,8 @@
                     grouped[sid] = {
                         student_id: sid,
                         name: l.name,
-                        school: l.school,
+                        school: l.school_name || l.legacy_school || 'Umum',
+                        class_name: l.class_name || '',
                         logs: []
                     };
                 }
@@ -605,8 +1060,6 @@
             });
 
             const studentsList = Object.values(grouped);
-            
-            // Sort students by recent submission log ID
             studentsList.sort((a, b) => b.logs[0].id - a.logs[0].id);
 
             container.innerHTML = studentsList.map((st, idx) => {
@@ -638,7 +1091,7 @@
                                     <span class="bg-emerald-50 text-emerald-800 border border-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-md">Juz ${itemJuz}</span>
                                     <span class="text-xs text-gray-500 font-medium">Ayat ${l.ayat_start} - ${l.ayat_end} (+${l.jumlah_ayat} Ayat)</span>
                                 </div>
-                                <div class="text-[10px] text-gray-400 font-medium">Tanggal Setor: ${escapeHtml(l.tgl)}</div>
+                                <div class="text-[10px] text-gray-400 font-medium">Tanggal Setor: ${escapeHtml(l.tgl)} ${l.ustadz_name ? '• Dinilai oleh: '+escapeHtml(l.ustadz_name) : ''}</div>
                                 <div class="pt-1">${audioPlayer}</div>
                             </div>
 
@@ -674,7 +1127,7 @@
                                 <div>
                                     <h3 class="font-extrabold text-base text-gray-900 flex items-center gap-2 flex-wrap">
                                         <span>${escapeHtml(st.name)}</span>
-                                        <span class="text-xs text-gray-400 font-normal">(${escapeHtml(st.school)})</span>
+                                        <span class="text-xs text-gray-400 font-normal">(${escapeHtml(st.school)}${st.class_name ? ' • '+escapeHtml(st.class_name) : ''})</span>
                                     </h3>
                                     <div class="flex items-center gap-2 text-xs text-gray-500 mt-0.5 font-medium">
                                         <span class="font-bold text-emerald-800">${st.logs.length} Setoran</span> • 
@@ -710,7 +1163,8 @@
             const filtered = allLogs.filter(l => 
                 l.name.toLowerCase().includes(query) || 
                 l.surah.toLowerCase().includes(query) ||
-                l.school.toLowerCase().includes(query) ||
+                (l.school_name && l.school_name.toLowerCase().includes(query)) ||
+                (l.class_name && l.class_name.toLowerCase().includes(query)) ||
                 (l.grade && l.grade.toLowerCase().includes(query)) ||
                 (l.juz && String(l.juz).includes(query))
             );
@@ -728,7 +1182,7 @@
                 .replace(/'/g, "&#039;");
         }
 
-        window.onload = fetchData;
+        window.onload = fetchInitialData;
     </script>
 </body>
 </html>

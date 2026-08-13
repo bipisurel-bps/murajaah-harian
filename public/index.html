@@ -641,6 +641,8 @@
             
             const payload = { 
                 student_id: currentStudent.unique_id, 
+                school_id: currentStudent.school_id,
+                class_id: currentStudent.class_id,
                 surah, 
                 ayat_start: start, 
                 ayat_end: end, 
@@ -731,7 +733,9 @@
             if (!currentStudent) return;
             
             document.getElementById('display-name').innerText = currentStudent.name;
-            document.getElementById('display-school').innerText = currentStudent.school;
+            const schoolLabel = currentStudent.school || "Umum";
+            const classLabel = currentStudent.class_name ? ` • ${currentStudent.class_name}` : "";
+            document.getElementById('display-school').innerText = `${schoolLabel}${classLabel}`;
             
             const currentTargetJuz = parseInt(localStorage.getItem('target_juz') || "30");
             

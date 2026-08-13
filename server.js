@@ -15,8 +15,8 @@ app.use(express.static('public'));
 
 const db = new sqlite3.Database('./tahfiz.db');
 
-// Active Session Storage for Scope Verification
-const activeSessions = new Map();
+// Map(token -> {id, school_id, role, name, username})
+const activeTokens = new Map();
 
 db.serialize(() => {
     // 1. Core Multi-Tenant Tables Creation
@@ -129,8 +129,8 @@ function getAuthUser(req) {
 
     if (!token) return null;
 
-    if (activeSessions.has(token)) {
-        return activeSessions.get(token);
+    if (activeTokens.has(token)) {
+        return activeTokens.get(token);
     }
 
     // Legacy SuperAdmin Token Fallback
@@ -151,6 +151,20 @@ function requireAdminAuth(req, res, next) {
     if (!user) {
         return res.status(401).json({ error: "Akses ditolak! Token autentikasi tidak valid atau sudah kedaluwarsa." });
     }
+    req.user = user;
+    req.authUser = user;
+    next();
+}
+
+function requireSuperAdmin(req, res, next) {
+    const user = getAuthUser(req);
+    if (!user) {
+        return res.status(401).json({ error: "Akses ditolak! Token autentikasi tidak valid." });
+    }
+    if (user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ error: "Akses ditolak! Fitur ini khusus untuk SuperAdmin." });
+    }
+    req.user = user;
     req.authUser = user;
     next();
 }
@@ -186,7 +200,7 @@ app.post('/api/admin/login', (req, res) => {
                     school_code: row.school_code
                 };
 
-                activeSessions.set(token, userObj);
+                activeTokens.set(token, userObj);
 
                 return res.json({
                     message: "Login ustadz berhasil",
@@ -196,7 +210,7 @@ app.post('/api/admin/login', (req, res) => {
             } else if (!row && (password === ADMIN_PASS || password === "admin123" || password === "ustadz123")) {
                 const token = "admin_token_" + Math.random().toString(36).substr(2, 9);
                 const superUser = { id: 0, name: "Super Admin", role: "SUPER_ADMIN", school_id: null };
-                activeSessions.set(token, superUser);
+                activeTokens.set(token, superUser);
                 return res.json({ message: "Login ustadz berhasil", token, user: superUser });
             } else {
                 return res.status(401).json({ error: "Username atau Password Ustadz salah!" });
@@ -206,7 +220,7 @@ app.post('/api/admin/login', (req, res) => {
         if (password === ADMIN_PASS || password === "admin123" || password === "ustadz123") {
             const token = "admin_token_" + Math.random().toString(36).substr(2, 9);
             const superUser = { id: 0, name: "Super Admin", role: "SUPER_ADMIN", school_id: null };
-            activeSessions.set(token, superUser);
+            activeTokens.set(token, superUser);
             return res.json({ message: "Login ustadz berhasil", token, user: superUser });
         } else {
             return res.status(401).json({ error: "Password admin/ustadz salah!" });
@@ -254,12 +268,12 @@ app.post('/api/profile', (req, res) => {
 });
 
 // ==========================================
-// SCHOOLS MANAGEMENT APIs (SUPERADMIN / SCHOOL_ADMIN)
+// SCHOOLS MANAGEMENT APIs (REQUIRE SUPERADMIN)
 // ==========================================
 
-// Get All Schools (Scoped by Role)
+// Get All Schools (Scoped for Non-Superadmin)
 app.get('/api/admin/schools', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
+    const user = req.user;
     let query = `SELECT s.*, 
                  (SELECT COUNT(*) FROM students WHERE school_id = s.id) as student_count,
                  (SELECT COUNT(*) FROM classes WHERE school_id = s.id) as class_count,
@@ -279,13 +293,8 @@ app.get('/api/admin/schools', requireAdminAuth, (req, res) => {
     });
 });
 
-// Add New School (SUPERADMIN ONLY)
-app.post('/api/admin/schools', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
-    if (user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ error: "Akses ditolak! Hanya SuperAdmin yang berhak menambah Sekolah/Tenant baru." });
-    }
-
+// Add New School (REQUIRES SUPERADMIN)
+app.post('/api/admin/schools', requireSuperAdmin, (req, res) => {
     const { name, code } = req.body;
     if (!name || !code) {
         return res.status(400).json({ error: "Nama dan Kode Sekolah wajib diisi!" });
@@ -306,8 +315,8 @@ app.post('/api/admin/schools', requireAdminAuth, (req, res) => {
 
 // Get Classes (Scoped strictly to Ustadz's assigned classes or school)
 app.get('/api/admin/classes', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
-    const { school_id } = req.query;
+    const user = req.user;
+    let { school_id } = req.query;
 
     let query = `SELECT c.*, s.name as school_name, u.name as ustadz_name,
                  (SELECT COUNT(*) FROM students WHERE class_id = c.id) as student_count
@@ -317,12 +326,16 @@ app.get('/api/admin/classes', requireAdminAuth, (req, res) => {
     let conditions = [];
     let params = [];
 
-    if (user.role === 'USTADZ') {
-        conditions.push(`(c.ustadz_id = ? OR c.school_id = ?)`);
-        params.push(user.id, user.school_id);
-    } else if (user.role === 'SCHOOL_ADMIN') {
+    if (user.role !== 'SUPER_ADMIN') {
+        // Lock School: Non-superadmin is strictly locked to user.school_id (Ignore any school_id query param)
         conditions.push(`c.school_id = ?`);
         params.push(user.school_id);
+
+        if (user.role === 'USTADZ') {
+            // Lock Class: Ustadz only sees classes assigned to them (classes.ustadz_id = req.user.id)
+            conditions.push(`c.ustadz_id = ?`);
+            params.push(user.id);
+        }
     } else if (school_id) {
         conditions.push(`c.school_id = ?`);
         params.push(school_id);
@@ -341,7 +354,7 @@ app.get('/api/admin/classes', requireAdminAuth, (req, res) => {
 
 // Add New Class (Scoped to User's School)
 app.post('/api/admin/classes', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
+    const user = req.user;
     let { school_id, ustadz_id, name, grade_level } = req.body;
 
     if (user.role !== 'SUPER_ADMIN') {
@@ -363,12 +376,12 @@ app.post('/api/admin/classes', requireAdminAuth, (req, res) => {
 });
 
 // ==========================================
-// USTADZ MANAGEMENT APIs (SCOPED)
+// USTADZ MANAGEMENT APIs (REQUIRE SUPERADMIN FOR CREATION)
 // ==========================================
 
 // Get All Ustadz Accounts (Scoped by School)
 app.get('/api/admin/ustadz', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
+    const user = req.user;
     const { school_id } = req.query;
 
     let query = `SELECT u.id, u.school_id, u.name, u.username, u.role, u.created_at, s.name as school_name 
@@ -396,17 +409,9 @@ app.get('/api/admin/ustadz', requireAdminAuth, (req, res) => {
     });
 });
 
-// Add New Ustadz Account (SUPERADMIN or SCHOOL_ADMIN ONLY)
-app.post('/api/admin/ustadz', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
-    if (user.role === 'USTADZ') {
-        return res.status(403).json({ error: "Akses ditolak! Ustadz tidak memiliki wewenang membuat akun Ustadz baru." });
-    }
-
-    let { school_id, name, username, password, role } = req.body;
-    if (user.role !== 'SUPER_ADMIN') {
-        school_id = user.school_id;
-    }
+// Add New Ustadz Account (REQUIRES SUPERADMIN)
+app.post('/api/admin/ustadz', requireSuperAdmin, (req, res) => {
+    const { school_id, name, username, password, role } = req.body;
 
     if (!school_id || !name || !username || !password) {
         return res.status(400).json({ error: "Sekolah, Nama, Username, dan Password wajib diisi!" });
@@ -489,7 +494,7 @@ app.post('/api/logs', (req, res) => {
 
 // Admin Grade & Note Endpoint (STRICTLY SCOPED TO USTADZ'S ASSIGNED CLASS/SCHOOL)
 app.post('/api/admin/grade-log', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
+    const user = req.user;
     const { log_id, grade, note } = req.body;
     if (!log_id) {
         return res.status(400).json({ error: "ID setoran (log_id) wajib disertakan!" });
@@ -528,7 +533,7 @@ app.post('/api/admin/grade-log', requireAdminAuth, (req, res) => {
 
 // Admin Student Accounts APIs (STRICTLY SCOPED)
 app.post('/api/admin/students', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
+    const user = req.user;
     let { name, school, username, password, school_id, class_id } = req.body;
     if (!name || !username || !password) {
         return res.status(400).json({ error: "Nama, Username, dan Password wajib diisi!" });
@@ -555,7 +560,7 @@ app.post('/api/admin/students', requireAdminAuth, (req, res) => {
 });
 
 app.get('/api/admin/students', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
+    const user = req.user;
     let { school_id, class_id } = req.query;
 
     let query = `SELECT s.id, s.name, s.school, s.unique_id, s.username, s.password, s.school_id, s.class_id,
@@ -566,19 +571,26 @@ app.get('/api/admin/students', requireAdminAuth, (req, res) => {
     let conditions = [];
     let params = [];
 
-    if (user.role === 'USTADZ') {
+    if (user.role !== 'SUPER_ADMIN') {
+        // Lock School: Ignore any school_id query param from request
         conditions.push(`s.school_id = ?`);
         params.push(user.school_id);
-        conditions.push(`(s.class_id IN (SELECT id FROM classes WHERE ustadz_id = ?) OR s.class_id IS NULL)`);
-        params.push(user.id);
-    } else if (user.role === 'SCHOOL_ADMIN') {
-        conditions.push(`s.school_id = ?`);
-        params.push(user.school_id);
-        if (class_id) {
+
+        if (user.role === 'USTADZ') {
+            // Lock Class: Ustadz only sees students in classes assigned to them (classes.ustadz_id = req.user.id)
+            if (class_id) {
+                conditions.push(`s.class_id = ? AND s.class_id IN (SELECT id FROM classes WHERE ustadz_id = ?)`);
+                params.push(class_id, user.id);
+            } else {
+                conditions.push(`s.class_id IN (SELECT id FROM classes WHERE ustadz_id = ?)`);
+                params.push(user.id);
+            }
+        } else if (class_id) {
             conditions.push(`s.class_id = ?`);
             params.push(class_id);
         }
     } else {
+        // SuperAdmin access: can filter by any passed school_id & class_id
         if (school_id) {
             conditions.push(`s.school_id = ?`);
             params.push(school_id);
@@ -602,7 +614,7 @@ app.get('/api/admin/students', requireAdminAuth, (req, res) => {
 
 // Admin Logs List API (STRICTLY SCOPED TO USER'S ASSIGNED SCHOOL & CLASS)
 app.get('/api/admin/all-logs', requireAdminAuth, (req, res) => {
-    const user = req.authUser;
+    const user = req.user;
     let { school_id, class_id } = req.query;
 
     let query = `SELECT logs.*, students.name, students.school as legacy_school, 
@@ -615,19 +627,26 @@ app.get('/api/admin/all-logs', requireAdminAuth, (req, res) => {
     let conditions = [];
     let params = [];
 
-    if (user.role === 'USTADZ') {
+    if (user.role !== 'SUPER_ADMIN') {
+        // Lock School: Ignore any school_id query param from request
         conditions.push(`logs.school_id = ?`);
         params.push(user.school_id);
-        conditions.push(`(logs.class_id IN (SELECT id FROM classes WHERE ustadz_id = ?) OR logs.class_id IS NULL)`);
-        params.push(user.id);
-    } else if (user.role === 'SCHOOL_ADMIN') {
-        conditions.push(`logs.school_id = ?`);
-        params.push(user.school_id);
-        if (class_id) {
+
+        if (user.role === 'USTADZ') {
+            // Lock Class: Ustadz only sees logs in classes assigned to them (classes.ustadz_id = req.user.id)
+            if (class_id) {
+                conditions.push(`logs.class_id = ? AND logs.class_id IN (SELECT id FROM classes WHERE ustadz_id = ?)`);
+                params.push(class_id, user.id);
+            } else {
+                conditions.push(`logs.class_id IN (SELECT id FROM classes WHERE ustadz_id = ?)`);
+                params.push(user.id);
+            }
+        } else if (class_id) {
             conditions.push(`logs.class_id = ?`);
             params.push(class_id);
         }
     } else {
+        // SuperAdmin access: can filter by any passed school_id & class_id
         if (school_id) {
             conditions.push(`logs.school_id = ?`);
             params.push(school_id);

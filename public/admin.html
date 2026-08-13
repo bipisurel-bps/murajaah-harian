@@ -556,6 +556,20 @@
 
     <script>
         const API = "/api";
+
+        // [SECURITY] Inject admin token into all /api/admin/* requests
+        const _origFetch = window.fetch.bind(window);
+        window.fetch = function(url, opts) {
+            opts = opts || {};
+            const token = sessionStorage.getItem('admin_token');
+            const urlStr = (typeof url === 'string') ? url : (url && url.url ? url.url : '');
+            if (token && urlStr.indexOf('/api/admin/') !== -1) {
+                const h = opts.headers || {};
+                opts = Object.assign({}, opts);
+                opts.headers = Object.assign({}, h, { 'Authorization': 'Bearer ' + token });
+            }
+            return _origFetch(url, opts);
+        };
         let allLogs = [];
         let allSchools = [];
         let allClasses = [];
@@ -1023,7 +1037,7 @@
         async function deleteLogAdmin(id) {
             if (!confirm("Apakah Anda yakin ingin menghapus setoran santri ini?")) return;
             try {
-                const res = await fetch(`${API}/logs/${id}?student_id=admin`, { method: 'DELETE' });
+                const res = await fetch(`${API}/admin/logs/${id}`, { method: 'DELETE' });
                 if (!res.ok) throw new Error("Gagal menghapus log");
                 fetchData();
             } catch (e) {

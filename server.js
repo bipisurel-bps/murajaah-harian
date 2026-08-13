@@ -15,6 +15,21 @@ app.use(express.static('public'));
 
 const db = new sqlite3.Database('./tahfiz.db');
 
+// ==========================================
+// AUTH SESSION STORE & MIDDLEWARE (SECURITY)
+// ==========================================
+const activeTokens = new Set();
+
+function requireAdmin(req, res, next) {
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+    if (!token || !activeTokens.has(token)) {
+        return res.status(401).json({ error: "Akses ditolak. Login admin/ustadz diperlukan." });
+    }
+    next();
+}
+
+
 db.serialize(() => {
     // 1. Core Multi-Tenant Tables Creation
     db.run(`CREATE TABLE IF NOT EXISTS schools (
@@ -132,6 +147,7 @@ app.post('/api/admin/login', (req, res) => {
             if (err) return res.status(500).json({ error: err.message });
             if (row && row.password === password) {
                 const token = `ustadz_token_${row.id}_${Math.random().toString(36).substr(2, 9)}`;
+                activeTokens.add(token);
                 return res.json({
                     message: "Login ustadz berhasil",
                     token,
@@ -148,6 +164,7 @@ app.post('/api/admin/login', (req, res) => {
             } else if (!row && (password === ADMIN_PASS || password === "admin123" || password === "ustadz123")) {
                 // Fallback for legacy admin
                 const token = "admin_token_" + Math.random().toString(36).substr(2, 9);
+                activeTokens.add(token);
                 return res.json({ message: "Login ustadz berhasil", token, user: { name: "Super Admin", role: "SUPER_ADMIN" } });
             } else {
                 return res.status(401).json({ error: "Username atau Password Ustadz salah!" });
@@ -157,6 +174,7 @@ app.post('/api/admin/login', (req, res) => {
         // Fallback for single password login
         if (password === ADMIN_PASS || password === "admin123" || password === "ustadz123") {
             const token = "admin_token_" + Math.random().toString(36).substr(2, 9);
+            activeTokens.add(token);
             return res.json({ message: "Login ustadz berhasil", token, user: { name: "Super Admin", role: "SUPER_ADMIN" } });
         } else {
             return res.status(401).json({ error: "Password admin/ustadz salah!" });
@@ -209,7 +227,7 @@ app.post('/api/profile', (req, res) => {
 // ==========================================
 
 // Get All Schools
-app.get('/api/admin/schools', (req, res) => {
+app.get('/api/admin/schools', requireAdmin, (req, res) => {
     db.all(`SELECT s.*, 
             (SELECT COUNT(*) FROM students WHERE school_id = s.id) as student_count,
             (SELECT COUNT(*) FROM classes WHERE school_id = s.id) as class_count,
@@ -221,7 +239,7 @@ app.get('/api/admin/schools', (req, res) => {
 });
 
 // Add New School
-app.post('/api/admin/schools', (req, res) => {
+app.post('/api/admin/schools', requireAdmin, (req, res) => {
     const { name, code } = req.body;
     if (!name || !code) {
         return res.status(400).json({ error: "Nama dan Kode Sekolah wajib diisi!" });
@@ -241,7 +259,7 @@ app.post('/api/admin/schools', (req, res) => {
 // ==========================================
 
 // Get Classes (Optionally Filtered by school_id)
-app.get('/api/admin/classes', (req, res) => {
+app.get('/api/admin/classes', requireAdmin, (req, res) => {
     const { school_id } = req.query;
     let query = `SELECT c.*, s.name as school_name, u.name as ustadz_name,
                  (SELECT COUNT(*) FROM students WHERE class_id = c.id) as student_count
@@ -262,7 +280,7 @@ app.get('/api/admin/classes', (req, res) => {
 });
 
 // Add New Class
-app.post('/api/admin/classes', (req, res) => {
+app.post('/api/admin/classes', requireAdmin, (req, res) => {
     const { school_id, ustadz_id, name, grade_level } = req.body;
     if (!school_id || !name) {
         return res.status(400).json({ error: "Sekolah dan Nama Kelas/Halaqah wajib diisi!" });
@@ -279,7 +297,7 @@ app.post('/api/admin/classes', (req, res) => {
 // ==========================================
 
 // Get All Ustadz Accounts
-app.get('/api/admin/ustadz', (req, res) => {
+app.get('/api/admin/ustadz', requireAdmin, (req, res) => {
     const { school_id } = req.query;
     let query = `SELECT u.id, u.school_id, u.name, u.username, u.role, u.created_at, s.name as school_name 
                  FROM ustadz u 
@@ -298,7 +316,7 @@ app.get('/api/admin/ustadz', (req, res) => {
 });
 
 // Add New Ustadz Account
-app.post('/api/admin/ustadz', (req, res) => {
+app.post('/api/admin/ustadz', requireAdmin, (req, res) => {
     const { school_id, name, username, password, role } = req.body;
     if (!school_id || !name || !username || !password) {
         return res.status(400).json({ error: "Sekolah, Nama, Username, dan Password wajib diisi!" });
@@ -328,13 +346,22 @@ app.get('/api/logs/:student_id', (req, res) => {
 // Delete Log Endpoint
 app.delete('/api/logs/:id', (req, res) => {
     const student_id = req.query.student_id;
-    if (!student_id) {
-        return res.status(400).json({ error: "student_id wajib disertakan" });
+    if (!student_id || student_id === 'admin') {
+        return res.status(400).json({ error: "student_id wajib disertakan (bukan 'admin')" });
     }
-    db.run(`DELETE FROM logs WHERE id = ? AND (student_id = ? OR ? = 'admin')`, [req.params.id, student_id, student_id], function(err) {
+    db.run(`DELETE FROM logs WHERE id = ? AND student_id = ?`, [req.params.id, student_id], function(err) {
         if (err) return res.status(500).json({ error: err.message });
         if (this.changes === 0) return res.status(403).json({ error: "Tidak memiliki izin menghapus setoran ini" });
         res.json({ message: "Setoran berhasil dihapus" });
+    });
+});
+
+// Admin delete log (protected by token)
+app.delete('/api/admin/logs/:id', requireAdmin, (req, res) => {
+    db.run(`DELETE FROM logs WHERE id = ?`, [req.params.id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        if (this.changes === 0) return res.status(404).json({ error: "Setoran tidak ditemukan" });
+        res.json({ message: "Setoran berhasil dihapus oleh admin" });
     });
 });
 
@@ -383,7 +410,7 @@ app.post('/api/logs', (req, res) => {
 });
 
 // Admin Grade & Note Endpoint (With Verified By)
-app.post('/api/admin/grade-log', (req, res) => {
+app.post('/api/admin/grade-log', requireAdmin, (req, res) => {
     const { log_id, grade, note, verified_by } = req.body;
     if (!log_id) {
         return res.status(400).json({ error: "ID setoran (log_id) wajib disertakan!" });
@@ -403,7 +430,7 @@ app.post('/api/admin/grade-log', (req, res) => {
 });
 
 // Admin Student Accounts APIs
-app.post('/api/admin/students', (req, res) => {
+app.post('/api/admin/students', requireAdmin, (req, res) => {
     const { name, school, username, password, school_id, class_id } = req.body;
     if (!name || !username || !password) {
         return res.status(400).json({ error: "Nama, Username, dan Password wajib diisi!" });
@@ -425,7 +452,7 @@ app.post('/api/admin/students', (req, res) => {
     });
 });
 
-app.get('/api/admin/students', (req, res) => {
+app.get('/api/admin/students', requireAdmin, (req, res) => {
     const { school_id, class_id } = req.query;
     let query = `SELECT s.id, s.name, s.school, s.unique_id, s.username, s.password, s.school_id, s.class_id,
                  sch.name as school_name, c.name as class_name
@@ -456,7 +483,7 @@ app.get('/api/admin/students', (req, res) => {
 });
 
 // Admin Logs List API (With School & Class Filters)
-app.get('/api/admin/all-logs', (req, res) => {
+app.get('/api/admin/all-logs', requireAdmin, (req, res) => {
     const { school_id, class_id } = req.query;
     let query = `SELECT logs.*, students.name, students.school as legacy_school, 
                  sch.name as school_name, c.name as class_name, u.name as ustadz_name

@@ -120,9 +120,8 @@ db.serialize(() => {
 function getAuthUser(req) {
     const authHeader = req.headers['authorization'] || '';
     const customHeaderToken = req.headers['x-admin-token'] || '';
-    const queryToken = req.query.token || '';
 
-    let token = customHeaderToken || queryToken;
+    let token = customHeaderToken;
     if (authHeader.startsWith('Bearer ')) {
         token = authHeader.substring(7);
     }
@@ -131,16 +130,6 @@ function getAuthUser(req) {
 
     if (activeTokens.has(token)) {
         return activeTokens.get(token);
-    }
-
-    // Legacy SuperAdmin Token Fallback
-    if (token.startsWith('admin_token_')) {
-        return {
-            id: 0,
-            name: "Super Admin",
-            role: "SUPER_ADMIN",
-            school_id: null
-        };
     }
 
     return null;
@@ -230,17 +219,23 @@ app.post('/api/admin/login', (req, res) => {
 
 // Student Login API
 app.post('/api/login', (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, school_code } = req.body;
     if (!username || !password) {
         return res.status(400).json({ error: "Username dan password wajib diisi!" });
     }
-    db.get(`SELECT s.*, sch.name as school_name, c.name as class_name 
+    let loginQuery = `SELECT s.*, sch.name as school_name, sch.code as school_code, c.name as class_name 
             FROM students s 
             LEFT JOIN schools sch ON s.school_id = sch.id 
             LEFT JOIN classes c ON s.class_id = c.id 
-            WHERE s.username = ?`, [username], (err, row) => {
+            WHERE s.username = ?`;
+    let loginParams = [username];
+    if (school_code) {
+        loginQuery += ` AND UPPER(sch.code) = UPPER(?)`;
+        loginParams.push(school_code);
+    }
+    db.get(loginQuery, loginParams, (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
-        if (!row) return res.status(401).json({ error: "Username tidak terdaftar!" });
+        if (!row) return res.status(401).json({ error: school_code ? "Username tidak terdaftar di sekolah ini!" : "Username tidak terdaftar!" });
         if (row.password !== password) return res.status(401).json({ error: "Password salah!" });
 
         res.json({
@@ -249,6 +244,7 @@ app.post('/api/login', (req, res) => {
                 id: row.id,
                 name: row.name,
                 school: row.school_name || row.school || "Umum",
+                school_code: row.school_code || null,
                 school_id: row.school_id,
                 class_id: row.class_id,
                 class_name: row.class_name || "Kelas Umum",
@@ -437,15 +433,48 @@ app.get('/api/logs/:student_id', (req, res) => {
     });
 });
 
+// ==========================================
+// PUBLIC SCHOOL ROUTING (Multi-School)
+// ==========================================
+
+// List all schools (public, for landing page)
+app.get('/api/schools/public', (req, res) => {
+    db.all(`SELECT s.id, s.name, s.code,
+            (SELECT COUNT(*) FROM students WHERE school_id = s.id) as student_count
+            FROM schools s ORDER BY s.name ASC`, (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// Get school info by code (case-insensitive, public)
+app.get('/api/school/:code', (req, res) => {
+    const code = (req.params.code || '').toUpperCase();
+    db.get(`SELECT id, name, code FROM schools WHERE UPPER(code) = ?`, [code], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!row) return res.status(404).json({ error: "Sekolah tidak ditemukan" });
+        res.json(row);
+    });
+});
+
 app.delete('/api/logs/:id', (req, res) => {
     const student_id = req.query.student_id;
-    if (!student_id) {
-        return res.status(400).json({ error: "student_id wajib disertakan" });
+    if (!student_id || student_id === 'admin') {
+        return res.status(400).json({ error: "student_id wajib disertakan (bukan 'admin')" });
     }
-    db.run(`DELETE FROM logs WHERE id = ? AND (student_id = ? OR ? = 'admin')`, [req.params.id, student_id, student_id], function(err) {
+    db.run(`DELETE FROM logs WHERE id = ? AND student_id = ?`, [req.params.id, student_id], function(err) {
         if (err) return res.status(500).json({ error: err.message });
         if (this.changes === 0) return res.status(403).json({ error: "Tidak memiliki izin menghapus setoran ini" });
         res.json({ message: "Setoran berhasil dihapus" });
+    });
+});
+
+// Admin delete log (protected by token)
+app.delete('/api/admin/logs/:id', requireAdminAuth, (req, res) => {
+    db.run(`DELETE FROM logs WHERE id = ?`, [req.params.id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        if (this.changes === 0) return res.status(404).json({ error: "Setoran tidak ditemukan" });
+        res.json({ message: "Setoran berhasil dihapus oleh admin" });
     });
 });
 
@@ -665,6 +694,16 @@ app.get('/api/admin/all-logs', requireAdminAuth, (req, res) => {
     db.all(query, params, (err, rows) => {
         if (err) res.status(500).json({ error: err.message });
         else res.json(rows);
+    });
+});
+
+// Serve school-specific login page (SPA) for known school codes
+app.get('/:code', (req, res, next) => {
+    const code = (req.params.code || '').toUpperCase();
+    db.get(`SELECT id FROM schools WHERE UPPER(code) = ?`, [code], (err, row) => {
+        if (err) return res.status(500).send(err.message);
+        if (row) return res.sendFile(path.join(__dirname, 'public', 'index.html'));
+        next();
     });
 });
 

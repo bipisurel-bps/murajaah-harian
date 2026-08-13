@@ -1050,7 +1050,7 @@
         async function deleteLogAdmin(id) {
             if (!confirm("Apakah Anda yakin ingin menghapus setoran santri ini?")) return;
             try {
-                const res = await authFetch(`${API}/logs/${id}?student_id=admin`, { method: 'DELETE' });
+                const res = await authFetch(`${API}/admin/logs/${id}`, { method: 'DELETE' });
                 if (!res.ok) throw new Error("Gagal menghapus log");
                 fetchData();
             } catch (e) {

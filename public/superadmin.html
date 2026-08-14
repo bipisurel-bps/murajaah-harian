@@ -146,8 +146,8 @@
                         return;
                     }
                     document.getElementById("admin-gate").style.display="none";
-                    sessionStorage.setItem("admin_token", d.token);
-                    if(d.user) sessionStorage.setItem("admin_user", JSON.stringify(d.user));
+                    sessionStorage.setItem("super_token", d.token);
+                    if(d.user) sessionStorage.setItem("super_user", JSON.stringify(d.user));
                     fetchInitialData();
                 }else{
                     document.getElementById("admin-gate-error").innerText = d.error || "Login gagal!";
@@ -161,7 +161,7 @@
         }
         
         window.addEventListener('DOMContentLoaded', function() {
-            if (sessionStorage.getItem("admin_token")) {
+            if (sessionStorage.getItem("super_token")) {
                 document.getElementById("admin-gate").style.display="none";
             }
         });
@@ -182,7 +182,7 @@
                     <span id="user-role-badge" class="flex items-center gap-1.5 text-xs text-violet-300 font-bold">
                         <span class="w-2.5 h-2.5 rounded-full bg-violet-400 animate-pulse"></span> Monitoring Ustadz
                     </span>
-                    <button onclick="sessionStorage.removeItem('admin_token'); sessionStorage.removeItem('admin_user'); location.reload();" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-full font-semibold transition-all no-print">
+                    <button onclick="sessionStorage.removeItem('super_token'); sessionStorage.removeItem('super_user'); location.reload();" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-full font-semibold transition-all no-print">
                         Keluar
                     </button>
                 </div>
@@ -555,7 +555,7 @@
         let currentUser = null;
 
         function authFetch(url, options = {}) {
-            const token = sessionStorage.getItem("admin_token") || "";
+            const token = sessionStorage.getItem("super_token") || "";
             const headers = options.headers ? { ...options.headers } : {};
             headers["x-admin-token"] = token;
             return fetch(url, { ...options, headers });
@@ -580,7 +580,7 @@
 
         async function fetchInitialData() {
             try {
-                const storedUser = sessionStorage.getItem("admin_user");
+                const storedUser = sessionStorage.getItem("super_user");
                 if (storedUser) {
                     currentUser = JSON.parse(storedUser);
                     document.getElementById('header-school-name').innerText = currentUser.school_name || "Multi-Tenant Tahfiz Pro";
@@ -1273,7 +1273,7 @@
         }
 
         window.onload = function() {
-            if (sessionStorage.getItem("admin_token")) {
+            if (sessionStorage.getItem("super_token")) {
                 fetchInitialData();
             }
         };

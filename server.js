@@ -4,19 +4,87 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+// Restrict CORS to known origins
+app.use(cors({
+    origin: (process.env.ALLOWED_ORIGINS || 'https://murajaahharian.web.id,https://www.murajaahharian.web.id').split(','),
+    methods: ['GET', 'POST', 'DELETE', 'OPTIONS']
+}));
+
+// Security headers
+app.use((req, res, next) => {
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self'");
+    next();
+});
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static('public'));
 
 const db = new sqlite3.Database('./tahfiz.db');
 
-// Map(token -> {id, school_id, role, name, username})
+// Map(token -> {id, school_id, role, name, username, expiresAt})
 const activeTokens = new Map();
+
+// Student session tokens (token -> {unique_id, school_id, class_id, expiresAt})
+const studentTokens = new Map();
+
+// ---- Password hashing (scrypt, built-in) ----
+const SESSION_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+function hashPassword(pw) {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.scryptSync(String(pw), salt, 64).toString('hex');
+    return 'scrypt$' + salt + '$' + hash;
+}
+
+function verifyPassword(pw, stored) {
+    if (!stored) return false;
+    if (stored.startsWith('scrypt$')) {
+        const parts = stored.split('$');
+        if (parts.length !== 3) return false;
+        const salt = parts[1], hash = parts[2];
+        try {
+            const test = crypto.scryptSync(String(pw), salt, 64).toString('hex');
+            const a = Buffer.from(hash, 'hex'), b = Buffer.from(test, 'hex');
+            return a.length === b.length && crypto.timingSafeEqual(a, b);
+        } catch (e) { return false; }
+    }
+    // legacy plaintext (will be re-hashed on successful login)
+    return stored === pw;
+}
+
+// ---- Secure token generation ----
+function generateToken(prefix) {
+    return prefix + '_' + crypto.randomBytes(24).toString('hex');
+}
+
+// ---- Simple in-memory login rate limiter ----
+const loginAttempts = new Map(); // ip -> {count, firstAttempt}
+function rateLimitLogin(req, res, next) {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+    const now = Date.now();
+    const windowMs = 15 * 60 * 1000;
+    const maxAttempts = 10;
+    let rec = loginAttempts.get(ip);
+    if (!rec || now - rec.firstAttempt > windowMs) {
+        rec = { count: 0, firstAttempt: now };
+        loginAttempts.set(ip, rec);
+    }
+    rec.count++;
+    if (rec.count > maxAttempts) {
+        return res.status(429).json({ error: "Terlalu banyak percobaan login. Coba lagi dalam beberapa menit." });
+    }
+    next();
+}
 
 db.serialize(() => {
     // 1. Core Multi-Tenant Tables Creation
@@ -103,7 +171,7 @@ db.serialize(() => {
             db.run(`INSERT INTO schools (name, code) VALUES ('Sekolah Utama', 'DEFAULT')`, function(err2) {
                 if (!err2) {
                     const defaultSchoolId = this.lastID;
-                    db.run(`INSERT INTO ustadz (school_id, name, username, password, role) VALUES (?, 'Ustadz Utama', 'ustadz', 'ustadz123', 'SUPER_ADMIN')`, [defaultSchoolId]);
+                    db.run(`INSERT INTO ustadz (school_id, name, username, password, role) VALUES (?, 'Ustadz Utama', 'ustadz', ?, 'SUPER_ADMIN')`, [defaultSchoolId, hashPassword(process.env.ADMIN_PASSWORD || 'ustadz123')]);
                     db.run(`INSERT INTO classes (school_id, ustadz_id, name, grade_level) VALUES (?, 1, 'Kelas Utama', 'Umum')`, [defaultSchoolId]);
                     db.run(`UPDATE students SET school_id = ? WHERE school_id IS NULL`, [defaultSchoolId]);
                     db.run(`UPDATE logs SET school_id = ? WHERE school_id IS NULL`, [defaultSchoolId]);
@@ -129,7 +197,12 @@ function getAuthUser(req) {
     if (!token) return null;
 
     if (activeTokens.has(token)) {
-        return activeTokens.get(token);
+        const u = activeTokens.get(token);
+        if (u && u.expiresAt && u.expiresAt < Date.now()) {
+            activeTokens.delete(token);
+            return null;
+        }
+        return u;
     }
 
     return null;
@@ -158,6 +231,17 @@ function requireSuperAdmin(req, res, next) {
     next();
 }
 
+function requireStudentAuth(req, res, next) {
+    const token = req.headers['x-student-token'] || (req.headers['authorization'] || '').replace(/^Bearer\s+/, '');
+    const sess = token && studentTokens.get(token);
+    if (!sess || (sess.expiresAt && sess.expiresAt < Date.now())) {
+        if (sess) studentTokens.delete(token);
+        return res.status(401).json({ error: "Akses ditolak! Login santri diperlukan." });
+    }
+    req.student = sess;
+    next();
+}
+
 function requireSchoolAdmin(req, res, next) {
     const user = getAuthUser(req);
     if (!user) {
@@ -176,9 +260,9 @@ function requireSchoolAdmin(req, res, next) {
 // ==========================================
 
 // Admin & Ustadz Login Verification
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', rateLimitLogin, (req, res) => {
     const { username, password } = req.body;
-    const ADMIN_PASS = process.env.ADMIN_PASSWORD || "ustadz123";
+    const ADMIN_PASS = process.env.ADMIN_PASSWORD || '';
 
     if (!password) {
         return res.status(400).json({ error: "Password wajib diisi!" });
@@ -190,8 +274,11 @@ app.post('/api/admin/login', (req, res) => {
                 LEFT JOIN schools s ON u.school_id = s.id 
                 WHERE u.username = ?`, [username], (err, row) => {
             if (err) return res.status(500).json({ error: err.message });
-            if (row && row.password === password) {
-                const token = `ustadz_token_${row.id}_${Math.random().toString(36).substr(2, 9)}`;
+            if (row && verifyPassword(password, row.password)) {
+                if (!row.password.startsWith('scrypt$')) {
+                    db.run(`UPDATE ustadz SET password = ? WHERE id = ?`, [hashPassword(password), row.id]);
+                }
+                const token = generateToken('ustadz_token_' + row.id);
                 const userObj = {
                     id: row.id,
                     name: row.name,
@@ -199,31 +286,26 @@ app.post('/api/admin/login', (req, res) => {
                     role: row.role || 'USTADZ',
                     school_id: row.school_id,
                     school_name: row.school_name,
-                    school_code: row.school_code
+                    school_code: row.school_code,
+                    expiresAt: Date.now() + SESSION_TTL
                 };
-
                 activeTokens.set(token, userObj);
-
-                return res.json({
-                    message: "Login ustadz berhasil",
-                    token,
-                    user: userObj
-                });
-            } else if (!row && (password === ADMIN_PASS || password === "admin123" || password === "ustadz123")) {
-                const token = "admin_token_" + Math.random().toString(36).substr(2, 9);
-                const superUser = { id: 0, name: "Super Admin", role: "SUPER_ADMIN", school_id: null };
+                return res.json({ message: "Login ustadz berhasil", token, user: userObj });
+            } else if (!row && ADMIN_PASS && verifyPassword(password, ADMIN_PASS)) {
+                const token = generateToken('admin_token_');
+                const superUser = { id: 0, name: "Super Admin", role: "SUPER_ADMIN", school_id: null, expiresAt: Date.now() + SESSION_TTL };
                 activeTokens.set(token, superUser);
-                return res.json({ message: "Login ustadz berhasil", token, user: superUser });
+                return res.json({ message: "Login superadmin berhasil", token, user: superUser });
             } else {
-                return res.status(401).json({ error: "Username atau Password Ustadz salah!" });
+                return res.status(401).json({ error: "Username atau Password salah!" });
             }
         });
     } else {
-        if (password === ADMIN_PASS || password === "admin123" || password === "ustadz123") {
-            const token = "admin_token_" + Math.random().toString(36).substr(2, 9);
-            const superUser = { id: 0, name: "Super Admin", role: "SUPER_ADMIN", school_id: null };
+        if (ADMIN_PASS && verifyPassword(password, ADMIN_PASS)) {
+            const token = generateToken('admin_token_');
+            const superUser = { id: 0, name: "Super Admin", role: "SUPER_ADMIN", school_id: null, expiresAt: Date.now() + SESSION_TTL };
             activeTokens.set(token, superUser);
-            return res.json({ message: "Login ustadz berhasil", token, user: superUser });
+            return res.json({ message: "Login superadmin berhasil", token, user: superUser });
         } else {
             return res.status(401).json({ error: "Password admin/ustadz salah!" });
         }
@@ -231,7 +313,7 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 // Student Login API
-app.post('/api/login', (req, res) => {
+app.post('/api/login', rateLimitLogin, (req, res) => {
     const { username, password, school_code } = req.body;
     if (!username || !password) {
         return res.status(400).json({ error: "Username dan password wajib diisi!" });
@@ -249,10 +331,16 @@ app.post('/api/login', (req, res) => {
     db.get(loginQuery, loginParams, (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!row) return res.status(401).json({ error: school_code ? "Username tidak terdaftar di sekolah ini!" : "Username tidak terdaftar!" });
-        if (row.password !== password) return res.status(401).json({ error: "Password salah!" });
+        if (!verifyPassword(password, row.password)) return res.status(401).json({ error: "Password salah!" });
+        if (!row.password.startsWith('scrypt$')) {
+            db.run(`UPDATE students SET password = ? WHERE id = ?`, [hashPassword(password), row.id]);
+        }
+        const token = generateToken('student_' + row.id);
+        studentTokens.set(token, { unique_id: row.unique_id, school_id: row.school_id, class_id: row.class_id, expiresAt: Date.now() + SESSION_TTL });
 
         res.json({
             message: "Login berhasil",
+            token,
             student: {
                 id: row.id,
                 name: row.name,
@@ -268,9 +356,9 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-app.post('/api/profile', (req, res) => {
-    const { name, school, unique_id } = req.body;
-    db.run(`INSERT OR REPLACE INTO students (name, school, unique_id) VALUES (?, ?, ?)`, [name, school, unique_id], (err) => {
+app.post('/api/profile', requireStudentAuth, (req, res) => {
+    const { name, school } = req.body;
+    db.run(`UPDATE students SET name = ?, school = ? WHERE unique_id = ?`, [name, school, req.student.unique_id], (err) => {
         if (err) res.status(500).json({ error: err.message });
         else res.json({ message: "Profil tersimpan" });
     });
@@ -432,7 +520,7 @@ app.post('/api/admin/ustadz', requireSchoolAdmin, (req, res) => {
         return res.status(400).json({ error: "Sekolah, Nama, Username, dan Password wajib diisi!" });
     }
     db.run(`INSERT INTO ustadz (school_id, name, username, password, role) VALUES (?, ?, ?, ?, ?)`,
-    [school_id, name, username, password, role || 'USTADZ'], function(err) {
+    [school_id, name, username, hashPassword(password), role || 'USTADZ'], function(err) {
         if (err) {
             if (err.message.includes('UNIQUE')) return res.status(400).json({ error: "Username ustadz sudah terpakai!" });
             return res.status(500).json({ error: err.message });
@@ -445,8 +533,11 @@ app.post('/api/admin/ustadz', requireSchoolAdmin, (req, res) => {
 // LOGS & SETORAN APIs (STRICTLY SCOPED)
 // ==========================================
 
-app.get('/api/logs/:student_id', (req, res) => {
-    db.all(`SELECT * FROM logs WHERE student_id = ? ORDER BY id DESC`, [req.params.student_id], (err, rows) => {
+app.get('/api/logs/:student_id', requireStudentAuth, (req, res) => {
+    if (req.params.student_id !== req.student.unique_id) {
+        return res.status(403).json({ error: "Akses ditolak! Anda hanya bisa melihat setoran sendiri." });
+    }
+    db.all(`SELECT * FROM logs WHERE student_id = ? ORDER BY id DESC`, [req.student.unique_id], (err, rows) => {
         if (err) res.status(500).json({ error: err.message });
         else res.json(rows);
     });
@@ -476,11 +567,8 @@ app.get('/api/school/:code', (req, res) => {
     });
 });
 
-app.delete('/api/logs/:id', (req, res) => {
-    const student_id = req.query.student_id;
-    if (!student_id || student_id === 'admin') {
-        return res.status(400).json({ error: "student_id wajib disertakan (bukan 'admin')" });
-    }
+app.delete('/api/logs/:id', requireStudentAuth, (req, res) => {
+    const student_id = req.student.unique_id;
     db.run(`DELETE FROM logs WHERE id = ? AND student_id = ?`, [req.params.id, student_id], function(err) {
         if (err) return res.status(500).json({ error: err.message });
         if (this.changes === 0) return res.status(403).json({ error: "Tidak memiliki izin menghapus setoran ini" });
@@ -498,26 +586,36 @@ app.delete('/api/admin/logs/:id', requireAdminAuth, (req, res) => {
 });
 
 // Submit New Log Endpoint
-app.post('/api/logs', (req, res) => {
-    const { student_id, surah, ayat_start, ayat_end, jumlah_ayat, tgl, audio_base64, juz, school_id, class_id } = req.body;
+app.post('/api/logs', requireStudentAuth, (req, res) => {
+    const student_id = req.student.unique_id;
+    const { surah, ayat_start, ayat_end, jumlah_ayat, tgl, audio_base64, juz } = req.body;
     
     let audio_path = null;
     
     if (audio_base64) {
         try {
+            // MIME whitelist
+            const mimeMatch = audio_base64.match(/^data:(audio\/[\w+-]+);base64,/);
+            const allowedMime = ['audio/webm', 'audio/ogg', 'audio/mp3', 'audio/mpeg', 'audio/opus', 'audio/wav', 'audio/mp4', 'audio/x-m4a'];
+            if (mimeMatch && !allowedMime.includes(mimeMatch[1])) {
+                return res.status(400).json({ error: "Format audio tidak didukung." });
+            }
+            // Size limit (5MB)
+            const base64Data = audio_base64.replace(/^data:audio\/\w+;base64,/, "");
+            const buffer = Buffer.from(base64Data, 'base64');
+            if (buffer.length > 5 * 1024 * 1024) {
+                return res.status(400).json({ error: "Ukuran audio terlalu besar (maks 5MB)." });
+            }
             const uploadsDir = path.join(__dirname, 'public', 'uploads');
             if (!fs.existsSync(uploadsDir)) {
                 fs.mkdirSync(uploadsDir, { recursive: true });
             }
-            
-            const base64Data = audio_base64.replace(/^data:audio\/\w+;base64,/, "");
             const fileExt = audio_base64.substring(audio_base64.indexOf('/') + 1, audio_base64.indexOf(';'));
-            const ext = fileExt === 'octet-stream' ? 'webm' : (fileExt || 'webm');
-            
-            const fileName = `audio_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.${ext}`;
+            const extMap = { 'webm': 'webm', 'ogg': 'ogg', 'mp3': 'mp3', 'mpeg': 'mp3', 'opus': 'webm', 'wav': 'wav', 'mp4': 'm4a', 'x-m4a': 'm4a', 'octet-stream': 'webm' };
+            const ext = extMap[fileExt] || 'webm';
+            const fileName = `audio_${Date.now()}_${crypto.randomBytes(6).toString('hex')}.${ext}`;
             const filePath = path.join(uploadsDir, fileName);
-            
-            fs.writeFileSync(filePath, base64Data, 'base64');
+            fs.writeFileSync(filePath, buffer);
             audio_path = `/uploads/${fileName}`;
         } catch (e) {
             console.error("Error saving audio file", e);
@@ -595,12 +693,12 @@ app.post('/api/admin/students', requireSchoolAdmin, (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         if (row) return res.status(400).json({ error: "Username sudah digunakan!" });
         
-        const unique_id = 'S-' + Math.random().toString(36).substr(2,7).toUpperCase();
+        const unique_id = 'S-' + crypto.randomBytes(5).toString('hex').toUpperCase();
         const finalSchoolId = school_id ? parseInt(school_id, 10) : 1;
         const finalClassId = class_id ? parseInt(class_id, 10) : null;
         
         db.run(`INSERT INTO students (name, school, unique_id, username, password, school_id, class_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [name, school || 'Umum', unique_id, username, password, finalSchoolId, finalClassId], (err2) => {
+        [name, school || 'Umum', unique_id, username, hashPassword(password), finalSchoolId, finalClassId], (err2) => {
             if (err2) return res.status(500).json({ error: err2.message });
             res.json({ message: "Santri berhasil terdaftar", unique_id });
         });
@@ -611,7 +709,7 @@ app.get('/api/admin/students', requireAdminAuth, (req, res) => {
     const user = req.user;
     let { school_id, class_id } = req.query;
 
-    let query = `SELECT s.id, s.name, s.school, s.unique_id, s.username, s.password, s.school_id, s.class_id,
+    let query = `SELECT s.id, s.name, s.school, s.unique_id, s.username, s.school_id, s.class_id,
                  sch.name as school_name, c.name as class_name
                  FROM students s
                  LEFT JOIN schools sch ON s.school_id = sch.id

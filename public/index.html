@@ -474,6 +474,7 @@
                 }
 
                 localStorage.setItem('current_student', JSON.stringify(data.student));
+                if (data.token) localStorage.setItem('student_token', data.token);
                 checkSession();
 
             } catch (err) {
@@ -486,6 +487,7 @@
 
         function handleLogout() {
             localStorage.removeItem('current_student');
+            localStorage.removeItem('student_token');
             currentStudent = null;
             location.reload();
         }
@@ -681,7 +683,7 @@
             try {
                 await fetch(`${API}/logs`, { 
                     method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
+                    headers: { 'Content-Type': 'application/json', 'x-student-token': localStorage.getItem('student_token') || '' }, 
                     body: JSON.stringify(payload) 
                 });
                 
@@ -704,7 +706,7 @@
             if (!confirm("Hapus setoran ini?")) return;
             var sid = currentStudent ? currentStudent.unique_id : "";
             try {
-                const res = await fetch(`${API}/logs/${logId}?student_id=${sid}`, { method: "DELETE" });
+                const res = await fetch(`${API}/logs/${logId}`, { method: "DELETE", headers: { 'x-student-token': localStorage.getItem('student_token') || '' } });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Gagal menghapus log");
                 render();
@@ -766,7 +768,7 @@
             const currentTargetJuz = parseInt(localStorage.getItem('target_juz') || "30");
             
             try {
-                const res = await fetch(`${API}/logs/${currentStudent.unique_id}`);
+                const res = await fetch(`${API}/logs/${currentStudent.unique_id}`, { headers: { 'x-student-token': localStorage.getItem('student_token') || '' } });
                 userLogs = await res.json();
                 
                 // Calculate Streak

@@ -108,17 +108,17 @@
     <div id="admin-gate" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#172554,#1E3A8A,#1E40AF);display:flex;align-items:center;justify-content:center;font-family:Outfit,sans-serif">
         <div style="background:white;padding:36px 32px;border-radius:24px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
             <div style="font-size:44px;margin-bottom:8px">&#x1f6e1;</div>
-            <h2 style="margin:0 0 4px;color:#172554;font-size:22px;font-weight:800">Akses Dashboard Ustadz</h2>
+            <h2 style="margin:0 0 4px;color:#172554;font-size:22px;font-weight:800">Akses Dashboard Admin</h2>
             <p style="color:#63706F;font-size:12px;margin:0 0 20px">Keamanan Skop Data Terisolasi Per Ustadz & Sekolah</p>
             
             <div style="margin-bottom:12px;text-align:left">
                 <label style="font-size:11px;font-weight:700;color:#63706F;text-transform:uppercase;display:block;margin-bottom:4px">Username (Opsional untuk SuperAdmin)</label>
-                <input type="text" id="admin-user-input" placeholder="username_ustadz" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box">
+                <input type="text" id="admin-user-input" placeholder="username_admin" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box">
             </div>
 
             <div style="margin-bottom:16px;text-align:left">
                 <label style="font-size:11px;font-weight:700;color:#63706F;text-transform:uppercase;display:block;margin-bottom:4px">Password Access</label>
-                <input type="password" id="admin-pass-input" placeholder="Password (default: ustadz123)" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkAdminPass()">
+                <input type="password" id="admin-pass-input" placeholder="Password (default: admin123)" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkAdminPass()">
             </div>
 
             <button onclick="checkAdminPass()" style="width:100%;padding:14px;background:#C59B27;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">Masuk Dashboard</button>

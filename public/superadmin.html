@@ -226,8 +226,8 @@
         <div class="flex flex-wrap items-center justify-between gap-3 mb-6 no-print">
             <div class="flex flex-wrap items-center bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm gap-1">
                 <button id="tab-btn-grading" onclick="switchTab('grading')" class="tab-active px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
-                    <i class="fas fa-clipboard-check"></i>
-                    <span>Penilaian & Monitoring</span>
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistik</span>
                 </button>
                 <button id="tab-btn-students" onclick="switchTab('students')" class="bg-transparent text-gray-500 hover:text-violet-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
                     <i class="fas fa-user-graduate"></i>
@@ -274,8 +274,8 @@
             <main class="space-y-4">
                 <div class="glass-card rounded-[28px] p-5 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
-                        <h2 class="text-lg font-extrabold tracking-wide text-violet-900">Daftar Santri & Log Rekaman</h2>
-                        <p class="text-xs text-gray-500">Klik pada nama santri untuk melihat dan menilai rekaman setoran</p>
+                        <h2 class="text-lg font-extrabold tracking-wide text-violet-900">Statistik Murajaah Santri</h2>
+                        <p class="text-xs text-gray-500">Ringkasan jumlah murajaah, surat yang disetor, dan nilai tiap santri</p>
                     </div>
                     
                     <div class="flex items-center gap-3 w-full md:w-auto no-print">
@@ -731,7 +731,7 @@
                 document.getElementById('stat-submissions').innerText = totalSubmissions;
                 document.getElementById('stat-verses').innerText = totalVerses;
                 
-                renderTable(allLogs);
+                renderStatistics(allLogs);
                 fetchStudentsList();
                 
             } catch (err) {
@@ -1064,6 +1064,64 @@
             }
         }
 
+        function renderStatistics(logs) {
+            const container = document.getElementById('submissions-container');
+            if (logs.length === 0) {
+                container.innerHTML = `<div class="glass-card rounded-[28px] p-8 text-center text-gray-400">
+                    <i class="fas fa-chart-simple text-3xl mb-2 text-violet-700/30"></i>
+                    <p class="text-xs">Belum ada data murajaah untuk skop keamanan ini.</p>
+                </div>`;
+                return;
+            }
+
+            const grouped = {};
+            logs.forEach(l => {
+                const sid = l.student_id;
+                if (!grouped[sid]) grouped[sid] = { name: l.name, school: l.school_name || l.legacy_school || 'Umum', class_name: l.class_name || '', logs: [] };
+                grouped[sid].logs.push(l);
+            });
+
+            const students = Object.values(grouped);
+            students.sort((a, b) => b.logs.length - a.logs.length);
+
+            const rows = students.map(st => {
+                const count = st.logs.length;
+                const totalAyat = st.logs.reduce((acc, l) => acc + (l.jumlah_ayat || 0), 0);
+                const surahs = [...new Set(st.logs.map(l => l.surah).filter(Boolean))]
+                    .map(s => `<span class="inline-block bg-gray-100 text-gray-700 text-[10px] font-semibold px-2 py-0.5 rounded-lg mr-1 mb-1">${escapeHtml(s)}</span>`).join('') || '<span class="text-gray-300 text-[10px]">—</span>';
+                const grades = st.logs.map(l => l.grade
+                    ? `<span class="inline-block bg-violet-50 text-violet-800 border border-violet-100 text-[10px] font-extrabold px-2 py-0.5 rounded-lg mr-1 mb-1">${escapeHtml(l.grade)}</span>`
+                    : '<span class="inline-block bg-gray-100 text-gray-400 text-[10px] font-semibold px-2 py-0.5 rounded-lg mr-1 mb-1">—</span>').join('');
+                return `<tr class="border-b border-gray-100 hover:bg-gray-50/60 transition-colors">
+                    <td class="p-4">
+                        <div class="font-bold text-gray-800 text-sm">${escapeHtml(st.name)}</div>
+                        <div class="text-[11px] text-gray-400 mt-0.5">${escapeHtml(st.class_name || '')}${st.class_name ? ' • ' : ''}${escapeHtml(st.school)}</div>
+                    </td>
+                    <td class="p-4 text-center"><span class="inline-flex items-center justify-center min-w-[32px] h-8 px-2 rounded-full bg-violet-50 text-violet-800 font-extrabold text-sm">${count}</span></td>
+                    <td class="p-4 text-center font-bold text-gray-700">${totalAyat}</td>
+                    <td class="p-4">${surahs}</td>
+                    <td class="p-4">${grades}</td>
+                </tr>`;
+            }).join('');
+
+            container.innerHTML = `<div class="glass-card rounded-[28px] overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm min-w-[720px]">
+                        <thead>
+                            <tr class="bg-violet-50/70 text-left">
+                                <th class="p-4 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Santri</th>
+                                <th class="p-4 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">Murajaah</th>
+                                <th class="p-4 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Ayat</th>
+                                <th class="p-4 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Surat yang Disetor</th>
+                                <th class="p-4 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Nilai</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            </div>`;
+        }
+
         function renderTable(logs) {
             const container = document.getElementById('submissions-container');
             if (logs.length === 0) {
@@ -1188,7 +1246,7 @@
         function filterTable() {
             const query = document.getElementById('search-input').value.toLowerCase().trim();
             if (!query) {
-                renderTable(allLogs);
+                renderStatistics(allLogs);
                 return;
             }
 
@@ -1201,7 +1259,7 @@
                 (l.juz && String(l.juz).includes(query))
             );
             
-            renderTable(filtered);
+            renderStatistics(filtered);
         }
 
         function escapeHtml(str) {

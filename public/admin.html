@@ -6,9 +6,9 @@
     <title>Murajaah Harian - Multi-Tenant & Scoped Dashboard Ustadz</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#065f46">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
     <style>
         :root {
             --emerald-dark: #051A18;
@@ -190,54 +190,43 @@
     </script>
 
     <!-- MAIN DASHBOARD -->
-    <div class="max-w-6xl mx-auto px-4 py-6 pb-24">
+    <div class="dashboard" style="max-width:1152px">
 
         <!-- Header Section -->
-        <header class="arch-header mb-6">
+        <header class="arch-header" style="margin-bottom:24px;text-align:left">
             <div class="header-pattern"></div>
-            
-            <div class="flex justify-between items-center mb-3 relative z-10">
-                <span class="bg-white/10 border border-white/10 px-3 py-1 rounded-full text-[#F0D58C] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <i class="fas fa-university text-xs"></i> <span id="header-school-name">Multi-Tenant Murajaah Harian</span> <a href="/superadmin.html" id="superadmin-link" style="display:none;color:#F0D58C;text-decoration:underline;font-weight:bold;margin-left:8px">⚙️ Admin</a>
-                </span>
-                <div class="flex items-center gap-3">
-                    <span id="user-role-badge" class="flex items-center gap-1.5 text-xs text-emerald-300 font-bold">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Monitoring Ustadz
-                    </span>
-                    <button onclick="sessionStorage.removeItem('ustadz_token'); sessionStorage.removeItem('ustadz_user'); location.reload();" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-full font-semibold transition-all no-print">
-                        Keluar
-                    </button>
+            <div class="header-row" style="justify-content:space-between">
+                <span class="school-chip" style="color:#F0D58C"><i class="fas fa-university"></i> <span id="header-school-name">Multi-Tenant Murajaah Harian</span> <a href="/superadmin.html" id="superadmin-link" style="display:none;color:#F0D58C;text-decoration:underline;font-weight:bold;margin-left:8px">⚙️ Admin</a></span>
+                <div class="admin-header-tools">
+                    <span id="user-role-badge" class="role-badge-live"><span style="width:10px;height:10px;border-radius:50%;background:#10b981;animation:pulse 2s infinite"></span> Monitoring Ustadz</span>
+                    <button onclick="sessionStorage.removeItem('ustadz_token'); sessionStorage.removeItem('ustadz_user'); location.reload();" class="logout-chip no-print">Keluar</button>
                 </div>
             </div>
-            <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight text-white mb-1.5 relative z-10">Monitoring Murajaah Santri</h1>
-            <p class="text-xs text-[#F0D58C] arabic-font font-bold relative z-10">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <h1 class="header-name" style="text-align:left">Monitoring Murajaah Santri</h1>
+            <p class="header-basmalah arabic-font" style="text-align:left">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
         </header>
 
         <!-- GLOBAL TENANT & CLASS FILTER BAR -->
-        <div class="glass-card rounded-2xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 border border-emerald-100 no-print">
-            <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold">
-                    <i class="fas fa-shield-halved text-sm text-emerald-700"></i>
+        <div class="filter-bar no-print">
+            <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:36px;height:36px;border-radius:12px;background:#ecfdf5;color:#065f46;display:flex;align-items:center;justify-content:center;font-weight:700">
+                    <i class="fas fa-shield-halved" style="font-size:14px;color:#047857"></i>
                 </div>
                 <div>
-                    <h3 class="text-xs font-bold text-emerald-950 uppercase tracking-wider">Role-Based Access Control (RBAC)</h3>
-                    <p class="text-[11px] text-gray-500" id="scope-status-desc">Data terisolasi sesuai sekolah dan kelas Anda</p>
+                    <h3 style="font-size:12px;font-weight:700;color:#051a18;text-transform:uppercase;letter-spacing:.05em">Role-Based Access Control (RBAC)</h3>
+                    <p style="font-size:11px;color:#64748b" id="scope-status-desc">Data terisolasi sesuai sekolah dan kelas Anda</p>
                 </div>
             </div>
-
-            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                <!-- School Select -->
-                <div class="flex items-center gap-2">
-                    <label class="text-xs font-bold text-gray-500 whitespace-nowrap"><i class="fas fa-school text-emerald-700 mr-1"></i>Sekolah:</label>
-                    <select id="filter-school-select" onchange="onSchoolFilterChange()" class="p-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none focus:border-emerald-700 min-w-[160px]">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+                <div class="filter-item">
+                    <label class="filter-label"><i class="fas fa-school" style="color:#047857;margin-right:4px"></i>Sekolah:</label>
+                    <select id="filter-school-select" onchange="onSchoolFilterChange()" class="filter-select">
                         <option value="">Semua Sekolah</option>
                     </select>
                 </div>
-
-                <!-- Class Select -->
-                <div class="flex items-center gap-2">
-                    <label class="text-xs font-bold text-gray-500 whitespace-nowrap"><i class="fas fa-users-class text-emerald-700 mr-1"></i>Kelas/Halaqah:</label>
-                    <select id="filter-class-select" onchange="fetchData()" class="p-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none focus:border-emerald-700 min-w-[160px]">
+                <div class="filter-item">
+                    <label class="filter-label"><i class="fas fa-users-class" style="color:#047857;margin-right:4px"></i>Kelas/Halaqah:</label>
+                    <select id="filter-class-select" onchange="fetchData()" class="filter-select">
                         <option value="">Semua Kelas</option>
                     </select>
                 </div>
@@ -246,20 +235,20 @@
 
         <!-- SUB-PAGE / TAB NAVIGATION -->
         <div class="flex flex-wrap items-center justify-between gap-3 mb-6 no-print">
-            <div class="flex flex-wrap items-center bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm gap-1">
-                <button id="tab-btn-grading" onclick="switchTab('grading')" class="tab-active px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+            <div class="tab-nav">
+                <button id="tab-btn-grading" onclick="switchTab('grading')" class="tab-btn-active">
                     <i class="fas fa-clipboard-check"></i>
                     <span>Penilaian & Monitoring</span>
                 </button>
-                <button id="tab-btn-students" onclick="switchTab('students')" class="bg-transparent text-gray-500 hover:text-emerald-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                <button id="tab-btn-students" onclick="switchTab('students')" class="tab-btn">
                     <i class="fas fa-user-graduate"></i>
                     <span>Kelola Santri</span>
                 </button>
-                <button id="tab-btn-classes" onclick="switchTab('classes')" class="bg-transparent text-gray-500 hover:text-emerald-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                <button id="tab-btn-classes" onclick="switchTab('classes')" class="tab-btn">
                     <i class="fas fa-chalkboard-teacher"></i>
                     <span>Kelola Kelas / Halaqah</span>
                 </button>
-                <button id="tab-btn-schools" onclick="switchTab('schools')" class="bg-transparent text-gray-500 hover:text-emerald-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                <button id="tab-btn-schools" onclick="switchTab('schools')" class="tab-btn">
                     <i class="fas fa-university"></i>
                     <span>Kelola Sekolah & Ustadz</span>
                 </button>
@@ -278,18 +267,18 @@
         <!-- TAB 1: PENILAIAN & MONITORING -->
         <div id="tab-content-grading" class="space-y-6">
             
-            <section class="grid grid-cols-3 gap-4">
-                <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
-                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Santri Aktif</span>
-                    <h3 class="text-2xl font-black text-emerald-950 mt-0.5" id="stat-students">0</h3>
+            <section class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-card-label">Total Santri Aktif</span>
+                    <h3 class="stat-card-value" id="stat-students">0</h3>
                 </div>
-                <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
-                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Setoran</span>
-                    <h3 class="text-2xl font-black text-emerald-950 mt-0.5" id="stat-submissions">0</h3>
+                <div class="stat-card">
+                    <span class="stat-card-label">Total Setoran</span>
+                    <h3 class="stat-card-value" id="stat-submissions">0</h3>
                 </div>
-                <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
-                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Ayat Disetor</span>
-                    <h3 class="text-2xl font-black text-emerald-950 mt-0.5" id="stat-verses">0</h3>
+                <div class="stat-card">
+                    <span class="stat-card-label">Total Ayat Disetor</span>
+                    <h3 class="stat-card-value" id="stat-verses">0</h3>
                 </div>
             </section>
 
@@ -300,13 +289,13 @@
                         <p class="text-xs text-gray-500">Klik pada nama santri untuk melihat dan menilai rekaman setoran</p>
                     </div>
                     
-                    <div class="flex items-center gap-3 w-full md:w-auto no-print">
-                        <div class="w-full md:w-80 relative">
-                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                            <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Cari nama santri, sekolah, surah, juz..." class="w-full pl-11 pr-4 py-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-600">
+                    <div class="admin-header-tools no-print" style="width:100%;justify-content:flex-end">
+                        <div class="search-wrap">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Cari nama santri, sekolah, surah, juz..." class="search-input" aria-label="Cari santri">
                         </div>
-                        <button onclick="fetchData()" class="w-10 h-10 border border-gray-200 hover:border-emerald-600 rounded-xl flex items-center justify-center text-emerald-800 hover:text-emerald-600 transition-all active:scale-95 bg-[#FEFCF7] shrink-0" title="Refresh Data">
-                            <i id="refresh-icon" class="fas fa-sync-alt text-xs"></i>
+                        <button onclick="fetchData()" class="refresh-btn" title="Refresh Data" aria-label="Refresh data">
+                            <i id="refresh-icon" class="fas fa-sync-alt" style="font-size:12px"></i>
                         </button>
                     </div>
                 </div>
@@ -535,33 +524,33 @@
     </div>
 
     <!-- Modal Penilaian Ustadz -->
-    <div id="modal-grade" class="fixed inset-0 bg-[#051a18]/70 backdrop-blur-sm z-50 flex items-center justify-center hidden no-print">
-        <div class="bg-white w-full max-w-md rounded-3xl p-6 border border-gray-200 shadow-2xl">
-            <h3 class="font-bold text-lg text-emerald-900 mb-1">Beri Nilai & Catatan Ustadz</h3>
-            <p id="grade-modal-subtitle" class="text-xs text-gray-500 mb-4">Setoran Santri</p>
-            
+    <div id="modal-grade" class="modal-backdrop hidden no-print">
+        <div class="modal">
+            <h3 style="font-weight:700;font-size:18px;color:#051a18;margin-bottom:4px">Beri Nilai & Catatan Ustadz</h3>
+            <p id="grade-modal-subtitle" style="font-size:12px;color:#64748b;margin-bottom:16px">Setoran Santri</p>
+
             <input type="hidden" id="grade-log-id">
-            
-            <div class="space-y-4 mb-6">
+
+            <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px">
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Nilai / Predikat Kelancaran</label>
-                    <select id="grade-select" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-emerald-600">
+                    <label class="field-label" for="grade-select">Nilai / Predikat Kelancaran</label>
+                    <select id="grade-select" class="input">
                         <option value="Mumtaz ✨">Mumtaz ✨ (Sangat Baik / Sangat Lancar)</option>
                         <option value="Jayyid Jiddan 🌟">Jayyid Jiddan 🌟 (Baik Sekali)</option>
                         <option value="Jayyid 👍">Jayyid 👍 (Baik)</option>
                         <option value="Perlu Mengulang 🔄">Perlu Mengulang 🔄 (Kurang Lancar)</option>
                     </select>
                 </div>
-                
+
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Catatan Tajwid / Makhraj</label>
-                    <textarea id="grade-note" rows="3" placeholder="Contoh: Tajwid di ayat 5 perlu diperhatikan mad jaiznya..." class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-emerald-600"></textarea>
+                    <label class="field-label" for="grade-note">Catatan Tajwid / Makhraj</label>
+                    <textarea id="grade-note" rows="3" placeholder="Contoh: Tajwid di ayat 5 perlu diperhatikan mad jaiznya..." class="input"></textarea>
                 </div>
             </div>
 
-            <div class="flex gap-3">
-                <button onclick="closeGradeModal()" class="w-1/3 bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl font-bold text-xs text-gray-600">Batal</button>
-                <button onclick="saveGrade()" class="w-2/3 btn-primary-green p-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2">
+            <div class="action-row">
+                <button onclick="closeGradeModal()" class="btn btn-secondary" style="flex:1">Batal</button>
+                <button onclick="saveGrade()" class="btn btn-primary" style="flex:2">
                     <span id="btn-grade-save-text">Simpan Penilaian</span>
                     <i id="btn-grade-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
                 </button>
@@ -590,10 +579,10 @@
                 const content = document.getElementById(`tab-content-${t}`);
                 if (btn && content) {
                     if (t === tabName) {
-                        btn.className = 'tab-active px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                        btn.className = 'tab-btn-active';
                         content.classList.remove('hidden');
                     } else {
-                        btn.className = 'bg-transparent text-gray-500 hover:text-emerald-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                        btn.className = 'tab-btn';
                         content.classList.add('hidden');
                     }
                 }
@@ -1098,9 +1087,9 @@
             const container = document.getElementById('submissions-container');
             if (logs.length === 0) {
                 container.innerHTML = `
-                    <div class="glass-card rounded-[28px] p-8 text-center text-gray-400">
-                        <i class="fas fa-folder-open text-3xl mb-2 text-emerald-700/30"></i>
-                        <p class="text-xs">Belum ada hafalan yang disetor untuk skop keamanan ini.</p>
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open" style="font-size:30px;margin-bottom:8px;color:#047857;opacity:.3"></i>
+                        <p class="muted">Belum ada hafalan yang disetor untuk skop keamanan ini.</p>
                     </div>
                 `;
                 return;
@@ -1135,47 +1124,40 @@
                 const unGradedCount = st.logs.filter(item => !item.grade).length;
                 
                 const pendingBadge = unGradedCount > 0 
-                    ? `<span class="bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><i class="fas fa-exclamation-circle text-amber-600"></i> ${unGradedCount} Perlu Dinilai</span>`
-                    : `<span class="bg-emerald-50 text-emerald-800 border border-emerald-100 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><i class="fas fa-check-circle text-emerald-600"></i> Semua Dinilai</span>`;
+                    ? `<span class="badge-pending"><i class="fas fa-exclamation-circle" style="color:#b45309"></i> ${unGradedCount} Perlu Dinilai</span>`
+                    : `<span class="badge-done"><i class="fas fa-check-circle" style="color:#047857"></i> Semua Dinilai</span>`;
 
                 const logsRows = st.logs.map(l => {
                     const audioPlayer = l.audio_path 
-                        ? `<audio src="${l.audio_path}" controls class="h-8 w-44 rounded-lg bg-gray-100"></audio>`
-                        : `<span class="text-xs text-gray-300 italic">Tidak ada rekaman</span>`;
+                        ? `<audio src="${l.audio_path}" controls class="audio-sm"></audio>`
+                        : `<span style="font-size:12px;color:#cbd5e1;font-style:italic">Tidak ada rekaman</span>`;
                     
                     const itemJuz = l.juz ? parseInt(l.juz) : 30;
                     
                     const gradeBadge = l.grade 
-                        ? `<span class="inline-block bg-emerald-50 border border-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-1 rounded-lg mb-1">${escapeHtml(l.grade)}</span>`
-                        : `<span class="inline-block bg-gray-100 text-gray-400 text-xs font-semibold px-2 py-0.5 rounded-lg mb-1">Belum dinilai</span>`;
+                        ? `<span class="badge badge-success" style="margin-bottom:4px">${escapeHtml(l.grade)}</span>`
+                        : `<span class="badge badge-neutral" style="margin-bottom:4px">Belum dinilai</span>`;
 
-                    const noteText = l.note ? `<p class="text-xs text-gray-600 bg-amber-50/60 p-2 rounded-lg border border-amber-100 mt-1">"${escapeHtml(l.note)}"</p>` : '';
+                    const noteText = l.note ? `<p style="font-size:12px;color:#475569;background:rgba(255,251,235,.6);padding:8px;border-radius:8px;border:1px solid #fde68a;margin-top:4px">"${escapeHtml(l.note)}"</p>` : '';
 
                     return `
-                        <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm hover:border-emerald-300 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="font-extrabold text-sm text-emerald-950">${escapeHtml(l.surah)}</span>
-                                    <span class="bg-emerald-50 text-emerald-800 border border-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-md">Juz ${itemJuz}</span>
-                                    <span class="text-xs text-gray-500 font-medium">Ayat ${l.ayat_start} - ${l.ayat_end} (+${l.jumlah_ayat} Ayat)</span>
+                        <div class="log-row">
+                            <div>
+                                <div class="accordion-title-row">
+                                    <span class="log-surah-title">${escapeHtml(l.surah)}</span>
+                                    <span class="juz-chip">Juz ${itemJuz}</span>
+                                    <span style="font-size:12px;color:#64748b;font-weight:500">Ayat ${l.ayat_start} - ${l.ayat_end} (+${l.jumlah_ayat} Ayat)</span>
                                 </div>
-                                <div class="text-[10px] text-gray-400 font-medium">Tanggal Setor: ${escapeHtml(l.tgl)} ${l.ustadz_name ? '• Dinilai oleh: '+escapeHtml(l.ustadz_name) : ''}</div>
-                                <div class="pt-1">${audioPlayer}</div>
+                                <div class="log-sub">Tanggal Setor: ${escapeHtml(l.tgl)} ${l.ustadz_name ? '• Dinilai oleh: '+escapeHtml(l.ustadz_name) : ''}</div>
+                                <div style="padding-top:4px">${audioPlayer}</div>
                             </div>
-
-                            <div class="w-full md:w-auto flex flex-col md:items-end gap-1.5 border-t md:border-t-0 pt-3 md:pt-0 border-gray-100">
+                            <div style="width:100%;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
                                 ${gradeBadge}
                                 ${noteText}
-                                <div class="flex items-center gap-1.5 mt-1 no-print">
-                                    <button onclick="openGradeModal(${l.id})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm">
-                                        <i class="fas fa-edit text-xs"></i> <span>Beri Nilai</span>
-                                    </button>
-                                    <button onclick="shareToWhatsApp(${l.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm" title="Kirim WA">
-                                        <i class="fab fa-whatsapp"></i> <span>Share WA</span>
-                                    </button>
-                                    <button onclick="deleteLogAdmin(${l.id})" class="bg-red-50 hover:bg-red-100 text-red-600 p-1.5 rounded-xl text-xs font-bold transition-all" title="Hapus">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                <div style="display:flex;align-items:center;gap:6px;margin-top:4px" class="no-print">
+                                    <button onclick="openGradeModal(${l.id})" class="btn-edit"><i class="fas fa-edit" style="font-size:12px"></i> <span>Beri Nilai</span></button>
+                                    <button onclick="shareToWhatsApp(${l.id})" class="btn-share" title="Kirim WA" aria-label="Kirim WA"><i class="fab fa-whatsapp"></i> <span>Share WA</span></button>
+                                    <button onclick="deleteLogAdmin(${l.id})" class="btn-delete-sm" title="Hapus" aria-label="Hapus"><i class="fas fa-trash-alt"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -1185,35 +1167,29 @@
                 const isFirst = idx === 0;
 
                 return `
-                    <div class="glass-card rounded-[24px] overflow-hidden border border-gray-200 shadow-sm transition-all">
-                        <!-- Accordion Header -->
-                        <div onclick="toggleStudentAccordion('${st.student_id}')" class="p-4 sm:p-5 bg-[#FEFCF7] hover:bg-emerald-50/30 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-2xl bg-emerald-800 text-white flex items-center justify-center font-black text-lg shadow-sm shrink-0">
-                                    ${escapeHtml(st.name).charAt(0).toUpperCase()}
-                                </div>
+                    <div class="accordion-card">
+                        <div onclick="toggleStudentAccordion('${st.student_id}')" class="accordion-head">
+                            <div style="display:flex;align-items:center;gap:12px">
+                                <div class="avatar-initial">${escapeHtml(st.name).charAt(0).toUpperCase()}</div>
                                 <div>
-                                    <h3 class="font-extrabold text-base text-gray-900 flex items-center gap-2 flex-wrap">
-                                        <span>${escapeHtml(st.name)}</span>
-                                        <span class="text-xs text-gray-400 font-normal">(${escapeHtml(st.school)}${st.class_name ? ' • '+escapeHtml(st.class_name) : ''})</span>
+                                    <h3 class="accordion-title-row">
+                                        <span class="accordion-name">${escapeHtml(st.name)}</span>
+                                        <span class="accordion-sub">(${escapeHtml(st.school)}${st.class_name ? ' • '+escapeHtml(st.class_name) : ''})</span>
                                     </h3>
-                                    <div class="flex items-center gap-2 text-xs text-gray-500 mt-0.5 font-medium">
-                                        <span class="font-bold text-emerald-800">${st.logs.length} Setoran</span> • 
-                                        <span class="font-semibold text-gray-700">${totalAyat} Total Ayat</span>
+                                    <div class="accordion-meta">
+                                        <span style="font-weight:700;color:#065f46">${st.logs.length} Setoran</span> • 
+                                        <span style="font-weight:600;color:#334155">${totalAyat} Total Ayat</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                            <div style="display:flex;align-items:center;gap:12px">
                                 ${pendingBadge}
-                                <button class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-emerald-800 transition-transform" id="accordion-icon-${st.student_id}" style="transform: ${isFirst ? 'rotate(180deg)' : 'rotate(0deg)'}">
-                                    <i class="fas fa-chevron-down text-xs"></i>
+                                <button class="chevron-btn" id="accordion-icon-${st.student_id}" style="transform: ${isFirst ? 'rotate(180deg)' : 'rotate(0deg)'}" aria-label="Buka/tutup">
+                                    <i class="fas fa-chevron-down" style="font-size:12px"></i>
                                 </button>
                             </div>
                         </div>
-
-                        <!-- Accordion Body -->
-                        <div id="accordion-body-${st.student_id}" class="${isFirst ? '' : 'hidden'} p-4 sm:p-5 bg-gray-50/60 border-t border-gray-100 space-y-3">
+                        <div id="accordion-body-${st.student_id}" class="${isFirst ? '' : 'hidden'} accordion-body">
                             ${logsRows}
                         </div>
                     </div>

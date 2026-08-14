@@ -158,6 +158,19 @@ function requireSuperAdmin(req, res, next) {
     next();
 }
 
+function requireSchoolAdmin(req, res, next) {
+    const user = getAuthUser(req);
+    if (!user) {
+        return res.status(401).json({ error: "Akses ditolak! Token autentikasi tidak valid." });
+    }
+    if (user.role !== 'SUPER_ADMIN' && user.role !== 'SCHOOL_ADMIN') {
+        return res.status(403).json({ error: "Akses ditolak! Fitur administrasi khusus Admin Sekolah atau SuperAdmin." });
+    }
+    req.user = user;
+    req.authUser = user;
+    next();
+}
+
 // ==========================================
 // AUTHENTICATION APIs
 // ==========================================
@@ -349,15 +362,12 @@ app.get('/api/admin/classes', requireAdminAuth, (req, res) => {
 });
 
 // Add New Class (Scoped to User's School)
-app.post('/api/admin/classes', requireAdminAuth, (req, res) => {
+app.post('/api/admin/classes', requireSchoolAdmin, (req, res) => {
     const user = req.user;
     let { school_id, ustadz_id, name, grade_level } = req.body;
 
     if (user.role !== 'SUPER_ADMIN') {
         school_id = user.school_id;
-    }
-    if (user.role === 'USTADZ' && !ustadz_id) {
-        ustadz_id = user.id;
     }
 
     if (!school_id || !name) {
@@ -406,8 +416,17 @@ app.get('/api/admin/ustadz', requireAdminAuth, (req, res) => {
 });
 
 // Add New Ustadz Account (REQUIRES SUPERADMIN)
-app.post('/api/admin/ustadz', requireSuperAdmin, (req, res) => {
-    const { school_id, name, username, password, role } = req.body;
+app.post('/api/admin/ustadz', requireSchoolAdmin, (req, res) => {
+    const user = req.user;
+    let { school_id, name, username, password, role } = req.body;
+
+    // School admin can only create ustadz for their own school (role forced to USTADZ)
+    if (user.role !== 'SUPER_ADMIN') {
+        school_id = user.school_id;
+        if (role && role !== 'USTADZ') {
+            return res.status(403).json({ error: "Admin Sekolah hanya bisa membuat akun Ustadz, bukan Admin Sekolah/SuperAdmin." });
+        }
+    }
 
     if (!school_id || !name || !username || !password) {
         return res.status(400).json({ error: "Sekolah, Nama, Username, dan Password wajib diisi!" });
@@ -561,7 +580,7 @@ app.post('/api/admin/grade-log', requireAdminAuth, (req, res) => {
 });
 
 // Admin Student Accounts APIs (STRICTLY SCOPED)
-app.post('/api/admin/students', requireAdminAuth, (req, res) => {
+app.post('/api/admin/students', requireSchoolAdmin, (req, res) => {
     const user = req.user;
     let { name, school, username, password, school_id, class_id } = req.body;
     if (!name || !username || !password) {

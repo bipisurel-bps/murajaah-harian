@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadda Tahfiz Pro - Multi-Tenant & Scoped Dashboard Ustadz</title>
+    <title>Portal Admin Sekolah - Jadda Tahfiz Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -140,8 +140,8 @@
             .then(function(r){return r.json()})
             .then(function(d){
                 if(d.token){
-                    if(d.user && d.user.role === 'SCHOOL_ADMIN') {
-                        document.getElementById("admin-gate-error").innerText = "Ini portal Ustadz. Anda Admin Sekolah — silakan gunakan portal Admin Sekolah (school-admin.html).";
+                    if(d.user && d.user.role === 'USTADZ') {
+                        document.getElementById("admin-gate-error").innerText = "Ini portal Admin Sekolah. Anda Ustadz — silakan gunakan portal Ustadz (admin.html).";
                         document.getElementById("admin-gate-error").style.display = "block";
                         return;
                     }
@@ -433,7 +433,7 @@
                                 <tr class="border-b border-gray-100 text-gray-400 font-bold uppercase pb-2">
                                     <th class="py-2.5 px-3">Nama Kelas</th>
                                     <th class="py-2.5 px-3">Sekolah</th>
-                                    <th class="py-2.5 px-3">Ustadz Pengampu</th>
+                                    <th class="py-2.5 px-3">Admin Sekolah</th>
                                     <th class="py-2.5 px-3 text-right">Jumlah Santri</th>
                                 </tr>
                             </thead>
@@ -602,10 +602,16 @@
                     document.getElementById('user-role-badge').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> ${currentUser.name || 'Ustadz'} [${roleLabel}]`;
                     document.getElementById('scope-status-desc').innerText = `Terautentikasi sebagai ${currentUser.name} (${roleLabel})`;
 
-                    // Management tabs moved to superadmin.html portal — always hidden here
+                    // School admin sees management tabs; only hide school REGISTRATION section (superadmin-only)
                     ['tab-btn-schools', 'tab-btn-students', 'tab-btn-classes'].forEach(function(id) {
                         const btn = document.getElementById(id);
-                        if (btn) btn.style.display = 'none';
+                        if (btn) btn.style.display = '';
+                    });
+                    document.querySelectorAll('#tab-content-schools h2').forEach(function(h) {
+                        if (h.textContent.trim() === 'Registrasi Sekolah Baru') {
+                            var sec = h.closest('section');
+                            if (sec) sec.style.display = 'none';
+                        }
                     });
                 }
 

@@ -84,19 +84,36 @@
             .glass-card { border: 1px solid #ccc; box-shadow: none; }
         }
     </style>
+<style>
+/* ===== Accessibility ===== */
+:focus-visible { outline: 3px solid #065f46; outline-offset: 2px; border-radius: 4px; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.skip-link { position: absolute; left: -9999px; top: 0; background: #065f46; color: #fff; padding: 12px 16px; z-index: 9999; border-radius: 0 0 8px 0; font-weight: 700; }
+.skip-link:focus { left: 0; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+@media (pointer: coarse) {
+  button, [role="button"], input[type="submit"], select, a.btn { min-height: 44px; }
+}
+[aria-invalid="true"] { border-color: #dc2626 !important; }
+</style>
 </head>
 <body class="pb-24">
+<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
     <!-- LOGIN SCREEN -->
     <div id="login-screen" class="fixed inset-0 login-bg z-[100] flex flex-col justify-center px-4">
         <div class="glass-card max-w-md mx-auto w-full rounded-[32px] p-8 border-emerald-900/30 shadow-2xl relative overflow-hidden bg-white">
             <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20 Z' fill='%23051A18'/%3E%3C/svg%3E&quot;); background-repeat: repeat;"></div>
             
-            <div class="relative z-10 grid grid-cols-4 gap-1.5 p-1.5 bg-gray-100 rounded-2xl mb-6">
-                <span class="block text-center text-[10px] leading-tight font-bold py-2 rounded-xl bg-emerald-800 text-white shadow-sm">Santri</span>
-                <a href="/admin.html" class="block text-center text-[10px] leading-tight font-bold py-2 rounded-xl text-gray-500 hover:bg-white hover:text-emerald-800 transition-all">Ustadz / Ustadzah</a>
-                <a href="/school-admin.html" class="block text-center text-[10px] leading-tight font-bold py-2 rounded-xl text-gray-500 hover:bg-white hover:text-emerald-800 transition-all">Admin Sekolah</a>
-                <a href="/superadmin.html" class="block text-center text-[10px] leading-tight font-bold py-2 rounded-xl text-gray-500 hover:bg-white hover:text-emerald-800 transition-all">Super Admin</a>
+            <div class="relative z-10 text-center mb-6">
+                <button id="pengelola-toggle" onclick="togglePengelola()" aria-expanded="false" aria-controls="pengelola-menu" class="text-[11px] text-gray-400 hover:text-emerald-700 font-semibold transition-all">Masuk sebagai pengelola ▾</button>
+                <div id="pengelola-menu" class="hidden mt-2 flex justify-center gap-2 flex-wrap">
+                    <a href="/admin.html" class="text-[11px] font-bold px-3 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-emerald-50 hover:text-emerald-800 transition-all">Ustadz / Ustadzah</a>
+                    <a href="/school-admin.html" class="text-[11px] font-bold px-3 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-800 transition-all">Admin Sekolah</a>
+                    <a href="/superadmin.html" class="text-[11px] font-bold px-3 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-violet-50 hover:text-violet-800 transition-all">Super Admin</a>
+                </div>
             </div>
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-[#FEFCF7] border border-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-800 text-2xl shadow-sm">
@@ -116,7 +133,7 @@
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Pilih Sekolah</label>
                     <div class="relative">
                         <i class="fas fa-school absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <select id="login-school-select" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
+                        <select id="login-school-select" aria-label="Pilih sekolah" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
                             <option value="">-- Pilih Sekolah --</option>
                         </select>
                     </div>
@@ -125,19 +142,19 @@
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Username</label>
                     <div class="relative">
                         <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input type="text" id="login-username" placeholder="Masukkan username" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
+                        <input type="text" id="login-username" aria-label="Username" placeholder="Masukkan username" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
                     </div>
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Password</label>
                     <div class="relative">
                         <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input type="password" id="login-password" placeholder="Masukkan password" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
+                        <input type="password" id="login-password" aria-label="Password" placeholder="Masukkan password" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
                     </div>
                 </div>
             </div>
 
-            <div id="login-error" class="hidden text-xs text-red-500 bg-red-50 p-3 rounded-xl mb-4 font-semibold text-center flex items-center justify-center gap-1.5 border border-red-100">
+            <div id="login-error" role="alert" aria-live="assertive" class="hidden text-xs text-red-500 bg-red-50 p-3 rounded-xl mb-4 font-semibold text-center flex items-center justify-center gap-1.5 border border-red-100">
                 <i class="fas fa-exclamation-circle"></i>
                 <span id="login-error-text">Kredensial tidak valid</span>
             </div>
@@ -832,6 +849,8 @@
                             } else {
                                 gradeBadge = `<span class="bg-gray-100 text-gray-800 text-[10px] font-bold px-2 py-0.5 rounded-full">${escapeHtml(l.grade)}</span>`;
                             }
+                        } else {
+                            gradeBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fas fa-clock mr-1"></i>Menunggu Penilaian</span>`;
                         }
 
                         const ustadzNote = l.note ? `
@@ -934,6 +953,14 @@
                     document.getElementById('login-school-name').innerText = 'Pilih sekolah Anda untuk masuk';
                 }
             } catch (e) {}
+        }
+
+        function togglePengelola() {
+            const menu = document.getElementById('pengelola-menu');
+            const btn = document.getElementById('pengelola-toggle');
+            if (!menu || !btn) return;
+            const hidden = menu.classList.toggle('hidden');
+            btn.setAttribute('aria-expanded', String(!hidden));
         }
 
         window.onload = function() {

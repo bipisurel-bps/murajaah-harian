@@ -106,6 +106,15 @@
 
             <div id="login-form-wrap"><div class="space-y-4 mb-6">
                 <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Pilih Sekolah</label>
+                    <div class="relative">
+                        <i class="fas fa-school absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <select id="login-school-select" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
+                            <option value="">-- Pilih Sekolah --</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Username</label>
                     <div class="relative">
                         <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
@@ -436,6 +445,11 @@
                 loginError.classList.remove('hidden');
                 return;
             }
+            if (!document.getElementById('login-school-select').value) {
+                loginErrorText.innerText = "Silakan pilih sekolah terlebih dahulu!";
+                loginError.classList.remove('hidden');
+                return;
+            }
 
             loginError.classList.add('hidden');
             spinner.classList.remove('hidden');
@@ -444,7 +458,7 @@
                 const res = await fetch(`${API}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: usernameInput, password: passwordInput, school_code: getSchoolCode() })
+                    body: JSON.stringify({ username: usernameInput, password: passwordInput, school_code: document.getElementById('login-school-select').value })
                 });
 
                 const data = await res.json();
@@ -884,42 +898,33 @@
 
         async function loadSchoolContext() {
             const code = getSchoolCode();
-            const picker = document.getElementById('school-picker');
             const formWrap = document.getElementById('login-form-wrap');
-            if (code) {
-                try {
-                    const res = await fetch(`/api/school/${encodeURIComponent(code)}`);
-                    if (res.ok) {
-                        const school = await res.json();
-                        document.getElementById('login-school-name').innerText = school.name;
-                        if (picker) picker.classList.add('hidden');
-                        if (formWrap) formWrap.classList.remove('hidden');
-                    }
-                } catch (e) {}
-            } else {
-                // Root -> landing: list schools
-                try {
-                    const res = await fetch('/api/schools/public');
-                    const schools = await res.json();
-                    const container = document.getElementById('school-picker-list');
-                    if (container) {
-                        container.innerHTML = '';
-                        if (!schools.length) {
-                            container.innerHTML = '<p class="text-xs text-gray-400 text-center py-3">Belum ada sekolah terdaftar.</p>';
-                        }
-                        schools.forEach(function(s) {
-                            const a = document.createElement('a');
-                            a.href = '/' + (s.code || '').toLowerCase();
-                            a.className = 'flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-[#FEFCF7] hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left';
-                            a.innerHTML = '<span class="text-sm font-bold text-gray-800">' + s.name + '</span><i class="fas fa-chevron-right text-xs text-gray-300"></i>';
-                            container.appendChild(a);
-                        });
-                    }
-                    document.getElementById('login-school-name').innerText = 'Pilih sekolah untuk mulai menyetor murajaah';
-                    if (picker) picker.classList.remove('hidden');
-                    if (formWrap) formWrap.classList.add('hidden');
-                } catch (e) {}
-            }
+            const picker = document.getElementById('school-picker');
+            // Always show the login form (dropdown-based school selection)
+            if (formWrap) formWrap.classList.remove('hidden');
+            if (picker) picker.classList.add('hidden');
+
+            const select = document.getElementById('login-school-select');
+            try {
+                const res = await fetch('/api/schools/public');
+                const schools = await res.json();
+                if (select) {
+                    select.innerHTML = '<option value="">-- Pilih Sekolah --</option>';
+                    schools.forEach(function(s) {
+                        const opt = document.createElement('option');
+                        opt.value = s.code;
+                        opt.textContent = s.name;
+                        if (code && s.code.toUpperCase() === code.toUpperCase()) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                }
+                if (code) {
+                    const school = schools.find(function(s) { return s.code.toUpperCase() === code.toUpperCase(); });
+                    if (school) document.getElementById('login-school-name').innerText = school.name;
+                } else {
+                    document.getElementById('login-school-name').innerText = 'Pilih sekolah Anda untuk masuk';
+                }
+            } catch (e) {}
         }
 
         window.onload = function() {

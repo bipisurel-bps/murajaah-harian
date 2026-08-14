@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tahfiz Pro - Portal Santri</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Murajaah Harian - Portal Santri</title>
+    <link name="theme-color" content="#065f46">
+    <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -147,7 +148,7 @@
             </button>
             </div>
         </div>
-        <p class="text-center text-white/30 text-[10px] mt-6 tracking-wide">Tahfiz Pro PWA Portal © 2026</p>
+        <p class="text-center text-white/30 text-[10px] mt-6 tracking-wide">Murajaah Harian PWA Portal © 2026</p>
     </div>
 
     <!-- MAIN PORTAL DASHBOARD -->
@@ -744,7 +745,7 @@
             const pct = document.getElementById('target-percentage').innerText;
             const streak = document.getElementById('streak-count').innerText;
             
-            const message = `*Laporan Murajaah Santri - Tahfiz Pro*\n\n` +
+            const message = `*Laporan Murajaah Santri - Murajaah Harian*\n\n` +
                 `👤 *Nama*: ${currentStudent.name}\n` +
                 `🏫 *Sekolah*: ${currentStudent.school}\n` +
                 `📖 *Target Juz*: Juz ${currentTargetJuz}\n` +
@@ -940,5 +941,6 @@
             loadSchoolContext();
         };
     </script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}</script>
 </body>
 </html>

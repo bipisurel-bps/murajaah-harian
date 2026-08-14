@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Super Admin - Jadda Tahfiz Pro</title>
+    <title>Portal Super Admin - Murajaah Harian</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#065f46">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -176,7 +178,7 @@
             
             <div class="flex justify-between items-center mb-3 relative z-10">
                 <span class="bg-white/10 border border-white/10 px-3 py-1 rounded-full text-[#F0D58C] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <i class="fas fa-university text-xs"></i> <span id="header-school-name">Multi-Tenant Tahfiz Pro</span>
+                    <i class="fas fa-university text-xs"></i> <span id="header-school-name">Multi-Tenant Murajaah Harian</span>
                 </span>
                 <div class="flex items-center gap-3">
                     <span id="user-role-badge" class="flex items-center gap-1.5 text-xs text-violet-300 font-bold">
@@ -583,7 +585,7 @@
                 const storedUser = sessionStorage.getItem("super_user");
                 if (storedUser) {
                     currentUser = JSON.parse(storedUser);
-                    document.getElementById('header-school-name').innerText = currentUser.school_name || "Multi-Tenant Tahfiz Pro";
+                    document.getElementById('header-school-name').innerText = currentUser.school_name || "Multi-Tenant Murajaah Harian";
                     
                     let roleLabel = currentUser.role || 'USTADZ';
                     if (roleLabel === 'SUPER_ADMIN') roleLabel = 'SuperAdmin (Akses Penuh)';
@@ -1038,7 +1040,7 @@
             const l = allLogs.find(item => Number(item.id) === Number(logId));
             if (!l) return;
 
-            const schoolName = l.school_name || l.legacy_school || 'Jadda Tahfiz';
+            const schoolName = l.school_name || l.legacy_school || 'Murajaah Harian';
             const className = l.class_name ? ` (${l.class_name})` : '';
 
             const message = `*Laporan Setoran Murajaah Santri*\n\n` +
@@ -1278,5 +1280,6 @@
             }
         };
     </script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}</script>
 </body>
 </html>

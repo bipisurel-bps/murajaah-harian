@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System — Murajaah Harian</title>
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .swatch{width:100%;height:56px;border-radius:8px;border:1px solid #e2e8f0}
+  .swatch-label{font-size:12px;color:#64748b;margin-top:6px}
+  .grid-tokens{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+  .demo-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .section{margin-bottom:40px}
+  .section h2{font-size:22px;margin-bottom:4px}
+  .section .sub{color:#64748b;font-size:14px;margin-bottom:16px}
+  body{padding:40px 0}
+  header{border-bottom:1px solid #e2e8f0;padding-bottom:20px;margin-bottom:32px}
+  header h1{font-size:30px}
+</style>
+</head>
+<body>
+<div class="container-main">
+  <header>
+    <h1>🎨 Design System — Murajaah Harian</h1>
+    <p class="sub">Satu sumber kebenaran untuk warna, spasi, tipografi, dan komponen. Tanpa Tailwind.</p>
+  </header>
+
+  <!-- WARNA -->
+  <div class="section">
+    <h2>Warna Brand</h2>
+    <p class="sub">Hijau emerald (identitas) + emas (aksen) + netral + semantik.</p>
+    <div class="grid-tokens">
+      <div><div class="swatch" style="background:#051a18"></div><div class="swatch-label">emerald-900</div></div>
+      <div><div class="swatch" style="background:#0a2d2a"></div><div class="swatch-label">emerald-800</div></div>
+      <div><div class="swatch" style="background:#065f46"></div><div class="swatch-label">emerald-700</div></div>
+      <div><div class="swatch" style="background:#047857"></div><div class="swatch-label">emerald-600</div></div>
+      <div><div class="swatch" style="background:#059669"></div><div class="swatch-label">emerald-500</div></div>
+      <div><div class="swatch" style="background:#c59b27"></div><div class="swatch-label">gold-500</div></div>
+      <div><div class="swatch" style="background:#0f172a"></div><div class="swatch-label">ink-900</div></div>
+      <div><div class="swatch" style="background:#64748b"></div><div class="swatch-label">ink-500</div></div>
+    </div>
+    <div class="grid-tokens" style="margin-top:12px">
+      <div><div class="swatch" style="background:#047857"></div><div class="swatch-label">success</div></div>
+      <div><div class="swatch" style="background:#b45309"></div><div class="swatch-label">warning</div></div>
+      <div><div class="swatch" style="background:#dc2626"></div><div class="swatch-label">danger</div></div>
+      <div><div class="swatch" style="background:#1d4ed8"></div><div class="swatch-label">info</div></div>
+    </div>
+  </div>
+
+  <!-- TIPOGRAFI -->
+  <div class="section">
+    <h2>Tipografi</h2>
+    <p class="sub">Judul: serif (Georgia). Isi: sans-serif (system).</p>
+    <h1 style="font-size:30px">Heading 1 — Judul Halaman</h1>
+    <h2 style="font-size:24px">Heading 2 — Judul Bagian</h2>
+    <h3 style="font-size:20px">Heading 3 — Judul Kartu</h3>
+    <p style="margin-top:8px">Body text — 16px, line-height 1.6. Setoran murajaah harian membantu santri mencatat dan ustadz menilai hafalan dengan rapi.</p>
+    <p style="font-size:14px;color:#64748b">Caption — 14px, untuk keterangan dan metadata.</p>
+  </div>
+
+  <!-- TOMBOL -->
+  <div class="section">
+    <h2>Tombol</h2>
+    <p class="sub">Tinggi minimal 44px (target sentuh).</p>
+    <div class="demo-row">
+      <button class="btn btn-primary">Mulai Setoran</button>
+      <button class="btn btn-gold">Simpan Penilaian</button>
+      <button class="btn btn-secondary">Batal</button>
+      <button class="btn btn-danger">Hapus</button>
+      <button class="btn btn-ghost">Lewati</button>
+      <button class="btn btn-primary" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="section">
+    <h2>Input</h2>
+    <p class="sub">Fokus hijau + aria-invalid merah.</p>
+    <div style="max-width:360px">
+      <label class="label" for="demo-name">Nama Lengkap</label>
+      <input class="input" id="demo-name" type="text" placeholder="Masukkan nama">
+      <div style="height:16px"></div>
+      <label class="label" for="demo-pass">Password</label>
+      <input class="input" id="demo-pass" type="password" placeholder="••••••••">
+      <div style="height:16px"></div>
+      <label class="label" for="demo-bad">Username (error)</label>
+      <input class="input" id="demo-bad" type="text" aria-invalid="true" value="username_salah">
+    </div>
+  </div>
+
+  <!-- KARTU -->
+  <div class="section">
+    <h2>Kartu</h2>
+    <p class="sub">Kartu responsif untuk setoran & data.</p>
+    <div class="demo-row" style="align-items:stretch">
+      <div class="card" style="flex:1;min-width:240px">
+        <div class="card-header"><h3 style="font-size:18px">Setoran — An-Nas</h3></div>
+        <p style="font-size:14px;color:#475569">Ayat 1–6 (6 ayat) • Juz 30</p>
+        <div class="demo-row">
+          <span class="badge badge-warning">⏳ Menunggu Penilaian</span>
+        </div>
+      </div>
+      <div class="card" style="flex:1;min-width:240px">
+        <div class="card-header"><h3 style="font-size:18px">Setoran — Al-Fatihah</h3></div>
+        <p style="font-size:14px;color:#475569">Ayat 1–7 (7 ayat) • Juz 1</p>
+        <div class="demo-row">
+          <span class="badge badge-success">★ Mumtaz</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BADGE -->
+  <div class="section">
+    <h2>Badge (status)</h2>
+    <p class="sub">Tidak hanya warna — selalu ada ikon + teks (aksesibel).</p>
+    <div class="demo-row">
+      <span class="badge badge-success">★ Mumtaz</span>
+      <span class="badge badge-info">✓ Jayyid Jiddan</span>
+      <span class="badge badge-danger">↻ Perlu Mengulang</span>
+      <span class="badge badge-warning">⏳ Menunggu Penilaian</span>
+      <span class="badge badge-neutral">Lainnya</span>
+      <span class="badge badge-gold">Emas</span>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="section">
+    <h2>Modal</h2>
+    <p class="sub">Focus trap + backdrop.</p>
+    <button class="btn btn-secondary" onclick="document.getElementById('demo-modal').classList.remove('sr-only')">Buka Modal</button>
+    <div class="modal-backdrop sr-only" id="demo-modal" onclick="if(event.target===this)this.classList.add('sr-only')">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dm-title">
+        <h3 id="dm-title" style="font-size:20px;margin-bottom:8px">Konfirmasi Hapus</h3>
+        <p style="font-size:14px;color:#475569">Setoran ini akan dihapus permanen. Lanjutkan?</p>
+        <div class="demo-row" style="justify-content:flex-end;margin-top:16px">
+          <button class="btn btn-secondary" onclick="document.getElementById('demo-modal').classList.add('sr-only')">Batal</button>
+          <button class="btn btn-danger" onclick="document.getElementById('demo-modal').classList.add('sr-only')">Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="section">
+    <h2>Toast</h2>
+    <p class="sub">Notifikasi singkat, tidak mengganggu.</p>
+    <div class="demo-row">
+      <button class="btn btn-secondary" onclick="showToast('Setoran berhasil dikirim', 'success')">Toast Sukses</button>
+      <button class="btn btn-secondary" onclick="showToast('Gagal menyimpan audio', 'error')">Toast Error</button>
+    </div>
+  </div>
+
+  <!-- SKELETON -->
+  <div class="section">
+    <h2>Skeleton Loading</h2>
+    <p class="sub">Ditampilkan saat data dimuat.</p>
+    <div class="card">
+      <div class="skeleton" style="height:20px;width:60%"></div>
+      <div class="skeleton" style="height:14px;width:90%;margin-top:12px"></div>
+      <div class="skeleton" style="height:14px;width:70%;margin-top:8px"></div>
+    </div>
+  </div>
+
+  <footer style="margin-top:48px;padding-top:16px;border-top:1px solid #e2e8f0;color:#94a3b8;font-size:13px">
+    Design System — Murajaah Harian. File: <code>public/styles.css</code>
+  </footer>
+</div>
+
+<script>
+function showToast(msg, type) {
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type === 'success' ? 'toast-success' : 'toast-error');
+  t.textContent = msg;
+  t.setAttribute('role', 'status');
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+</script>
+</body>
+</html>

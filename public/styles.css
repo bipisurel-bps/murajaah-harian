@@ -1,0 +1,184 @@
+/* ============================================================
+   Murajaah Harian — Design System (CSS Lokal)
+   Tanpa Tailwind. Satu sumber kebenaran untuk warna, spasi,
+   tipografi, dan komponen.
+   ============================================================ */
+
+/* ---------- 1. DESIGN TOKENS ---------- */
+:root {
+  /* Brand — hijau emerald (identitas utama) + emas (aksen) */
+  --emerald-950: #03110f;
+  --emerald-900: #051a18;
+  --emerald-800: #0a2d2a;
+  --emerald-700: #065f46;
+  --emerald-600: #047857;
+  --emerald-500: #059669;
+  --emerald-400: #10b981;
+  --emerald-100: #d1fae5;
+  --emerald-50:  #ecfdf5;
+
+  --gold-600: #a97e1a;
+  --gold-500: #c59b27;
+  --gold-400: #e3c567;
+  --gold-100: #fbf3dd;
+
+  /* Netral */
+  --ink-900: #0f172a;
+  --ink-700: #334155;
+  --ink-600: #475569;
+  --ink-500: #64748b;
+  --ink-400: #94a3b8;
+  --ink-300: #cbd5e1;
+  --ink-200: #e2e8f0;
+  --ink-100: #f1f5f9;
+  --ink-50:  #f8fafc;
+
+  /* Semantik */
+  --success:       #047857;
+  --success-strong:#065f46;
+  --success-bg:    #ecfdf5;
+  --warning:       #b45309;
+  --warning-bg:    #fffbeb;
+  --danger:        #dc2626;
+  --danger-bg:     #fef2f2;
+  --info:          #1d4ed8;
+  --info-bg:       #eff6ff;
+
+  /* Spasi (skala 4px) */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
+  --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px;
+
+  /* Radius */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-full: 9999px;
+
+  /* Tipografi */
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --fs-xs: 12px; --fs-sm: 14px; --fs-base: 16px; --fs-lg: 18px;
+  --fs-xl: 20px; --fs-2xl: 24px; --fs-3xl: 30px;
+
+  /* Elevasi */
+  --shadow-sm: 0 1px 2px rgba(15,23,42,.06);
+  --shadow-md: 0 4px 6px -1px rgba(15,23,42,.10);
+  --shadow-lg: 0 12px 24px -6px rgba(15,23,42,.15);
+}
+
+/* ---------- 2. RESET & DASAR ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  color: var(--ink-900);
+  background: #faf9f6;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 1.25; color: var(--ink-900); }
+a { color: var(--emerald-700); text-decoration: none; }
+img, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* ---------- 3. LAYOUT ---------- */
+.container-main { width: 94%; max-width: 1150px; margin: 0 auto; }
+.container-narrow { width: 92%; max-width: 480px; margin: 0 auto; }
+
+/* ---------- 4. KOMPONEN ---------- */
+
+/* Tombol */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s2);
+  min-height: 44px; padding: var(--s3) var(--s5);
+  border: 1px solid transparent; border-radius: var(--r-md);
+  font-weight: 700; font-size: var(--fs-sm); line-height: 1;
+  cursor: pointer; transition: background .15s ease, transform .1s ease, box-shadow .15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-primary { background: var(--emerald-700); color: #fff; }
+.btn-primary:hover { background: var(--emerald-600); }
+.btn-gold { background: var(--gold-500); color: #fff; }
+.btn-gold:hover { background: var(--gold-600); }
+.btn-secondary { background: #fff; color: var(--ink-700); border-color: var(--ink-200); }
+.btn-secondary:hover { background: var(--ink-50); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #b91c1c; }
+.btn-ghost { background: transparent; color: var(--ink-600); }
+.btn-ghost:hover { background: var(--ink-100); }
+.btn-block { width: 100%; }
+
+/* Input */
+.input {
+  width: 100%; min-height: 44px; padding: var(--s3) var(--s4);
+  border: 1px solid var(--ink-300); border-radius: var(--r-md);
+  background: #fff; font-size: var(--fs-base);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.input:focus { outline: none; border-color: var(--emerald-600); box-shadow: 0 0 0 3px rgba(5,150,105,.15); }
+.input::placeholder { color: var(--ink-400); }
+.input[aria-invalid="true"] { border-color: var(--danger); }
+.label { display: block; font-weight: 600; font-size: var(--fs-sm); color: var(--ink-700); margin-bottom: var(--s2); }
+
+/* Kartu */
+.card {
+  background: #fff; border: 1px solid var(--ink-200);
+  border-radius: var(--r-xl); padding: var(--s6);
+  box-shadow: var(--shadow-sm);
+}
+.card-header { margin-bottom: var(--s4); }
+
+/* Badge */
+.badge {
+  display: inline-flex; align-items: center; gap: var(--s1);
+  padding: var(--s1) var(--s3); border-radius: var(--r-full);
+  font-size: var(--fs-xs); font-weight: 700; line-height: 1.4; white-space: nowrap;
+}
+.badge-success { background: var(--success-bg); color: var(--success-strong); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); }
+.badge-danger  { background: var(--danger-bg);  color: var(--danger); }
+.badge-info    { background: var(--info-bg);    color: var(--info); }
+.badge-neutral { background: var(--ink-100);    color: var(--ink-600); }
+.badge-gold    { background: var(--gold-100);   color: var(--gold-600); }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(15,23,42,.5);
+  display: flex; align-items: center; justify-content: center; padding: var(--s4);
+}
+.modal {
+  width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto;
+  background: #fff; border-radius: var(--r-xl); padding: var(--s6);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Toast */
+.toast {
+  position: fixed; bottom: var(--s6); left: 50%; transform: translateX(-50%);
+  z-index: 100; background: var(--ink-900); color: #fff;
+  padding: var(--s3) var(--s5); border-radius: var(--r-md);
+  font-size: var(--fs-sm); box-shadow: var(--shadow-lg);
+  animation: toast-in .25s ease;
+}
+.toast-success { background: var(--success-strong); }
+.toast-error { background: var(--danger); }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, var(--ink-100) 25%, var(--ink-200) 50%, var(--ink-100) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite; border-radius: var(--r-md);
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ---------- 5. AKSESIBILITAS ---------- */
+:focus-visible { outline: 3px solid var(--emerald-700); outline-offset: 2px; border-radius: 4px; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}
+@media (pointer: coarse) {
+  button, [role="button"], a.btn { min-height: 44px; }
+}

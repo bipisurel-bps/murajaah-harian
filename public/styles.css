@@ -182,3 +182,54 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (pointer: coarse) {
   button, [role="button"], a.btn { min-height: 44px; }
 }
+
+
+/* ===== Layar Login ===== */
+.hidden { display: none !important; }
+.animate-spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.login-screen {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 16px;
+  background: radial-gradient(circle at 50% 0%, #0a2d2a, #051a18 85%);
+}
+.login-card {
+  position: relative; overflow: hidden;
+  max-width: 448px; width: 100%; margin: 0 auto;
+  background: #fff; border-radius: 32px; padding: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.45);
+}
+.login-pattern {
+  position: absolute; inset: 0; opacity: .05; pointer-events: none;
+  background: radial-gradient(#051a18 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.pengelola-area { position: relative; z-index: 10; text-align: center; margin-bottom: 24px; }
+.pengelola-toggle { background: none; border: 0; color: #94a3b8; font-size: 11px; font-weight: 600; cursor: pointer; }
+.pengelola-toggle:hover { color: #047857; }
+.pengelola-menu { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.pengelola-link { font-size: 11px; font-weight: 700; padding: 8px 12px; border-radius: 12px; background: #f1f5f9; color: #475569; }
+.pengelola-link:hover { background: #ecfdf5; color: #065f46; }
+.login-head { position: relative; z-index: 10; text-align: center; margin-bottom: 24px; }
+.login-logo {
+  width: 64px; height: 64px; margin: 0 auto 12px;
+  background: #fefcf7; border: 1px solid #d1fae5; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #065f46; font-size: 24px; box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.login-title { font-size: 20px; font-weight: 800; color: #051a18; }
+.login-subtitle { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 500; }
+.field-stack { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+.field { position: relative; z-index: 10; }
+.field-label { display: block; font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; padding-left: 4px; }
+.input-wrap { position: relative; }
+.input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px; }
+.input-with-icon { padding-left: 44px; background: #fefcf7; }
+.login-error { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: #dc2626; background: #fef2f2; border: 1px solid #fee2e2; padding: 12px; border-radius: 12px; margin-bottom: 16px; font-weight: 600; text-align: center; }
+.login-submit { position: relative; z-index: 10; }
+.login-footer { text-align: center; color: rgba(255,255,255,.3); font-size: 10px; margin-top: 24px; letter-spacing: .025em; }
+.school-list { display: flex; flex-direction: column; gap: 8px; max-height: 224px; overflow-y: auto; padding-right: 4px; }
+.back-link { display: block; width: 100%; margin-top: 12px; font-size: 12px; color: #047857; font-weight: 600; background: none; border: 0; cursor: pointer; }
+.back-link:hover { text-decoration: underline; }

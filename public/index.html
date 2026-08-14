@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
     <style>
         :root {
             --emerald-dark: #051A18;
@@ -103,69 +104,69 @@
 <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
     <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="fixed inset-0 login-bg z-[100] flex flex-col justify-center px-4">
-        <div class="glass-card max-w-md mx-auto w-full rounded-[32px] p-8 border-emerald-900/30 shadow-2xl relative overflow-hidden bg-white">
-            <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20 Z' fill='%23051A18'/%3E%3C/svg%3E&quot;); background-repeat: repeat;"></div>
-            
-            <div class="relative z-10 text-center mb-6">
-                <button id="pengelola-toggle" onclick="togglePengelola()" aria-expanded="false" aria-controls="pengelola-menu" class="text-[11px] text-gray-400 hover:text-emerald-700 font-semibold transition-all">Masuk sebagai pengelola ▾</button>
-                <div id="pengelola-menu" class="hidden mt-2 flex justify-center gap-2 flex-wrap">
-                    <a href="/admin.html" class="text-[11px] font-bold px-3 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-emerald-50 hover:text-emerald-800 transition-all">Ustadz / Ustadzah</a>
-                    <a href="/school-admin.html" class="text-[11px] font-bold px-3 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-800 transition-all">Admin Sekolah</a>
-                    <a href="/superadmin.html" class="text-[11px] font-bold px-3 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-violet-50 hover:text-violet-800 transition-all">Super Admin</a>
-                </div>
-            </div>
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-[#FEFCF7] border border-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-800 text-2xl shadow-sm">
-                    <i class="fas fa-quran"></i>
-                </div>
-                <h2 class="text-xl font-extrabold text-emerald-950">Portal Santri Tahfiz</h2>
-                <div id="school-picker" class="hidden mt-4">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 text-left pl-1">Pilih Sekolah Anda</p>
-                    <div id="school-picker-list" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
-                    <button onclick="window.location.href='/'" class="mt-3 w-full text-xs text-emerald-700 font-semibold hover:underline">← Kembali ke daftar sekolah</button>
-                </div>
-                <p id="login-school-name" class="text-xs text-gray-500 mt-1 font-medium">Masuk untuk menyetor dan melihat laporan murajaah</p>
-            </div>
+    <div id="login-screen" class="login-screen">
+        <div class="login-card">
+            <div class="login-pattern"></div>
 
-            <div id="login-form-wrap"><div class="space-y-4 mb-6">
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Pilih Sekolah</label>
-                    <div class="relative">
-                        <i class="fas fa-school absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <select id="login-school-select" aria-label="Pilih sekolah" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
-                            <option value="">-- Pilih Sekolah --</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Username</label>
-                    <div class="relative">
-                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input type="text" id="login-username" aria-label="Username" placeholder="Masukkan username" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">Password</label>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input type="password" id="login-password" aria-label="Password" placeholder="Masukkan password" class="w-full pl-11 pr-4 py-3 bg-[#FEFCF7] border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all text-gray-800">
-                    </div>
+            <div class="pengelola-area">
+                <button id="pengelola-toggle" onclick="togglePengelola()" aria-expanded="false" aria-controls="pengelola-menu" class="pengelola-toggle">Masuk sebagai pengelola ▾</button>
+                <div id="pengelola-menu" class="pengelola-menu hidden">
+                    <a href="/admin.html" class="pengelola-link">Ustadz / Ustadzah</a>
+                    <a href="/school-admin.html" class="pengelola-link">Admin Sekolah</a>
+                    <a href="/superadmin.html" class="pengelola-link">Super Admin</a>
                 </div>
             </div>
 
-            <div id="login-error" role="alert" aria-live="assertive" class="hidden text-xs text-red-500 bg-red-50 p-3 rounded-xl mb-4 font-semibold text-center flex items-center justify-center gap-1.5 border border-red-100">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="login-error-text">Kredensial tidak valid</span>
+            <div class="login-head">
+                <div class="login-logo"><i class="fas fa-quran"></i></div>
+                <h2 class="login-title">Portal Santri Murajaah Harian</h2>
+                <div id="school-picker" class="hidden" style="margin-top:16px">
+                    <p class="field-label" style="text-align:left">Pilih Sekolah Anda</p>
+                    <div id="school-picker-list" class="school-list"></div>
+                    <button onclick="window.location.href='/'" class="back-link">← Kembali ke daftar sekolah</button>
+                </div>
+                <p id="login-school-name" class="login-subtitle">Masuk untuk menyetor dan melihat laporan murajaah</p>
             </div>
 
-            <button onclick="handleLogin()" class="w-full glow-btn p-4 rounded-2xl font-bold tracking-wide text-sm flex items-center justify-center gap-2">
-                <span>Masuk Sekarang</span>
-                <i id="login-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
-            </button>
+            <div id="login-form-wrap">
+                <div class="field-stack">
+                    <div class="field">
+                        <label class="field-label" for="login-school-select">Pilih Sekolah</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-school input-icon"></i>
+                            <select id="login-school-select" aria-label="Pilih sekolah" class="input input-with-icon">
+                                <option value="">-- Pilih Sekolah --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="login-username">Username</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="login-username" aria-label="Username" placeholder="Masukkan username" class="input input-with-icon">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="login-password">Password</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="login-password" aria-label="Password" placeholder="Masukkan password" class="input input-with-icon">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="login-error" role="alert" aria-live="assertive" class="login-error hidden">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="login-error-text">Kredensial tidak valid</span>
+                </div>
+
+                <button onclick="handleLogin()" class="btn btn-primary btn-block login-submit">
+                    <span>Masuk Sekarang</span>
+                    <i id="login-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
+                </button>
             </div>
         </div>
-        <p class="text-center text-white/30 text-[10px] mt-6 tracking-wide">Murajaah Harian PWA Portal © 2026</p>
+        <p class="login-footer">Murajaah Harian PWA Portal © 2026</p>
     </div>
 
     <!-- MAIN PORTAL DASHBOARD -->

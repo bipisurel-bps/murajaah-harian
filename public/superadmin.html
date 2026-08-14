@@ -6,14 +6,14 @@
     <title>Portal Super Admin - Murajaah Harian</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#065f46">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
     <style>
         :root {
-            --violet-dark: #2E1065;
-            --violet-medium: #4C1D95;
-            --violet-light: #5B21B6;
+            --emerald-dark: #2E1065;
+            --emerald-medium: #4C1D95;
+            --emerald-light: #5B21B6;
             --gold: #C59B27;
             --gold-light: #F0D58C;
             --paper: #FAF8F5;
@@ -30,7 +30,7 @@
         }
         .arch-header {
             position: relative;
-            background: linear-gradient(135deg, var(--violet-dark) 0%, var(--violet-medium) 70%, var(--violet-light) 100%);
+            background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald-medium) 70%, var(--emerald-light) 100%);
             border-radius: 28px;
             padding: 2rem 1.5rem;
             color: var(--paper);
@@ -53,22 +53,22 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .glass-card:hover {
-            border-color: var(--violet-light);
+            border-color: var(--emerald-light);
             box-shadow: 0 10px 28px rgba(46, 16, 101, 0.08);
         }
         .btn-green-outline {
             border: 1px solid var(--border);
             background: #FEFCF7;
-            color: var(--violet-medium);
+            color: var(--emerald-medium);
             transition: all 0.2s;
         }
         .btn-green-outline:hover {
-            background: var(--violet-medium);
+            background: var(--emerald-medium);
             color: var(--paper);
-            border-color: var(--violet-medium);
+            border-color: var(--emerald-medium);
         }
         .btn-primary-green {
-            background: linear-gradient(135deg, var(--violet-light) 0%, var(--violet-medium) 100%);
+            background: linear-gradient(135deg, var(--emerald-light) 0%, var(--emerald-medium) 100%);
             color: var(--paper);
             box-shadow: 0 4px 15px rgba(46, 16, 101, 0.15);
             transition: all 0.2s;
@@ -92,9 +92,9 @@
             font-family: 'Amiri', serif;
         }
         .tab-active {
-            background-color: var(--violet-medium) !important;
+            background-color: var(--emerald-medium) !important;
             color: #ffffff !important;
-            border-color: var(--violet-medium) !important;
+            border-color: var(--emerald-medium) !important;
             box-shadow: 0 4px 12px rgba(46, 16, 101, 0.2);
         }
         @media print {
@@ -185,10 +185,10 @@
     </script>
 
     <!-- MAIN DASHBOARD -->
-    <div class="max-w-6xl mx-auto px-4 py-6 pb-24">
+    <div class="dashboard" style="max-width:1152px">
 
         <!-- Header Section -->
-        <header class="arch-header mb-6">
+        <header class="arch-header" style="margin-bottom:24px;text-align:left">
             <div class="header-pattern"></div>
             
             <div class="flex justify-between items-center mb-3 relative z-10">
@@ -196,26 +196,25 @@
                     <i class="fas fa-university text-xs"></i> <span id="header-school-name">Multi-Tenant Murajaah Harian</span>
                 </span>
                 <div class="flex items-center gap-3">
-                    <span id="user-role-badge" class="flex items-center gap-1.5 text-xs text-violet-300 font-bold">
-                        <span class="w-2.5 h-2.5 rounded-full bg-violet-400 animate-pulse"></span> Monitoring Ustadz
+                    <span id="user-role-badge" class="role-badge-live"><span style="width:10px;height:10px;border-radius:50%;background:#10b981;animation:pulse 2s infinite"></span> Monitoring Ustadz
                     </span>
-                    <button onclick="sessionStorage.removeItem('super_token'); sessionStorage.removeItem('super_user'); location.reload();" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-full font-semibold transition-all no-print">
+                    <button onclick="sessionStorage.removeItem('super_token'); sessionStorage.removeItem('super_user'); location.reload();" class="logout-chip no-print">
                         Keluar
                     </button>
                 </div>
             </div>
-            <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight text-white mb-1.5 relative z-10">Portal Super Admin</h1>
-            <p class="text-xs text-[#F0D58C] arabic-font font-bold relative z-10">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <h1 class="header-name" style="text-align:left">Portal Super Admin</h1>
+            <p class="header-basmalah arabic-font" style="text-align:left">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
         </header>
 
         <!-- GLOBAL TENANT & CLASS FILTER BAR -->
-        <div class="glass-card rounded-2xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 border border-violet-100 no-print">
+        <div class="glass-card rounded-2xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 border border-emerald-100 no-print">
             <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-violet-50 text-violet-800 flex items-center justify-center font-bold">
-                    <i class="fas fa-shield-halved text-sm text-violet-700"></i>
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold">
+                    <i class="fas fa-shield-halved text-sm text-emerald-700"></i>
                 </div>
                 <div>
-                    <h3 class="text-xs font-bold text-violet-950 uppercase tracking-wider">Role-Based Access Control (RBAC)</h3>
+                    <h3 class="text-xs font-bold text-emerald-950 uppercase tracking-wider">Role-Based Access Control (RBAC)</h3>
                     <p class="text-[11px] text-gray-500" id="scope-status-desc">Data terisolasi sesuai sekolah dan kelas Anda</p>
                 </div>
             </div>
@@ -223,16 +222,16 @@
             <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
                 <!-- School Select -->
                 <div class="flex items-center gap-2">
-                    <label class="text-xs font-bold text-gray-500 whitespace-nowrap"><i class="fas fa-school text-violet-700 mr-1"></i>Sekolah:</label>
-                    <select id="filter-school-select" onchange="onSchoolFilterChange()" class="p-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none focus:border-violet-700 min-w-[160px]">
+                    <label class="text-xs font-bold text-gray-500 whitespace-nowrap"><i class="fas fa-school text-emerald-700 mr-1"></i>Sekolah:</label>
+                    <select id="filter-school-select" onchange="onSchoolFilterChange()" class="p-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none focus:border-emerald-700 min-w-[160px]">
                         <option value="">Semua Sekolah</option>
                     </select>
                 </div>
 
                 <!-- Class Select -->
                 <div class="flex items-center gap-2">
-                    <label class="text-xs font-bold text-gray-500 whitespace-nowrap"><i class="fas fa-users-class text-violet-700 mr-1"></i>Kelas/Halaqah:</label>
-                    <select id="filter-class-select" onchange="fetchData()" class="p-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none focus:border-violet-700 min-w-[160px]">
+                    <label class="text-xs font-bold text-gray-500 whitespace-nowrap"><i class="fas fa-users-class text-emerald-700 mr-1"></i>Kelas/Halaqah:</label>
+                    <select id="filter-class-select" onchange="fetchData()" class="p-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none focus:border-emerald-700 min-w-[160px]">
                         <option value="">Semua Kelas</option>
                     </select>
                 </div>
@@ -241,20 +240,20 @@
 
         <!-- SUB-PAGE / TAB NAVIGATION -->
         <div class="flex flex-wrap items-center justify-between gap-3 mb-6 no-print">
-            <div class="flex flex-wrap items-center bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm gap-1">
-                <button id="tab-btn-grading" onclick="switchTab('grading')" class="tab-active px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+            <div class="tab-nav">
+                <button id="tab-btn-grading" onclick="switchTab('grading')" class="tab-btn-active">
                     <i class="fas fa-chart-bar"></i>
                     <span>Statistik</span>
                 </button>
-                <button id="tab-btn-students" onclick="switchTab('students')" class="bg-transparent text-gray-500 hover:text-violet-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                <button id="tab-btn-students" onclick="switchTab('students')" class="tab-btn">
                     <i class="fas fa-user-graduate"></i>
                     <span>Kelola Santri</span>
                 </button>
-                <button id="tab-btn-classes" onclick="switchTab('classes')" class="bg-transparent text-gray-500 hover:text-violet-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                <button id="tab-btn-classes" onclick="switchTab('classes')" class="tab-btn">
                     <i class="fas fa-chalkboard-teacher"></i>
                     <span>Kelola Kelas / Halaqah</span>
                 </button>
-                <button id="tab-btn-schools" onclick="switchTab('schools')" class="bg-transparent text-gray-500 hover:text-violet-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all">
+                <button id="tab-btn-schools" onclick="switchTab('schools')" class="tab-btn">
                     <i class="fas fa-university"></i>
                     <span>Kelola Sekolah & Ustadz</span>
                 </button>
@@ -262,9 +261,9 @@
 
             <div class="flex items-center gap-2">
                 <button onclick="window.print()" class="text-xs bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
-                    <i class="fas fa-print text-violet-600"></i> Cetak PDF
+                    <i class="fas fa-print text-emerald-600"></i> Cetak PDF
                 </button>
-                <a href="/" class="btn-green-outline px-4 py-2.5 rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-sm">
+                <a href="/" class="btn btn-secondary">
                     <i class="fas fa-home"></i> Home/Login Page
                 </a>
             </div>
@@ -273,34 +272,34 @@
         <!-- TAB 1: PENILAIAN & MONITORING -->
         <div id="tab-content-grading" class="space-y-6">
             
-            <section class="grid grid-cols-3 gap-4">
-                <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
-                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Santri Aktif</span>
-                    <h3 class="text-2xl font-black text-violet-950 mt-0.5" id="stat-students">0</h3>
+            <section class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-card-label">Total Santri Aktif</span>
+                    <h3 class="stat-card-value" id="stat-students">0</h3>
                 </div>
-                <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
-                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Setoran</span>
-                    <h3 class="text-2xl font-black text-violet-950 mt-0.5" id="stat-submissions">0</h3>
+                <div class="stat-card">
+                    <span class="stat-card-label">Total Setoran</span>
+                    <h3 class="stat-card-value" id="stat-submissions">0</h3>
                 </div>
-                <div class="glass-card rounded-2xl p-4 flex flex-col justify-center">
-                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Ayat Disetor</span>
-                    <h3 class="text-2xl font-black text-violet-950 mt-0.5" id="stat-verses">0</h3>
+                <div class="stat-card">
+                    <span class="stat-card-label">Total Ayat Disetor</span>
+                    <h3 class="stat-card-value" id="stat-verses">0</h3>
                 </div>
             </section>
 
             <main class="space-y-4">
                 <div class="glass-card rounded-[28px] p-5 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
-                        <h2 class="text-lg font-extrabold tracking-wide text-violet-900">Statistik Murajaah Santri</h2>
+                        <h2 class="text-lg font-extrabold tracking-wide text-emerald-900">Statistik Murajaah Santri</h2>
                         <p class="text-xs text-gray-500">Ringkasan jumlah murajaah, surat yang disetor, dan nilai tiap santri</p>
                     </div>
                     
-                    <div class="flex items-center gap-3 w-full md:w-auto no-print">
-                        <div class="w-full md:w-80 relative">
-                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                            <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Cari nama santri, sekolah, surah, juz..." class="w-full pl-11 pr-4 py-2.5 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-600">
+                    <div class="admin-header-tools no-print" style="width:100%;justify-content:flex-end">
+                        <div class="search-wrap">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Cari nama santri, sekolah, surah, juz..." class="search-input" aria-label="Cari santri">
                         </div>
-                        <button onclick="fetchData()" class="w-10 h-10 border border-gray-200 hover:border-violet-600 rounded-xl flex items-center justify-center text-violet-800 hover:text-violet-600 transition-all active:scale-95 bg-[#FEFCF7] shrink-0" title="Refresh Data">
+                        <button onclick="fetchData()" class="refresh-btn" title="Refresh Data">
                             <i id="refresh-icon" class="fas fa-sync-alt text-xs"></i>
                         </button>
                     </div>
@@ -308,7 +307,7 @@
 
                 <div id="submissions-container" class="space-y-3.5">
                     <div class="text-center py-12 text-gray-400 glass-card rounded-[28px]">
-                        <i class="fas fa-circle-notch animate-spin text-2xl mb-2 text-violet-600"></i>
+                        <i class="fas fa-circle-notch animate-spin text-2xl mb-2 text-emerald-600"></i>
                         <p class="text-xs">Memuat daftar santri & setoran...</p>
                     </div>
                 </div>
@@ -320,61 +319,61 @@
         <div id="tab-content-students" class="hidden space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
-                <section class="glass-card rounded-3xl p-6 h-fit no-print">
-                    <div class="w-12 h-12 bg-violet-50 text-violet-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-violet-100">
+                <section class="form-card">
+                    <div class="form-icon">
                         <i class="fas fa-user-plus"></i>
                     </div>
-                    <h2 class="text-lg font-bold text-violet-950 mb-1">Daftarkan Santri Baru</h2>
-                    <p class="text-xs text-gray-500 mb-5">Buat akun login santri terikat ke sekolah & kelas.</p>
+                    <h2 style="font-size:18px;font-weight:700;color:#051a18;margin-bottom:4px">Daftarkan Santri Baru</h2>
+                    <p style="font-size:12px;color:#64748b;margin-bottom:20px">Buat akun login santri terikat ke sekolah & kelas.</p>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Sekolah / Pesantren</label>
-                            <select id="reg-school-id" onchange="updateRegClassOptions()" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Sekolah / Pesantren</label>
+                            <select id="reg-school-id" onchange="updateRegClassOptions()" class="input">
                                 <option value="">Pilih Sekolah...</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Kelas / Halaqah</label>
-                            <select id="reg-class-id" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Kelas / Halaqah</label>
+                            <select id="reg-class-id" class="input">
                                 <option value="">Pilih Kelas...</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap Santri</label>
-                            <input type="text" id="reg-name" placeholder="Ahmad Fauzi" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Nama Lengkap Santri</label>
+                            <input type="text" id="reg-name" placeholder="Ahmad Fauzi" class="input">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Username Login</label>
-                            <input type="text" id="reg-username" placeholder="fauzi123" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Username Login</label>
+                            <input type="text" id="reg-username" placeholder="fauzi123" class="input">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Password Access</label>
-                            <input type="text" id="reg-password" placeholder="fauzi789" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Password Access</label>
+                            <input type="text" id="reg-password" placeholder="fauzi789" class="input">
                         </div>
 
-                        <div id="reg-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
-                        <div id="reg-success" class="hidden text-xs text-violet-800 bg-violet-50 border border-violet-100 p-3 rounded-xl text-center font-bold"></div>
+                        <div id="reg-error" class="hidden login-error"></div>
+                        <div id="reg-success" class="hidden" style="color:#047857;background:#ecfdf5;border:1px solid #d1fae5;padding:12px;border-radius:12px;text-align:center;font-weight:700;font-size:12px"></div>
 
-                        <button onclick="registerStudent()" class="w-full btn-primary-green p-3.5 rounded-xl font-bold text-sm tracking-wide">
+                        <button onclick="registerStudent()" class="btn btn-primary btn-block">
                             <i class="fas fa-save mr-1.5"></i> Simpan & Daftarkan Santri
                         </button>
                     </div>
                 </section>
 
-                <section class="glass-card rounded-3xl p-6 lg:col-span-2">
+                <section class="form-card">
                     <div class="flex justify-between items-center mb-4">
                         <div>
-                            <h2 class="text-base font-bold text-violet-950 flex items-center gap-2">
-                                <i class="fas fa-id-card-alt text-violet-700"></i>
+                            <h2 class="text-base font-bold text-emerald-950 flex items-center gap-2">
+                                <i class="fas fa-id-card-alt text-emerald-700"></i>
                                 <span>Daftar Akun Santri</span>
                             </h2>
                             <p class="text-xs text-gray-500">Daftar akun login & unik ID terisolasi per sekolah</p>
                         </div>
                     </div>
                     
-                    <div class="overflow-x-auto custom-scrollbar max-h-96">
-                        <table class="w-full border-collapse text-left text-xs">
+                    <div class="table-responsive">
+                        <table class="table">
                             <thead>
                                 <tr class="border-b border-gray-100 text-gray-400 font-bold uppercase pb-2">
                                     <th class="py-2.5 px-3">Nama Santri</th>
@@ -398,49 +397,49 @@
         <!-- TAB 3: KELOLA KELAS / HALAQAHS -->
         <div id="tab-content-classes" class="hidden space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <section class="glass-card rounded-3xl p-6 h-fit no-print">
-                    <div class="w-12 h-12 bg-violet-50 text-violet-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-violet-100">
+                <section class="form-card">
+                    <div class="form-icon">
                         <i class="fas fa-chalkboard-teacher"></i>
                     </div>
-                    <h2 class="text-lg font-bold text-violet-950 mb-1">Tambah Kelas / Halaqah</h2>
-                    <p class="text-xs text-gray-500 mb-5">Buat kelas baru dan alokasikan Ustadz pengampu.</p>
+                    <h2 style="font-size:18px;font-weight:700;color:#051a18;margin-bottom:4px">Tambah Kelas / Halaqah</h2>
+                    <p style="font-size:12px;color:#64748b;margin-bottom:20px">Buat kelas baru dan alokasikan Ustadz pengampu.</p>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Sekolah / Pesantren</label>
-                            <select id="class-school-id" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Sekolah / Pesantren</label>
+                            <select id="class-school-id" class="input">
                                 <option value="">Pilih Sekolah...</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Kelas / Halaqah</label>
-                            <input type="text" id="class-name" placeholder="Contoh: Kelas 7A / Halaqah Subuh" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Nama Kelas / Halaqah</label>
+                            <input type="text" id="class-name" placeholder="Contoh: Kelas 7A / Halaqah Subuh" class="input">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Ustadz / Musyrif Pengampu</label>
-                            <select id="class-ustadz-id" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Ustadz / Musyrif Pengampu</label>
+                            <select id="class-ustadz-id" class="input">
                                 <option value="">Pilih Ustadz...</option>
                             </select>
                         </div>
 
-                        <div id="class-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
-                        <div id="class-success" class="hidden text-xs text-violet-800 bg-violet-50 border border-violet-100 p-3 rounded-xl text-center font-bold"></div>
+                        <div id="class-error" class="hidden login-error"></div>
+                        <div id="class-success" class="hidden" style="color:#047857;background:#ecfdf5;border:1px solid #d1fae5;padding:12px;border-radius:12px;text-align:center;font-weight:700;font-size:12px"></div>
 
-                        <button onclick="addClass()" class="w-full btn-primary-green p-3.5 rounded-xl font-bold text-sm tracking-wide">
+                        <button onclick="addClass()" class="btn btn-primary btn-block">
                             <i class="fas fa-plus mr-1.5"></i> Simpan Kelas Baru
                         </button>
                     </div>
                 </section>
 
-                <section class="glass-card rounded-3xl p-6 lg:col-span-2">
-                    <h2 class="text-base font-bold text-violet-950 mb-1 flex items-center gap-2">
-                        <i class="fas fa-list text-violet-700"></i>
+                <section class="form-card">
+                    <h2 style="font-size:16px;font-weight:700;color:#051a18;margin-bottom:4px;display:flex;align-items:center;gap:8px">
+                        <i class="fas fa-list text-emerald-700"></i>
                         <span>Daftar Kelas / Halaqah</span>
                     </h2>
-                    <p class="text-xs text-gray-500 mb-4">Daftar kelas dan Ustadz pengampu</p>
+                    <p style="font-size:12px;color:#64748b;margin-bottom:16px">Daftar kelas dan Ustadz pengampu</p>
 
-                    <div class="overflow-x-auto custom-scrollbar max-h-96">
-                        <table class="w-full border-collapse text-left text-xs">
+                    <div class="table-responsive">
+                        <table class="table">
                             <thead>
                                 <tr class="border-b border-gray-100 text-gray-400 font-bold uppercase pb-2">
                                     <th class="py-2.5 px-3">Nama Kelas</th>
@@ -462,63 +461,63 @@
         <div id="tab-content-schools" class="hidden space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 
-                <section class="glass-card rounded-3xl p-6 h-fit no-print">
-                    <div class="w-12 h-12 bg-violet-50 text-violet-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-violet-100">
+                <section class="form-card">
+                    <div class="form-icon">
                         <i class="fas fa-university"></i>
                     </div>
-                    <h2 class="text-lg font-bold text-violet-950 mb-1">Registrasi Sekolah Baru</h2>
-                    <p class="text-xs text-gray-500 mb-5">Hanya SuperAdmin yang berhak menambah tenant sekolah.</p>
+                    <h2 style="font-size:18px;font-weight:700;color:#051a18;margin-bottom:4px">Registrasi Sekolah Baru</h2>
+                    <p style="font-size:12px;color:#64748b;margin-bottom:20px">Hanya SuperAdmin yang berhak menambah tenant sekolah.</p>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Sekolah / Pesantren</label>
-                            <input type="text" id="school-name" placeholder="Contoh: SDIT Al-Hidayah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Nama Sekolah / Pesantren</label>
+                            <input type="text" id="school-name" placeholder="Contoh: SDIT Al-Hidayah" class="input">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Kode Sekolah (Kode Unik Tenant)</label>
-                            <input type="text" id="school-code" placeholder="Contoh: SDIT-01" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Kode Sekolah (Kode Unik Tenant)</label>
+                            <input type="text" id="school-code" placeholder="Contoh: SDIT-01" class="input">
                         </div>
 
-                        <div id="school-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
-                        <div id="school-success" class="hidden text-xs text-violet-800 bg-violet-50 border border-violet-100 p-3 rounded-xl text-center font-bold"></div>
+                        <div id="school-error" class="hidden login-error"></div>
+                        <div id="school-success" class="hidden" style="color:#047857;background:#ecfdf5;border:1px solid #d1fae5;padding:12px;border-radius:12px;text-align:center;font-weight:700;font-size:12px"></div>
 
-                        <button onclick="addSchool()" class="w-full btn-primary-green p-3.5 rounded-xl font-bold text-sm tracking-wide">
+                        <button onclick="addSchool()" class="btn btn-primary btn-block">
                             <i class="fas fa-building-circle-check mr-1.5"></i> Simpan Sekolah Baru
                         </button>
                     </div>
                 </section>
 
-                <section class="glass-card rounded-3xl p-6 h-fit no-print">
-                    <div class="w-12 h-12 bg-amber-50 text-amber-800 rounded-2xl flex items-center justify-center text-xl mb-3 border border-amber-100">
+                <section class="form-card">
+                    <div class="form-icon" style="background:#fffbeb;color:#92400e;border-color:#fde68a">
                         <i class="fas fa-user-shield"></i>
                     </div>
-                    <h2 class="text-lg font-bold text-violet-950 mb-1">Buat Akun Ustadz Baru</h2>
-                    <p class="text-xs text-gray-500 mb-5">Daftarkan akun login khusus Ustadz/Musyrif.</p>
+                    <h2 style="font-size:18px;font-weight:700;color:#051a18;margin-bottom:4px">Buat Akun Ustadz Baru</h2>
+                    <p style="font-size:12px;color:#64748b;margin-bottom:20px">Daftarkan akun login khusus Ustadz/Musyrif.</p>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Sekolah / Pesantren</label>
-                            <select id="ustadz-school-id" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Sekolah / Pesantren</label>
+                            <select id="ustadz-school-id" class="input">
                                 <option value="">Pilih Sekolah...</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap Ustadz</label>
-                            <input type="text" id="ustadz-name" placeholder="Ustadz Abdullah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Nama Lengkap Ustadz</label>
+                            <input type="text" id="ustadz-name" placeholder="Ustadz Abdullah" class="input">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Username Ustadz</label>
-                            <input type="text" id="ustadz-username" placeholder="ustadz_abdullah" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Username Ustadz</label>
+                            <input type="text" id="ustadz-username" placeholder="ustadz_abdullah" class="input">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Password</label>
-                            <input type="text" id="ustadz-password" placeholder="pass123" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-700">
+                            <label class="field-label">Password</label>
+                            <input type="text" id="ustadz-password" placeholder="pass123" class="input">
                         </div>
 
-                        <div id="ustadz-error" class="hidden text-xs text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl text-center font-medium"></div>
-                        <div id="ustadz-success" class="hidden text-xs text-violet-800 bg-violet-50 border border-violet-100 p-3 rounded-xl text-center font-bold"></div>
+                        <div id="ustadz-error" class="hidden login-error"></div>
+                        <div id="ustadz-success" class="hidden" style="color:#047857;background:#ecfdf5;border:1px solid #d1fae5;padding:12px;border-radius:12px;text-align:center;font-weight:700;font-size:12px"></div>
 
-                        <button onclick="addUstadz()" class="w-full bg-amber-600 hover:bg-amber-700 text-white p-3.5 rounded-xl font-bold text-sm tracking-wide shadow-md">
+                        <button onclick="addUstadz()" class="btn btn-gold btn-block">
                             <i class="fas fa-user-plus mr-1.5"></i> Buat Akun Ustadz
                         </button>
                     </div>
@@ -532,15 +531,15 @@
     <!-- Modal Penilaian Ustadz -->
     <div id="modal-grade" class="fixed inset-0 bg-[#2E1065]/70 backdrop-blur-sm z-50 flex items-center justify-center hidden no-print">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 border border-gray-200 shadow-2xl">
-            <h3 class="font-bold text-lg text-violet-900 mb-1">Beri Nilai & Catatan Ustadz</h3>
+            <h3 class="font-bold text-lg text-emerald-900 mb-1">Beri Nilai & Catatan Ustadz</h3>
             <p id="grade-modal-subtitle" class="text-xs text-gray-500 mb-4">Setoran Santri</p>
             
             <input type="hidden" id="grade-log-id">
             
             <div class="space-y-4 mb-6">
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Nilai / Predikat Kelancaran</label>
-                    <select id="grade-select" class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-violet-600">
+                    <label class="field-label">Nilai / Predikat Kelancaran</label>
+                    <select id="grade-select" class="input">
                         <option value="Mumtaz ✨">Mumtaz ✨ (Sangat Baik / Sangat Lancar)</option>
                         <option value="Jayyid Jiddan 🌟">Jayyid Jiddan 🌟 (Baik Sekali)</option>
                         <option value="Jayyid 👍">Jayyid 👍 (Baik)</option>
@@ -549,8 +548,8 @@
                 </div>
                 
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Catatan Tajwid / Makhraj</label>
-                    <textarea id="grade-note" rows="3" placeholder="Contoh: Tajwid di ayat 5 perlu diperhatikan mad jaiznya..." class="w-full p-3 bg-[#FEFCF7] border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-violet-600"></textarea>
+                    <label class="field-label">Catatan Tajwid / Makhraj</label>
+                    <textarea id="grade-note" rows="3" placeholder="Contoh: Tajwid di ayat 5 perlu diperhatikan mad jaiznya..." class="input"></textarea>
                 </div>
             </div>
 
@@ -585,10 +584,10 @@
                 const content = document.getElementById(`tab-content-${t}`);
                 if (btn && content) {
                     if (t === tabName) {
-                        btn.className = 'tab-active px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                        btn.className = 'tab-btn-active';
                         content.classList.remove('hidden');
                     } else {
-                        btn.className = 'bg-transparent text-gray-500 hover:text-violet-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all';
+                        btn.className = 'tab-btn';
                         content.classList.add('hidden');
                     }
                 }
@@ -607,7 +606,7 @@
                     else if (roleLabel === 'SCHOOL_ADMIN') roleLabel = 'Admin Sekolah';
                     else roleLabel = 'Ustadz Pengampu';
 
-                    document.getElementById('user-role-badge').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-violet-400 animate-pulse"></span> ${currentUser.name || 'Ustadz'} [${roleLabel}]`;
+                    document.getElementById('user-role-badge').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> ${currentUser.name || 'Ustadz'} [${roleLabel}]`;
                     document.getElementById('scope-status-desc').innerText = `Terautentikasi sebagai ${currentUser.name} (${roleLabel})`;
 
 
@@ -793,8 +792,8 @@
                     <tr class="hover:bg-gray-50/50">
                         <td class="py-2.5 px-3 font-semibold text-gray-900">${escapeHtml(s.name)}</td>
                         <td class="py-2.5 px-3 text-gray-500">${escapeHtml(s.school_name || s.school)}</td>
-                        <td class="py-2.5 px-3"><span class="bg-violet-50 text-violet-800 px-2 py-0.5 rounded font-bold text-[10px]">${escapeHtml(s.class_name || 'Umum')}</span></td>
-                        <td class="py-2.5 px-3"><code class="bg-gray-100 text-violet-800 px-2 py-0.5 rounded font-mono font-bold">${escapeHtml(s.username)}</code></td>
+                        <td class="py-2.5 px-3"><span class="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded font-bold text-[10px]">${escapeHtml(s.class_name || 'Umum')}</span></td>
+                        <td class="py-2.5 px-3"><code class="bg-gray-100 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold">${escapeHtml(s.username)}</code></td>
                         <td class="py-2.5 px-3 font-mono text-gray-600">${escapeHtml(s.password)}</td>
                     </tr>
                 `).join('');
@@ -975,7 +974,7 @@
                 <tr class="hover:bg-gray-50/50">
                     <td class="py-2.5 px-3 font-bold text-gray-900">${escapeHtml(c.name)}</td>
                     <td class="py-2.5 px-3 text-gray-500">${escapeHtml(c.school_name || 'Umum')}</td>
-                    <td class="py-2.5 px-3 text-violet-800 font-medium">${escapeHtml(c.ustadz_name || 'Belum Ditentukan')}</td>
+                    <td class="py-2.5 px-3 text-emerald-800 font-medium">${escapeHtml(c.ustadz_name || 'Belum Ditentukan')}</td>
                     <td class="py-2.5 px-3 text-right font-bold text-gray-700">${c.student_count || 0} Santri</td>
                 </tr>
             `).join('');
@@ -1085,7 +1084,7 @@
             const container = document.getElementById('submissions-container');
             if (logs.length === 0) {
                 container.innerHTML = `<div class="glass-card rounded-[28px] p-8 text-center text-gray-400">
-                    <i class="fas fa-chart-simple text-3xl mb-2 text-violet-700/30"></i>
+                    <i class="fas fa-chart-simple text-3xl mb-2 text-emerald-700/30"></i>
                     <p class="text-xs">Belum ada data murajaah untuk skop keamanan ini.</p>
                 </div>`;
                 return;
@@ -1101,42 +1100,32 @@
             const students = Object.values(grouped);
             students.sort((a, b) => b.logs.length - a.logs.length);
 
-            const rows = students.map(st => {
+            const cards = students.map(st => {
                 const count = st.logs.length;
                 const totalAyat = st.logs.reduce((acc, l) => acc + (l.jumlah_ayat || 0), 0);
                 const surahs = [...new Set(st.logs.map(l => l.surah).filter(Boolean))]
-                    .map(s => `<span class="inline-block bg-gray-100 text-gray-700 text-[10px] font-semibold px-2 py-0.5 rounded-lg mr-1 mb-1">${escapeHtml(s)}</span>`).join('') || '<span class="text-gray-300 text-[10px]">—</span>';
+                    .map(s => `<span class="surah-chip">${escapeHtml(s)}</span>`).join('') || '<span style="font-size:10px;color:#cbd5e1">—</span>';
                 const grades = st.logs.map(l => l.grade
-                    ? `<span class="inline-block bg-violet-50 text-violet-800 border border-violet-100 text-[10px] font-extrabold px-2 py-0.5 rounded-lg mr-1 mb-1">${escapeHtml(l.grade)}</span>`
-                    : '<span class="inline-block bg-gray-100 text-gray-400 text-[10px] font-semibold px-2 py-0.5 rounded-lg mr-1 mb-1">—</span>').join('');
-                return `<tr class="border-b border-gray-100 hover:bg-gray-50/60 transition-colors">
-                    <td class="p-4">
-                        <div class="font-bold text-gray-800 text-sm">${escapeHtml(st.name)}</div>
-                        <div class="text-[11px] text-gray-400 mt-0.5">${escapeHtml(st.class_name || '')}${st.class_name ? ' • ' : ''}${escapeHtml(st.school)}</div>
-                    </td>
-                    <td class="p-4 text-center"><span class="inline-flex items-center justify-center min-w-[32px] h-8 px-2 rounded-full bg-violet-50 text-violet-800 font-extrabold text-sm">${count}</span></td>
-                    <td class="p-4 text-center font-bold text-gray-700">${totalAyat}</td>
-                    <td class="p-4">${surahs}</td>
-                    <td class="p-4">${grades}</td>
-                </tr>`;
+                    ? `<span class="grade-chip">${escapeHtml(l.grade)}</span>`
+                    : '<span class="grade-chip-empty">—</span>').join('');
+                return `<div class="stat-student-card">
+                    <div class="stat-student-head">
+                        <div>
+                            <div class="stat-student-name">${escapeHtml(st.name)}</div>
+                            <div class="stat-student-sub">${escapeHtml(st.class_name || '')}${st.class_name ? ' • ' : ''}${escapeHtml(st.school)}</div>
+                        </div>
+                        <span class="stat-count-badge">${count}</span>
+                    </div>
+                    <div class="stat-student-meta">
+                        <div class="stat-meta-item"><div class="k">Murajaah</div><div class="v">${count}x</div></div>
+                        <div class="stat-meta-item"><div class="k">Total Ayat</div><div class="v">${totalAyat}</div></div>
+                    </div>
+                    <div class="stat-student-meta"><div class="stat-meta-item" style="flex:1"><div class="k">Surat yang Disetor</div><div class="chip-group" style="margin-top:4px">${surahs}</div></div></div>
+                    <div class="stat-student-meta"><div class="stat-meta-item" style="flex:1"><div class="k">Nilai</div><div class="chip-group" style="margin-top:4px">${grades}</div></div></div>
+                </div>`;
             }).join('');
 
-            container.innerHTML = `<div class="glass-card rounded-[28px] overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm min-w-[720px]">
-                        <thead>
-                            <tr class="bg-violet-50/70 text-left">
-                                <th class="p-4 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Santri</th>
-                                <th class="p-4 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">Murajaah</th>
-                                <th class="p-4 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Ayat</th>
-                                <th class="p-4 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Surat yang Disetor</th>
-                                <th class="p-4 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Nilai</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>
-            </div>`;
+            container.innerHTML = `<div class="card-list">${cards}</div>`;
         }
 
         function renderTable(logs) {
@@ -1144,7 +1133,7 @@
             if (logs.length === 0) {
                 container.innerHTML = `
                     <div class="glass-card rounded-[28px] p-8 text-center text-gray-400">
-                        <i class="fas fa-folder-open text-3xl mb-2 text-violet-700/30"></i>
+                        <i class="fas fa-folder-open text-3xl mb-2 text-emerald-700/30"></i>
                         <p class="text-xs">Belum ada hafalan yang disetor untuk skop keamanan ini.</p>
                     </div>
                 `;
@@ -1175,7 +1164,7 @@
                 
                 const pendingBadge = unGradedCount > 0 
                     ? `<span class="bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><i class="fas fa-exclamation-circle text-amber-600"></i> ${unGradedCount} Perlu Dinilai</span>`
-                    : `<span class="bg-violet-50 text-violet-800 border border-violet-100 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><i class="fas fa-check-circle text-violet-600"></i> Semua Dinilai</span>`;
+                    : `<span class="bg-emerald-50 text-emerald-800 border border-emerald-100 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><i class="fas fa-check-circle text-emerald-600"></i> Semua Dinilai</span>`;
 
                 const logsRows = st.logs.map(l => {
                     const audioPlayer = l.audio_path 
@@ -1185,17 +1174,17 @@
                     const itemJuz = l.juz ? parseInt(l.juz) : 30;
                     
                     const gradeBadge = l.grade 
-                        ? `<span class="inline-block bg-violet-50 border border-violet-100 text-violet-800 text-xs font-extrabold px-2.5 py-1 rounded-lg mb-1">${escapeHtml(l.grade)}</span>`
+                        ? `<span class="inline-block bg-emerald-50 border border-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-1 rounded-lg mb-1">${escapeHtml(l.grade)}</span>`
                         : `<span class="inline-block bg-gray-100 text-gray-400 text-xs font-semibold px-2 py-0.5 rounded-lg mb-1">Belum dinilai</span>`;
 
                     const noteText = l.note ? `<p class="text-xs text-gray-600 bg-amber-50/60 p-2 rounded-lg border border-amber-100 mt-1">"${escapeHtml(l.note)}"</p>` : '';
 
                     return `
-                        <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm hover:border-violet-300 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm hover:border-emerald-300 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="font-extrabold text-sm text-violet-950">${escapeHtml(l.surah)}</span>
-                                    <span class="bg-violet-50 text-violet-800 border border-violet-100 text-[10px] font-bold px-2 py-0.5 rounded-md">Juz ${itemJuz}</span>
+                                    <span class="font-extrabold text-sm text-emerald-950">${escapeHtml(l.surah)}</span>
+                                    <span class="bg-emerald-50 text-emerald-800 border border-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-md">Juz ${itemJuz}</span>
                                     <span class="text-xs text-gray-500 font-medium">Ayat ${l.ayat_start} - ${l.ayat_end} (+${l.jumlah_ayat} Ayat)</span>
                                 </div>
                                 <div class="text-[10px] text-gray-400 font-medium">Tanggal Setor: ${escapeHtml(l.tgl)} ${l.ustadz_name ? '• Dinilai oleh: '+escapeHtml(l.ustadz_name) : ''}</div>
@@ -1206,10 +1195,10 @@
                                 ${gradeBadge}
                                 ${noteText}
                                 <div class="flex items-center gap-1.5 mt-1 no-print">
-                                    <button onclick="openGradeModal(${l.id})" class="bg-violet-50 hover:bg-violet-100 text-violet-800 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm">
+                                    <button onclick="openGradeModal(${l.id})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm">
                                         <i class="fas fa-edit text-xs"></i> <span>Beri Nilai</span>
                                     </button>
-                                    <button onclick="shareToWhatsApp(${l.id})" class="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm" title="Kirim WA">
+                                    <button onclick="shareToWhatsApp(${l.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm" title="Kirim WA">
                                         <i class="fab fa-whatsapp"></i> <span>Share WA</span>
                                     </button>
                                     <button onclick="deleteLogAdmin(${l.id})" class="bg-red-50 hover:bg-red-100 text-red-600 p-1.5 rounded-xl text-xs font-bold transition-all" title="Hapus">
@@ -1226,9 +1215,9 @@
                 return `
                     <div class="glass-card rounded-[24px] overflow-hidden border border-gray-200 shadow-sm transition-all">
                         <!-- Accordion Header -->
-                        <div onclick="toggleStudentAccordion('${st.student_id}')" class="p-4 sm:p-5 bg-[#FEFCF7] hover:bg-violet-50/30 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition-colors">
+                        <div onclick="toggleStudentAccordion('${st.student_id}')" class="p-4 sm:p-5 bg-[#FEFCF7] hover:bg-emerald-50/30 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition-colors">
                             <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-2xl bg-violet-800 text-white flex items-center justify-center font-black text-lg shadow-sm shrink-0">
+                                <div class="w-11 h-11 rounded-2xl bg-emerald-800 text-white flex items-center justify-center font-black text-lg shadow-sm shrink-0">
                                     ${escapeHtml(st.name).charAt(0).toUpperCase()}
                                 </div>
                                 <div>
@@ -1237,7 +1226,7 @@
                                         <span class="text-xs text-gray-400 font-normal">(${escapeHtml(st.school)}${st.class_name ? ' • '+escapeHtml(st.class_name) : ''})</span>
                                     </h3>
                                     <div class="flex items-center gap-2 text-xs text-gray-500 mt-0.5 font-medium">
-                                        <span class="font-bold text-violet-800">${st.logs.length} Setoran</span> • 
+                                        <span class="font-bold text-emerald-800">${st.logs.length} Setoran</span> • 
                                         <span class="font-semibold text-gray-700">${totalAyat} Total Ayat</span>
                                     </div>
                                 </div>
@@ -1245,7 +1234,7 @@
 
                             <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                                 ${pendingBadge}
-                                <button class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-violet-800 transition-transform" id="accordion-icon-${st.student_id}" style="transform: ${isFirst ? 'rotate(180deg)' : 'rotate(0deg)'}">
+                                <button class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-emerald-800 transition-transform" id="accordion-icon-${st.student_id}" style="transform: ${isFirst ? 'rotate(180deg)' : 'rotate(0deg)'}">
                                     <i class="fas fa-chevron-down text-xs"></i>
                                 </button>
                             </div>

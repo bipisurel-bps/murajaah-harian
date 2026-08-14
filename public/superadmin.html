@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadda Tahfiz Pro - Multi-Tenant & Scoped Dashboard Ustadz</title>
+    <title>Portal Administrasi - Jadda Tahfiz Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -140,6 +140,11 @@
             .then(function(r){return r.json()})
             .then(function(d){
                 if(d.token){
+                    if(d.user && d.user.role !== 'SUPER_ADMIN') {
+                        document.getElementById("admin-gate-error").innerText = "Akses khusus SuperAdmin! Silakan gunakan portal Ustadz.";
+                        document.getElementById("admin-gate-error").style.display = "block";
+                        return;
+                    }
                     document.getElementById("admin-gate").style.display="none";
                     sessionStorage.setItem("admin_token", d.token);
                     if(d.user) sessionStorage.setItem("admin_user", JSON.stringify(d.user));
@@ -171,7 +176,7 @@
             
             <div class="flex justify-between items-center mb-3 relative z-10">
                 <span class="bg-white/10 border border-white/10 px-3 py-1 rounded-full text-[#F0D58C] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <i class="fas fa-university text-xs"></i> <span id="header-school-name">Multi-Tenant Tahfiz Pro</span> <a href="/superadmin.html" id="superadmin-link" style="display:none;color:#F0D58C;text-decoration:underline;font-weight:bold;margin-left:8px">⚙️ Admin</a>
+                    <i class="fas fa-university text-xs"></i> <span id="header-school-name">Multi-Tenant Tahfiz Pro</span>
                 </span>
                 <div class="flex items-center gap-3">
                     <span id="user-role-badge" class="flex items-center gap-1.5 text-xs text-emerald-300 font-bold">
@@ -581,10 +586,6 @@
                     document.getElementById('header-school-name').innerText = currentUser.school_name || "Multi-Tenant Tahfiz Pro";
                     
                     let roleLabel = currentUser.role || 'USTADZ';
-                    if (currentUser.role === 'SUPER_ADMIN') {
-                        const saLink = document.getElementById('superadmin-link');
-                        if (saLink) saLink.style.display = 'inline';
-                    }
                     if (roleLabel === 'SUPER_ADMIN') roleLabel = 'SuperAdmin (Akses Penuh)';
                     else if (roleLabel === 'SCHOOL_ADMIN') roleLabel = 'Admin Sekolah';
                     else roleLabel = 'Ustadz Pengampu';
@@ -592,11 +593,7 @@
                     document.getElementById('user-role-badge').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> ${currentUser.name || 'Ustadz'} [${roleLabel}]`;
                     document.getElementById('scope-status-desc').innerText = `Terautentikasi sebagai ${currentUser.name} (${roleLabel})`;
 
-                    // Management tabs moved to superadmin.html portal — always hidden here
-                    ['tab-btn-schools', 'tab-btn-students', 'tab-btn-classes'].forEach(function(id) {
-                        const btn = document.getElementById(id);
-                        if (btn) btn.style.display = 'none';
-                    });
+
                 }
 
                 await fetchSchools();

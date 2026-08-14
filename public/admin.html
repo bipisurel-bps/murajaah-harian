@@ -589,8 +589,11 @@
                     document.getElementById('scope-status-desc').innerText = `Terautentikasi sebagai ${currentUser.name} (${roleLabel})`;
 
                     if (currentUser.role === 'USTADZ') {
-                        const schoolTabBtn = document.getElementById('tab-btn-schools');
-                        if (schoolTabBtn) schoolTabBtn.style.display = 'none';
+                        // Ustadz only sees 'Penilaian & Monitoring'; hide management tabs
+                        ['tab-btn-schools', 'tab-btn-students', 'tab-btn-classes'].forEach(function(id) {
+                            const btn = document.getElementById(id);
+                            if (btn) btn.style.display = 'none';
+                        });
                     }
                 }
 
@@ -1208,7 +1211,11 @@
                 .replace(/'/g, "&#039;");
         }
 
-        window.onload = fetchInitialData;
+        window.onload = function() {
+            if (sessionStorage.getItem("admin_token")) {
+                fetchInitialData();
+            }
+        };
     </script>
 </body>
 </html>

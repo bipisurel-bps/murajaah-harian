@@ -269,15 +269,18 @@ app.post('/api/admin/login', rateLimitLogin, (req, res) => {
     }
 
     if (username) {
-        db.get(`SELECT u.*, s.name as school_name, s.code as school_code 
+        let loginQuery = `SELECT u.*, s.name as school_name, s.code as school_code 
                 FROM ustadz u 
                 LEFT JOIN schools s ON u.school_id = s.id 
-                WHERE u.username = ?`, [username], (err, row) => {
+                WHERE u.username = ?`;
+        let loginParams = [username];
+        if (school_code) {
+            loginQuery += ` AND UPPER(s.code) = UPPER(?)`;
+            loginParams.push(school_code);
+        }
+        db.get(loginQuery, loginParams, (err, row) => {
             if (err) return res.status(500).json({ error: err.message });
             if (row && verifyPassword(password, row.password)) {
-                if (school_code && row.school_code && school_code.toUpperCase() !== row.school_code.toUpperCase()) {
-                    return res.status(401).json({ error: "Anda bukan pengelola di sekolah yang dipilih." });
-                }
                 if (!row.password.startsWith('scrypt$')) {
                     db.run(`UPDATE ustadz SET password = ? WHERE id = ?`, [hashPassword(password), row.id]);
                 }
@@ -299,6 +302,11 @@ app.post('/api/admin/login', rateLimitLogin, (req, res) => {
                 const superUser = { id: 0, name: "Super Admin", role: "SUPER_ADMIN", school_id: null, expiresAt: Date.now() + SESSION_TTL };
                 activeTokens.set(token, superUser);
                 return res.json({ message: "Login superadmin berhasil", token, user: superUser });
+            } else if (school_code) {
+                db.get(`SELECT id FROM ustadz WHERE username = ?`, [username], (err2, exists) => {
+                    if (exists) return res.status(401).json({ error: "Anda bukan pengelola di sekolah yang dipilih." });
+                    return res.status(401).json({ error: "Username atau Password salah!" });
+                });
             } else {
                 return res.status(401).json({ error: "Username atau Password salah!" });
             }

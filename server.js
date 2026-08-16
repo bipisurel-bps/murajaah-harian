@@ -589,6 +589,7 @@ app.delete('/api/admin/logs/:id', requireAdminAuth, (req, res) => {
 app.post('/api/logs', requireStudentAuth, (req, res) => {
     const student_id = req.student.unique_id;
     const { surah, ayat_start, ayat_end, jumlah_ayat, tgl, audio_base64, juz, school_id, class_id } = req.body;
+    console.log('[api/logs] dari', student_id, '| surah', surah, '| audio_base64', (audio_base64||'').length, 'chars | school_id', school_id, '| class_id', class_id);
     
     let audio_path = null;
     

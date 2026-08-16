@@ -703,11 +703,15 @@
             };
             
             try {
-                await fetch(`${API}/logs`, { 
+                const res = await fetch(`${API}/logs`, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json', 'x-student-token': localStorage.getItem('student_token') || '' }, 
                     body: JSON.stringify(payload) 
                 });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw new Error(data.error || ('Server error HTTP ' + res.status));
+                }
                 
                 document.getElementById('surah-select').value = '';
                 document.getElementById('ayat-start').value = '';
@@ -717,7 +721,7 @@
                 render();
             } catch (err) {
                 console.error("Gagal menambahkan log", err);
-                alert("Gagal mengirim setoran.");
+                alert("Gagal mengirim setoran: " + (err.message || ''));
             } finally {
                 document.getElementById('btn-submit-text').innerText = "Kirim Setoran";
                 document.getElementById('btn-submit-spinner').classList.add('hidden');

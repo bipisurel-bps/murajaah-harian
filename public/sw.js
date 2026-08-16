@@ -1,4 +1,4 @@
-const CACHE_NAME = 'murajaah-harian-v4';
+const CACHE_NAME = 'murajaah-harian-v5';
 const APP_SHELL = [
   '/',
   '/index.html',

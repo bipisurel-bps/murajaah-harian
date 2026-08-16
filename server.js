@@ -269,6 +269,9 @@ app.post('/api/admin/login', rateLimitLogin, (req, res) => {
     }
 
     if (username) {
+        if (!school_code) {
+            return res.status(400).json({ error: "Silakan pilih sekolah terlebih dahulu." });
+        }
         let loginQuery = `SELECT u.*, s.name as school_name, s.code as school_code 
                 FROM ustadz u 
                 LEFT JOIN schools s ON u.school_id = s.id 

@@ -172,6 +172,11 @@
             var u=document.getElementById("admin-user-input").value.trim();
             var p=document.getElementById("admin-pass-input").value.trim();
             var sc=document.getElementById("admin-school-input").value.trim();
+            if(!sc){
+                document.getElementById("admin-gate-error").innerText = "Silakan pilih sekolah terlebih dahulu!";
+                document.getElementById("admin-gate-error").style.display = "block";
+                return;
+            }
             document.getElementById("admin-gate-error").style.display="none";
 
             fetch("/api/admin/login",{

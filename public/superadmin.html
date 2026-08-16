@@ -671,6 +671,7 @@
                 const res = await authFetch(`${API}/admin/classes${schoolId ? '?school_id='+schoolId : ''}`);
                 if (!res.ok) throw new Error("Gagal mengambil kelas");
                 allClasses = await res.json();
+                updateRegClassOptions();
 
                 const filterClassSelect = document.getElementById('filter-class-select');
                 if (filterClassSelect) {

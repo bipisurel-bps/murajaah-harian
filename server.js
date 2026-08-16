@@ -588,20 +588,20 @@ app.delete('/api/admin/logs/:id', requireAdminAuth, (req, res) => {
 // Submit New Log Endpoint
 app.post('/api/logs', requireStudentAuth, (req, res) => {
     const student_id = req.student.unique_id;
-    const { surah, ayat_start, ayat_end, jumlah_ayat, tgl, audio_base64, juz } = req.body;
+    const { surah, ayat_start, ayat_end, jumlah_ayat, tgl, audio_base64, juz, school_id, class_id } = req.body;
     
     let audio_path = null;
     
     if (audio_base64) {
         try {
             // MIME whitelist
-            const mimeMatch = audio_base64.match(/^data:(audio\/[\w+-]+);base64,/);
+            const mimeMatch = audio_base64.match(/^data:(audio\/[\w+-]+)(?:;[\w+-]+=[\w+-]+)*;base64,/);
             const allowedMime = ['audio/webm', 'audio/ogg', 'audio/mp3', 'audio/mpeg', 'audio/opus', 'audio/wav', 'audio/mp4', 'audio/x-m4a'];
             if (mimeMatch && !allowedMime.includes(mimeMatch[1])) {
                 return res.status(400).json({ error: "Format audio tidak didukung." });
             }
             // Size limit (5MB)
-            const base64Data = audio_base64.replace(/^data:audio\/\w+;base64,/, "");
+            const base64Data = audio_base64.substring(audio_base64.indexOf(';base64,') + 8);
             const buffer = Buffer.from(base64Data, 'base64');
             if (buffer.length > 5 * 1024 * 1024) {
                 return res.status(400).json({ error: "Ukuran audio terlalu besar (maks 5MB)." });

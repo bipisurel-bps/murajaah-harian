@@ -261,7 +261,7 @@ function requireSchoolAdmin(req, res, next) {
 
 // Admin & Ustadz Login Verification
 app.post('/api/admin/login', rateLimitLogin, (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, school_code } = req.body;
     const ADMIN_PASS = process.env.ADMIN_PASSWORD || '';
 
     if (!password) {
@@ -275,6 +275,9 @@ app.post('/api/admin/login', rateLimitLogin, (req, res) => {
                 WHERE u.username = ?`, [username], (err, row) => {
             if (err) return res.status(500).json({ error: err.message });
             if (row && verifyPassword(password, row.password)) {
+                if (school_code && row.school_code && school_code.toUpperCase() !== row.school_code.toUpperCase()) {
+                    return res.status(401).json({ error: "Anda bukan pengelola di sekolah yang dipilih." });
+                }
                 if (!row.password.startsWith('scrypt$')) {
                     db.run(`UPDATE ustadz SET password = ? WHERE id = ?`, [hashPassword(password), row.id]);
                 }

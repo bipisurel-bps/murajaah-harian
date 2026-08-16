@@ -129,7 +129,13 @@
             <h2 style="margin:0 0 4px;color:#051A18;font-size:22px;font-weight:800">Akses Dashboard Ustadz</h2>
             <p style="color:#63706F;font-size:12px;margin:0 0 20px">Role-Based Access Control (RBAC)</p>
             
-            <div style="margin-bottom:12px;text-align:left">
+                        <div style="margin-bottom:12px;text-align:left">
+                <label style="font-size:11px;font-weight:700;color:#63706F;text-transform:uppercase;display:block;margin-bottom:4px">Pilih Sekolah</label>
+                <select id="admin-school-input" aria-label="Pilih Sekolah" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box;background:white">
+                    <option value="">Pilih Sekolah...</option>
+                </select>
+            </div>
+<div style="margin-bottom:12px;text-align:left">
                 <label style="font-size:11px;font-weight:700;color:#63706F;text-transform:uppercase;display:block;margin-bottom:4px">Username (Opsional untuk SuperAdmin)</label>
                 <input type="text" id="admin-user-input" aria-label="Username" placeholder="username_ustadz" style="width:100%;padding:12px;border:1px solid #E5DDD0;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box">
             </div>
@@ -145,15 +151,33 @@
     </div>
     
     <script>
+        // Isi dropdown sekolah (login pengelola)
+        (function(){
+            fetch("/api/schools/public")
+                .then(function(r){return r.json()})
+                .then(function(schools){
+                    var sel=document.getElementById("admin-school-input");
+                    if(!sel) return;
+                    (schools||[]).forEach(function(s){
+                        var o=document.createElement("option");
+                        o.value=s.code||"";
+                        o.textContent=s.name||"";
+                        sel.appendChild(o);
+                    });
+                })
+                .catch(function(e){console.error("Gagal muat sekolah", e)});
+        })();
+
         function checkAdminPass(){
             var u=document.getElementById("admin-user-input").value.trim();
             var p=document.getElementById("admin-pass-input").value.trim();
+            var sc=document.getElementById("admin-school-input").value.trim();
             document.getElementById("admin-gate-error").style.display="none";
 
             fetch("/api/admin/login",{
                 method:"POST",
                 headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({username:u, password:p})
+                body:JSON.stringify({username:u, password:p, school_code:sc})
             })
             .then(function(r){return r.json()})
             .then(function(d){

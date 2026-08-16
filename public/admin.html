@@ -1123,15 +1123,6 @@
 
         function renderTable(logs) {
             const container = document.getElementById('submissions-container');
-            if (logs.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-folder-open" style="font-size:30px;margin-bottom:8px;color:#047857;opacity:.3"></i>
-                        <p class="muted">Belum ada hafalan yang disetor untuk skop keamanan ini.</p>
-                    </div>
-                `;
-                return;
-            }
 
             const grouped = {};
             (allStudents || []).forEach(s => {
@@ -1158,6 +1149,15 @@
             });
 
             const studentsList = Object.values(grouped);
+            if (studentsList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open" style="font-size:30px;margin-bottom:8px;color:#047857;opacity:.3"></i>
+                        <p class="muted">Belum ada santri terdaftar untuk skop keamanan ini.</p>
+                    </div>
+                `;
+                return;
+            }
             // Priority inbox: students with ungraded setoran first
             studentsList.sort((a, b) => {
                 const aUngraded = a.logs.filter(item => !item.grade).length;

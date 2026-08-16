@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Murajaah Harian - Portal Santri</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link name="theme-color" content="#065f46">
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
@@ -117,7 +118,7 @@
             </div>
 
             <div class="login-head">
-                <div class="login-logo"><i class="fas fa-quran"></i></div>
+                <div class="login-logo"><img src="/logo.png" alt="Murajaah Harian" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
                 <h2 class="login-title">Portal Santri Murajaah Harian</h2>
                 <div id="school-picker" class="hidden" style="margin-top:16px">
                     <p class="field-label" style="text-align:left">Pilih Sekolah Anda</p>
@@ -174,7 +175,10 @@
         <header class="arch-header">
             <div class="header-pattern"></div>
             <div class="header-row">
-                <span id="display-school" class="school-chip">Sekolah</span>
+                <div style="display:flex;align-items:center;gap:10px">
+                    <img class="header-logo" src="/logo.png" alt="Murajaah Harian">
+                    <span id="display-school" class="school-chip">Sekolah</span>
+                </div>
                 <div class="header-tools">
                     <div id="streak-badge" class="streak-chip" title="Daily Murajaah Streak">
                         <i class="fas fa-fire"></i>

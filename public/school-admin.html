@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Admin Sekolah - Murajaah Harian</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#065f46">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
@@ -197,9 +198,12 @@
             <div class="header-pattern"></div>
             
             <div class="flex justify-between items-center mb-3 relative z-10">
-                <span class="bg-white/10 border border-white/10 px-3 py-1 rounded-full text-[#F0D58C] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <div style="display:flex;align-items:center;gap:10px">
+                    <img class="header-logo" src="/logo.png" alt="Murajaah Harian">
+                    <span class="bg-white/10 border border-white/10 px-3 py-1 rounded-full text-[#F0D58C] text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5">
                     <i class="fas fa-university text-xs"></i> <span id="header-school-name">Multi-Tenant Murajaah Harian</span> <a href="/superadmin.html" id="superadmin-link" style="display:none;color:#F0D58C;text-decoration:underline;font-weight:bold;margin-left:8px">⚙️ Admin</a>
                 </span>
+                </div>
                 <div class="flex items-center gap-3">
                     <span id="user-role-badge" class="role-badge-live"><span style="width:10px;height:10px;border-radius:50%;background:#10b981;animation:pulse 2s infinite"></span> Monitoring Ustadz
                     </span>

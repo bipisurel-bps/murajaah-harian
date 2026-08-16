@@ -575,3 +575,6 @@ body { padding-bottom: 0; }
 
 /* Hilangkan floating nav (mobile) */
 .floating-nav { display: none !important; }
+
+.space-y-1 > * + * { margin-top: 4px; }
+.space-y-6 > * + * { margin-top: 24px; }

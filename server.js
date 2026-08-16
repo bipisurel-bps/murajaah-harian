@@ -305,7 +305,7 @@ app.post('/api/admin/login', rateLimitLogin, (req, res) => {
                 const superUser = { id: 0, name: "Super Admin", role: "SUPER_ADMIN", school_id: null, expiresAt: Date.now() + SESSION_TTL };
                 activeTokens.set(token, superUser);
                 return res.json({ message: "Login superadmin berhasil", token, user: superUser });
-            } else if (school_code) {
+            } else if (!row && school_code) {
                 db.get(`SELECT id FROM ustadz WHERE username = ?`, [username], (err2, exists) => {
                     if (exists) return res.status(401).json({ error: "Anda bukan pengelola di sekolah yang dipilih." });
                     return res.status(401).json({ error: "Username atau Password salah!" });

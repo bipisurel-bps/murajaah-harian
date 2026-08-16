@@ -572,3 +572,6 @@ body { padding-bottom: 0; }
 /* ===== Logo header ===== */
 .header-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #fff; border: 2px solid rgba(255,255,255,.35); flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
 @media (max-width: 640px) { .header-logo { width: 36px; height: 36px; } }
+
+/* Hilangkan floating nav (mobile) */
+.floating-nav { display: none !important; }

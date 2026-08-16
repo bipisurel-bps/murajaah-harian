@@ -306,6 +306,10 @@ app.post('/api/admin/login', rateLimitLogin, (req, res) => {
                 activeTokens.set(token, superUser);
                 return res.json({ message: "Login superadmin berhasil", token, user: superUser });
             } else if (!row && school_code) {
+                // PENTING: !row WAJIB di sini. Kalau row KETEMU tapi password salah,
+                // JANGAN masuk cabang ini (pesan jadi "sekolah salah" padahal harus
+                // "password salah"). Tanpa !row, password salah + sekolah benar
+                // memberi pesan yang menyesatkan.
                 db.get(`SELECT id FROM ustadz WHERE username = ?`, [username], (err2, exists) => {
                     if (exists) return res.status(401).json({ error: "Anda bukan pengelola di sekolah yang dipilih." });
                     return res.status(401).json({ error: "Username atau Password salah!" });

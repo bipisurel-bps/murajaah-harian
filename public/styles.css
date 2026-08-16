@@ -325,7 +325,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .stat-total { font-weight: 700; color: #047857; }
 @keyframes ping { 75%, 100% { transform: scale(2.2); opacity: 0; } }
 .animate-ping { animation: ping 1s cubic-bezier(0,0,.2,1) infinite; }
-@media (max-width: 1023px) { .dashboard { padding-bottom: 96px; } }
+@media (max-width: 1023px) { .dashboard { padding-bottom: 24px; } }
 body { padding-bottom: 0; }
 
 

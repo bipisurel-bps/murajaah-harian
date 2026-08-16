@@ -1,4 +1,4 @@
-const CACHE_NAME = 'murajaah-harian-v1';
+const CACHE_NAME = 'murajaah-harian-v2';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -7,6 +7,9 @@ const APP_SHELL = [
   '/superadmin.html',
   '/manifest.json',
   '/offline.html',
+  '/styles.css',
+  '/favicon.png',
+  '/logo.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png'
 ];

@@ -611,7 +611,17 @@
                 document.getElementById('record-state-active').classList.remove('hidden');
             } catch (err) {
                 console.error("Gagal akses mic", err);
-                alert("Gagal mengakses mikrofon! Mohon beri izin akses di browser Anda.");
+                let msg = "";
+                if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+                    msg = "Izin mikrofon ditolak/diblokir.\n\nCara mengatasinya:\n1. Klik ikon gembok (🔒) di address bar\n2. Pilih \"Izin Situs\" / \"Site Settings\"\n3. Ubah Mikrofon menjadi \"Izinkan\" (Allow)\n4. Muat ulang halaman lalu coba lagi.";
+                } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
+                    msg = "Mikrofon tidak ditemukan di perangkat Anda. Pastikan mikrofon terpasang/aktif.";
+                } else if (err.name === "NotReadableError" || err.name === "TrackStartError") {
+                    msg = "Mikrofon sedang dipakai aplikasi lain. Tutup aplikasi lain lalu coba lagi.";
+                } else {
+                    msg = "Gagal mengakses mikrofon! Mohon beri izin akses di browser Anda.";
+                }
+                alert(msg);
             }
         }
 

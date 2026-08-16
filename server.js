@@ -350,7 +350,8 @@ app.post('/api/login', rateLimitLogin, (req, res) => {
                 class_id: row.class_id,
                 class_name: row.class_name || "Kelas Umum",
                 unique_id: row.unique_id,
-                username: row.username
+                username: row.username,
+                target_juz: row.target_juz || 30
             }
         });
     });
@@ -636,6 +637,20 @@ app.post('/api/logs', requireStudentAuth, (req, res) => {
             if (err2) res.status(500).json({ error: err2.message });
             else res.json({ message: "Berhasil", audio_path, juz: targetJuz, school_id: finalSchoolId, class_id: finalClassId });
         });
+    });
+});
+
+// Simpan target hafalan (juz) santri
+app.put('/api/student/target-juz', requireStudentAuth, (req, res) => {
+    const student_id = req.student.unique_id;
+    const { target_juz } = req.body;
+    const juz = parseInt(target_juz);
+    if (!juz || juz < 1 || juz > 30) {
+        return res.status(400).json({ error: "Juz target tidak valid." });
+    }
+    db.run(`UPDATE students SET target_juz = ? WHERE unique_id = ?`, [juz, student_id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Berhasil", target_juz: juz });
     });
 });
 

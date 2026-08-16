@@ -562,6 +562,7 @@
     <script>
         const API = "/api";
         let allLogs = [];
+        let allStudents = [];
         let allSchools = [];
         let allClasses = [];
         let currentUser = null;
@@ -743,6 +744,12 @@
                 const res = await authFetch(`${API}/admin/all-logs${queryString}`);
                 if (!res.ok) throw new Error("Gagal mengambil log setoran");
                 allLogs = await res.json();
+                
+                // Ambil semua santri (agar santri yang belum setor juga muncul)
+                try {
+                    const sRes = await authFetch(`${API}/admin/students${queryString}`);
+                    if (sRes.ok) allStudents = await sRes.json();
+                } catch(e) { console.error('Gagal ambil daftar santri', e); }
                 
                 const totalSubmissions = allLogs.length;
                 const totalVerses = allLogs.reduce((acc, log) => acc + (log.jumlah_ayat || 0), 0);
@@ -1098,6 +1105,15 @@
             }
 
             const grouped = {};
+            (allStudents || []).forEach(s => {
+                grouped[s.unique_id] = {
+                    student_id: s.unique_id,
+                    name: s.name,
+                    school: s.school_name || s.school || 'Umum',
+                    class_name: s.class_name || '',
+                    logs: []
+                };
+            });
             logs.forEach(l => {
                 const sid = l.student_id;
                 if (!grouped[sid]) {
@@ -1118,18 +1134,25 @@
                 const aUngraded = a.logs.filter(item => !item.grade).length;
                 const bUngraded = b.logs.filter(item => !item.grade).length;
                 if (aUngraded !== bUngraded) return bUngraded - aUngraded;
-                return b.logs[0].id - a.logs[0].id;
+                const aLast = a.logs.length ? a.logs[0].id : 0;
+                const bLast = b.logs.length ? b.logs[0].id : 0;
+                if (aLast !== bLast) return bLast - aLast;
+                return a.name.localeCompare(b.name);
             });
 
             container.innerHTML = studentsList.map((st, idx) => {
                 const totalAyat = st.logs.reduce((acc, item) => acc + (item.jumlah_ayat || 0), 0);
                 const unGradedCount = st.logs.filter(item => !item.grade).length;
                 
-                const pendingBadge = unGradedCount > 0 
-                    ? `<span class="badge-pending"><i class="fas fa-exclamation-circle" style="color:#b45309"></i> ${unGradedCount} Perlu Dinilai</span>`
-                    : `<span class="badge-done"><i class="fas fa-check-circle" style="color:#047857"></i> Semua Dinilai</span>`;
+                const pendingBadge = st.logs.length === 0
+                    ? `<span class="badge-neutral" style="font-size:11px">Belum Setor</span>`
+                    : (unGradedCount > 0 
+                        ? `<span class="badge-pending"><i class="fas fa-exclamation-circle" style="color:#b45309"></i> ${unGradedCount} Perlu Dinilai</span>`
+                        : `<span class="badge-done"><i class="fas fa-check-circle" style="color:#047857"></i> Semua Dinilai</span>`);
 
-                const logsRows = st.logs.map(l => {
+                const logsRows = st.logs.length === 0
+                    ? `<div class="log-row" style="justify-content:center"><span style="font-size:12px;color:#94a3b8">Belum ada setoran murajaah.</span></div>`
+                    : st.logs.map(l => {
                     const audioPlayer = l.audio_path 
                         ? `<audio src="${l.audio_path}" controls class="audio-sm"></audio>`
                         : `<span style="font-size:12px;color:#cbd5e1;font-style:italic">Tidak ada rekaman</span>`;
@@ -1166,7 +1189,7 @@
                     `;
                 }).join('');
 
-                const isFirst = idx === 0;
+                const isFirst = false;
 
                 return `
                     <div class="accordion-card">

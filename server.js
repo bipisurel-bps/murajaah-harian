@@ -22,7 +22,7 @@ app.use((req, res, next) => {
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(self), camera=()');
-    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; media-src 'self' data: blob:; connect-src 'self'");
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:; img-src 'self' data: blob: https:; media-src 'self' data: blob:; connect-src 'self' blob: https:; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
     next();
 });
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -865,6 +865,89 @@ app.get('/:code', (req, res, next) => {
         if (row) return res.sendFile(path.join(__dirname, 'public', 'demo.html'));
         next();
     });
+});
+
+// --- BENCHMARK VISITOR & ACCESS TRACKER API ---
+const STATS_FILE = path.join(__dirname, 'analytics.json');
+
+app.post('/api/stats/hit', (req, res) => {
+    try {
+        const body = req.body || {};
+        const action = body.action === 'click' ? 'click' : 'pageview';
+        const cleanPath = (typeof body.path === 'string' ? body.path : '/').split('?')[0].slice(0, 100);
+        const visitorId = typeof body.visitorId === 'string' && body.visitorId.length <= 64 ? body.visitorId : null;
+        const targetName = typeof body.target === 'string' ? body.target.slice(0, 80) : null;
+
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 10);
+
+        let data = { totalHits: 0, totalClicks: 0, uniqueVisitorsCount: 0, startedAt: now.toISOString(), lastHitAt: null, visitorIds: [], dailyUniques: {}, clicksByTarget: {}, byPath: {}, byDate: {} };
+        if (fs.existsSync(STATS_FILE)) {
+            try { data = Object.assign(data, JSON.parse(fs.readFileSync(STATS_FILE, 'utf8'))); } catch (e) {}
+        }
+        data.lastHitAt = now.toISOString();
+
+        if (visitorId) {
+            if (!data.visitorIds.includes(visitorId)) {
+                if (data.visitorIds.length >= 5000) data.visitorIds.shift();
+                data.visitorIds.push(visitorId);
+                data.uniqueVisitorsCount = (data.uniqueVisitorsCount || 0) + 1;
+            }
+            data.dailyUniques = data.dailyUniques || {};
+            data.dailyUniques[dateStr] = data.dailyUniques[dateStr] || [];
+            if (!data.dailyUniques[dateStr].includes(visitorId)) {
+                data.dailyUniques[dateStr].push(visitorId);
+            }
+        }
+
+        if (action === 'click' && targetName) {
+            data.totalClicks = (data.totalClicks || 0) + 1;
+            data.clicksByTarget = data.clicksByTarget || {};
+            data.clicksByTarget[targetName] = (data.clicksByTarget[targetName] || 0) + 1;
+        } else {
+            data.totalHits = (data.totalHits || 0) + 1;
+            data.byPath = data.byPath || {};
+            data.byPath[cleanPath] = (data.byPath[cleanPath] || 0) + 1;
+            data.byDate = data.byDate || {};
+            data.byDate[dateStr] = (data.byDate[dateStr] || 0) + 1;
+        }
+
+        fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2), 'utf8');
+        res.json({ success: true, totalHits: data.totalHits, uniqueVisitors: data.uniqueVisitorsCount });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.get('/api/stats/summary', (req, res) => {
+    try {
+        let data = { totalHits: 0, totalClicks: 0, uniqueVisitorsCount: 0, dailyUniquesSummary: {}, clicksByTarget: {}, byPath: {}, byDate: {} };
+        if (fs.existsSync(STATS_FILE)) {
+            try {
+                const parsed = JSON.parse(fs.readFileSync(STATS_FILE, 'utf8'));
+                const dailyUniquesSummary = {};
+                if (parsed.dailyUniques) {
+                    for (const [d, ids] of Object.entries(parsed.dailyUniques)) {
+                        dailyUniquesSummary[d] = Array.isArray(ids) ? ids.length : 0;
+                    }
+                }
+                data = {
+                    totalHits: parsed.totalHits || 0,
+                    totalClicks: parsed.totalClicks || 0,
+                    uniqueVisitorsCount: parsed.uniqueVisitorsCount || 0,
+                    startedAt: parsed.startedAt || new Date().toISOString(),
+                    lastHitAt: parsed.lastHitAt || null,
+                    dailyUniquesSummary,
+                    clicksByTarget: parsed.clicksByTarget || {},
+                    byPath: parsed.byPath || {},
+                    byDate: parsed.byDate || {}
+                };
+            } catch (e) {}
+        }
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.listen(PORT, () => console.log('Server Murajaah Harian Multi-Tenant running on port ' + PORT));

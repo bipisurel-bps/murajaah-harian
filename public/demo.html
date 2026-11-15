@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Murajaah Harian - Portal Santri</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link name="theme-color" content="#065f46">
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        :root {
+            --emerald-dark: #051A18;
+            --emerald-medium: #0A2D2A;
+            --emerald-light: #164E48;
+            --gold: #C59B27;
+            --gold-light: #F0D58C;
+            --paper: #FAF8F5;
+            --card: #FFFFFF;
+            --ink: #1F2827;
+            --ink-soft: #63706F;
+            --border: #E5DDD0;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+        .arch-header {
+            position: relative;
+            background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald-medium) 70%, var(--emerald-light) 100%);
+            border-radius: 28px;
+            padding: 2rem 1.5rem 2.5rem;
+            color: var(--paper);
+            box-shadow: 0 10px 25px rgba(5, 26, 24, 0.15);
+            overflow: hidden;
+        }
+        .header-pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.08;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z M30 10 L50 30 L30 50 L10 30 Z' fill='%23C59B27' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+        .glass-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            box-shadow: 0 6px 20px rgba(5, 26, 24, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: var(--emerald-light);
+            box-shadow: 0 10px 28px rgba(5, 26, 24, 0.08);
+        }
+        .glow-btn {
+            background: linear-gradient(135deg, var(--emerald-light) 0%, var(--emerald-medium) 100%);
+            color: var(--paper);
+            box-shadow: 0 4px 15px rgba(5, 26, 24, 0.2);
+            transition: all 0.3s ease;
+        }
+        .glow-btn:hover {
+            background: linear-gradient(135deg, #1d6159 0%, #0d3834 100%);
+            box-shadow: 0 6px 20px rgba(5, 26, 24, 0.35);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            box-shadow: 0 6px 30px rgba(5, 26, 24, 0.08);
+        }
+        .arabic-font {
+            font-family: 'Amiri', serif;
+        }
+        .login-bg {
+            background: radial-gradient(circle at 50% 0%, var(--emerald-medium), var(--emerald-dark) 85%);
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+            .glass-card { border: 1px solid #ccc; box-shadow: none; }
+        }
+    </style>
+<style>
+/* ===== Accessibility ===== */
+:focus-visible { outline: 3px solid #065f46; outline-offset: 2px; border-radius: 4px; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.skip-link { position: absolute; left: -9999px; top: 0; background: #065f46; color: #fff; padding: 12px 16px; z-index: 9999; border-radius: 0 0 8px 0; font-weight: 700; }
+.skip-link:focus { left: 0; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+@media (pointer: coarse) {
+  button, [role="button"], input[type="submit"], select, a.btn { min-height: 44px; }
+}
+[aria-invalid="true"] { border-color: #dc2626 !important; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+
+    <!-- TOP DEMO RETURN BAR -->
+    <div class="no-print" style="background:#051A18;color:#FAF8F5;padding:10px 18px;display:flex;justify-content:space-between;align-items:center;font-size:12px;border-bottom:1px solid rgba(22,78,72,0.8);z-index:9999;position:relative">
+        <div style="display:flex;align-items:center;gap:10px">
+            <span style="background:rgba(197,155,39,0.25);color:#F0D58C;border:1px solid rgba(197,155,39,0.5);padding:2px 8px;border-radius:999px;font-weight:700;font-size:10px;letter-spacing:0.05em;text-transform:uppercase">Live Demo</span>
+            <span style="color:#d1d5db">Anda sedang berada di <strong style="color:#fff">Demo Portal Santri Murajaah Harian</strong></span>
+        </div>
+        <a href="/" style="color:#F0D58C;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(255,255,255,0.06);border-radius:8px;border:1px solid rgba(240,213,140,0.3);transition:all 0.2s ease">
+            <span>← Kembali ke Halaman SaaS</span>
+        </a>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-card">
+            <div class="login-pattern"></div>
+
+            <div class="pengelola-area">
+                <button id="pengelola-toggle" onclick="togglePengelola()" aria-expanded="false" aria-controls="pengelola-menu" class="pengelola-toggle">Masuk sebagai pengelola ▾</button>
+                <div id="pengelola-menu" class="pengelola-menu hidden">
+                    <a href="/admin.html" class="pengelola-link">Ustadz / Ustadzah</a>
+                    <a href="/school-admin.html" class="pengelola-link">Admin Sekolah</a>
+                    <a href="/superadmin.html" class="pengelola-link">Super Admin</a>
+                </div>
+            </div>
+
+            <div class="login-head">
+                <div class="login-logo"><img src="/logo.png" alt="Murajaah Harian" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+                <h2 class="login-title">Portal Santri Murajaah Harian</h2>
+                <div id="school-picker" class="hidden" style="margin-top:16px">
+                    <p class="field-label" style="text-align:left">Pilih Sekolah Anda</p>
+                    <div id="school-picker-list" class="school-list"></div>
+                    <button onclick="window.location.href='/'" class="back-link">← Kembali ke daftar sekolah</button>
+                </div>
+                <p id="login-school-name" class="login-subtitle">Masuk untuk menyetor dan melihat laporan murajaah</p>
+            </div>
+
+            <div id="login-form-wrap">
+                <div class="field-stack">
+                    <div class="field">
+                        <label class="field-label" for="login-school-select">Pilih Sekolah</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-school input-icon"></i>
+                            <select id="login-school-select" aria-label="Pilih sekolah" class="input input-with-icon">
+                                <option value="">-- Pilih Sekolah --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="login-username">Username</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="login-username" aria-label="Username" placeholder="Masukkan username" class="input input-with-icon">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="login-password">Password</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="login-password" aria-label="Password" placeholder="Masukkan password" class="input input-with-icon">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="login-error" role="alert" aria-live="assertive" class="login-error hidden">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="login-error-text">Kredensial tidak valid</span>
+                </div>
+
+                <button onclick="handleLogin()" class="btn btn-primary btn-block login-submit">
+                    <span>Masuk Sekarang</span>
+                    <i id="login-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
+                </button>
+            </div>
+        </div>
+        <p class="login-footer">Murajaah Harian © 2026 · Developed &amp; Supported by Jadda.app</p>
+    </div>
+
+    <!-- MAIN PORTAL DASHBOARD -->
+    <div id="dashboard-screen" class="hidden dashboard">
+        <!-- Header Section -->
+        <header class="arch-header">
+            <div class="header-pattern"></div>
+            <div class="header-row">
+                <div style="display:flex;align-items:center;gap:10px">
+                    <img class="header-logo" src="/logo.png" alt="Murajaah Harian">
+                    <span id="display-school" class="school-chip">Sekolah</span>
+                </div>
+                <div class="header-tools">
+                    <div id="streak-badge" class="streak-chip" title="Daily Murajaah Streak">
+                        <i class="fas fa-fire"></i>
+                        <span id="streak-count">0 Hari</span>
+                    </div>
+                    <button onclick="handleLogout()" class="logout-chip" title="Keluar" aria-label="Keluar">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </button>
+                </div>
+            </div>
+            <h1 id="display-name" class="header-name">Nama Siswa</h1>
+            <p class="header-basmalah arabic-font">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+        </header>
+
+        <!-- 2-Column Responsive Layout -->
+        <div class="dashboard-grid">
+            <!-- Left Column: Target & Progress -->
+            <div class="col">
+                <section class="card">
+                    <div class="card-title-row">
+                        <span class="section-title">Target Hafalan</span>
+                        <div class="header-tools">
+                            <span class="muted">Juz</span>
+                            <select id="target-juz" onchange="changeTargetJuz()" class="select-inline"></select>
+                        </div>
+                    </div>
+                    <div class="stat-center">
+                        <p class="stat-label">Ayat Unik Disetor (Mutqin Check)</p>
+                        <div>
+                            <h2 class="stat-value" id="stat-unique">0</h2>
+                            <span class="stat-sub">/ <span id="display-max-verses">564</span> Ayat</span>
+                        </div>
+                        <p class="muted">Total Setoran: <span id="stat-total" class="stat-total">0</span> Ayat</p>
+                        <div class="progress-meta">
+                            <span>Progress Mutqin (Juz <span id="display-target-juz">30</span>)</span>
+                            <span id="target-percentage" class="stat-total">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progress-bar" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-title-row">
+                        <h3 class="section-title">Progress per Surah</h3>
+                        <span class="mini-chip">Terdaftar</span>
+                    </div>
+                    <div id="surah-progress-list" class="surah-list">
+                        <p class="muted">Belum ada setoran surah</p>
+                    </div>
+                </section>
+
+                <section class="action-row no-print">
+                    <button onclick="window.print()" class="btn-outline">
+                        <i class="fas fa-print"></i> Cetak PDF
+                    </button>
+                    <button onclick="shareToWhatsApp()" class="btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Kirim WA
+                    </button>
+                </section>
+            </div>
+
+            <!-- Right Column: Setor & Riwayat -->
+            <div class="col">
+                <button onclick="openInputModal()" class="btn-add no-print" style="justify-content:center;width:100%">
+                    <i class="fas fa-plus"></i> Setor Murajaah
+                </button>
+
+                <div class="section-head no-print" onclick="toggleRiwayat()" style="cursor:pointer">
+                    <div>
+                        <h3>Riwayat Setoran Murajaah</h3>
+                        <p>Klik untuk menampilkan daftar setoran & penilaian</p>
+                    </div>
+                    <i id="riwayat-chevron" class="fas fa-chevron-down" style="color:#065f46;font-size:18px"></i>
+                </div>
+
+                <section id="logs" class="logs-list hidden">
+                    <div class="empty-state">
+                        <i class="fas fa-circle-notch animate-spin" style="font-size:24px;margin-bottom:8px;color:#047857"></i>
+                        <p class="muted">Memuat data murajaah...</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Modal Input Setoran -->
+        <div id="modal-input" class="modal-backdrop hidden no-print">
+            <div class="modal">
+                <h2 style="font-weight:700;font-size:18px;text-align:center;color:#051a18;margin-bottom:16px">Setor Murajaah Baru</h2>
+
+                <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px">
+                    <div class="form-grid-3">
+                        <div>
+                            <label class="field-label" for="setor-juz">Juz</label>
+                            <select id="setor-juz" onchange="updateSurahDropdown()" class="input"></select>
+                        </div>
+                        <div>
+                            <label class="field-label" for="surah-select">Nama Surah</label>
+                            <select id="surah-select" class="input"></select>
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div>
+                            <label class="field-label" for="ayat-start">Dari Ayat</label>
+                            <input type="number" id="ayat-start" placeholder="1" class="input">
+                        </div>
+                        <div>
+                            <label class="field-label" for="ayat-end">Sampai Ayat</label>
+                            <input type="number" id="ayat-end" placeholder="10" class="input">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="field-label">Rekaman Suara (Opsional)</label>
+                        <div class="record-area">
+                            <div id="record-state-idle" class="rec-idle">
+                                <button type="button" onclick="startRecording()" class="rec-btn" aria-label="Mulai rekam">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                                <span class="rec-label" style="color:#065f46;opacity:.6">Mulai Rekam Suara</span>
+                            </div>
+                            <div id="record-state-active" class="hidden rec-idle">
+                                <div style="display:flex;align-items:center;gap:8px;position:relative">
+                                    <span style="width:8px;height:8px;border-radius:50%;background:#dc2626;animation:ping 1s infinite"></span>
+                                    <span class="rec-timer" id="record-timer">00:00</span>
+                                </div>
+                                <button type="button" onclick="stopRecording()" class="rec-btn rec-btn-danger" style="margin-top:8px" aria-label="Hentikan rekam">
+                                    <i class="fas fa-stop"></i>
+                                </button>
+                                <span class="rec-label" style="color:#dc2626;opacity:.6">Hentikan</span>
+                            </div>
+                            <div id="record-state-preview" class="hidden" style="width:100%">
+                                <audio id="audio-preview" controls class="audio-player"></audio>
+                                <button type="button" onclick="deleteRecording()" class="delete-link" style="margin-top:4px">
+                                    <i class="fas fa-trash-alt"></i> Hapus & Rekam Ulang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <button onclick="closeInputModal()" class="btn btn-secondary" style="flex:1">Batal</button>
+                    <button onclick="addLog()" class="btn btn-primary" style="flex:2">
+                        <span id="btn-submit-text">Kirim Setoran</span>
+                        <i id="btn-submit-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Quick Nav for Mobile -->
+        <nav class="floating-nav no-print">
+            <button onclick="location.reload()" class="nav-btn">
+                <i class="fas fa-home"></i>
+                <span class="nav-label">Home</span>
+            </button>
+            <button onclick="openInputModal()" class="nav-fab" aria-label="Setor Murajaah">
+                <i class="fas fa-plus"></i>
+            </button>
+            <a href="/admin.html" class="nav-btn nav-btn-gray">
+                <i class="fas fa-user-shield"></i>
+                <span class="nav-label">Admin</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <script>
+        const API = "/api";
+        
+        const JUZ_VERSES = {
+            1: 148, 2: 111, 3: 126, 4: 131, 5: 124, 6: 110, 7: 149, 8: 142, 9: 159, 10: 127,
+            11: 151, 12: 170, 13: 154, 14: 227, 15: 185, 16: 271, 17: 190, 18: 202, 19: 338, 20: 171,
+            21: 178, 22: 169, 23: 357, 24: 175, 25: 246, 26: 195, 27: 399, 28: 137, 29: 431, 30: 564
+        };
+
+        const QURAN_SURAHS = [
+            {no:1,name:"Al-Fatihah",verses:7},{no:2,name:"Al-Baqarah",verses:286},{no:3,name:"Ali 'Imran",verses:200},
+            {no:4,name:"An-Nisa'",verses:176},{no:5,name:"Al-Ma'idah",verses:120},{no:6,name:"Al-An'am",verses:165},
+            {no:7,name:"Al-A'raf",verses:206},{no:8,name:"Al-Anfal",verses:75},{no:9,name:"At-Tawbah",verses:129},
+            {no:10,name:"Yunus",verses:109},{no:11,name:"Hud",verses:123},{no:12,name:"Yusuf",verses:111},
+            {no:13,name:"Ar-Ra'd",verses:43},{no:14,name:"Ibrahim",verses:52},{no:15,name:"Al-Hijr",verses:99},
+            {no:16,name:"An-Nahl",verses:128},{no:17,name:"Al-Isra'",verses:111},{no:18,name:"Al-Kahf",verses:110},
+            {no:19,name:"Maryam",verses:98},{no:20,name:"Ta-Ha",verses:135},{no:21,name:"Al-Anbiya'",verses:112},
+            {no:22,name:"Al-Hajj",verses:78},{no:23,name:"Al-Mu'minun",verses:118},{no:24,name:"An-Nur",verses:64},
+            {no:25,name:"Al-Furqan",verses:77},{no:26,name:"Asy-Syu'ara'",verses:227},{no:27,name:"An-Naml",verses:93},
+            {no:28,name:"Al-Qasas",verses:88},{no:29,name:"Al-Ankabut",verses:69},{no:30,name:"Ar-Rum",verses:60},
+            {no:31,name:"Luqman",verses:34},{no:32,name:"As-Sajdah",verses:30},{no:33,name:"Al-Ahzab",verses:73},
+            {no:34,name:"Saba'",verses:54},{no:35,name:"Fatir",verses:45},{no:36,name:"Yasin",verses:83},
+            {no:37,name:"As-Saffat",verses:182},{no:38,name:"Sad",verses:88},{no:39,name:"Az-Zumar",verses:75},
+            {no:40,name:"Ghafir",verses:85},{no:41,name:"Fussilat",verses:54},{no:42,name:"Asy-Syura",verses:53},
+            {no:43,name:"Az-Zukhruf",verses:89},{no:44,name:"Ad-Dukhan",verses:59},{no:45,name:"Al-Jasiyah",verses:37},
+            {no:46,name:"Al-Ahqaf",verses:35},{no:47,name:"Muhammad",verses:38},{no:48,name:"Al-Fath",verses:29},
+            {no:49,name:"Al-Hujurat",verses:18},{no:50,name:"Qaf",verses:45},{no:51,name:"Adz-Dzariyat",verses:60},
+            {no:52,name:"At-Tur",verses:49},{no:53,name:"An-Najm",verses:62},{no:54,name:"Al-Qamar",verses:55},
+            {no:55,name:"Ar-Rahman",verses:78},{no:56,name:"Al-Waqi'ah",verses:96},{no:57,name:"Al-Hadid",verses:29},
+            {no:58,name:"Al-Mujadilah",verses:22},{no:59,name:"Al-Hasyr",verses:24},{no:60,name:"Al-Mumtahanah",verses:13},
+            {no:61,name:"As-Saff",verses:14},{no:62,name:"Al-Jumu'ah",verses:11},{no:63,name:"Al-Munafiqun",verses:11},
+            {no:64,name:"At-Taghabun",verses:18},{no:65,name:"At-Talaq",verses:12},{no:66,name:"At-Tahrim",verses:12},
+            {no:67,name:"Al-Mulk",verses:30},{no:68,name:"Al-Qalam",verses:52},{no:69,name:"Al-Haqqah",verses:52},
+            {no:70,name:"Al-Ma'arij",verses:44},{no:71,name:"Nuh",verses:28},{no:72,name:"Al-Jinn",verses:28},
+            {no:73,name:"Al-Muzzammil",verses:20},{no:74,name:"Al-Muddaththir",verses:56},{no:75,name:"Al-Qiyamah",verses:40},
+            {no:76,name:"Al-Insan",verses:31},{no:77,name:"Al-Mursalat",verses:50},{no:78,name:"An-Naba'",verses:40},
+            {no:79,name:"An-Nazi'at",verses:46},{no:80,name:"'Abasa",verses:42},{no:81,name:"At-Takwir",verses:29},
+            {no:82,name:"Al-Infitar",verses:19},{no:83,name:"Al-Mutaffifin",verses:36},{no:84,name:"Al-Insyiqaq",verses:25},
+            {no:85,name:"Al-Buruj",verses:22},{no:86,name:"At-Tariq",verses:17},{no:87,name:"Al-A'la",verses:19},
+            {no:88,name:"Al-Ghasyiyah",verses:26},{no:89,name:"Al-Fajr",verses:30},{no:90,name:"Al-Balad",verses:20},
+            {no:91,name:"Asy-Syams",verses:15},{no:92,name:"Al-Lail",verses:21},{no:93,name:"Ad-Dhuha",verses:11},
+            {no:94,name:"Al-Insyirah",verses:8},{no:95,name:"At-Tin",verses:8},{no:96,name:"Al-'Alaq",verses:19},
+            {no:97,name:"Al-Qadr",verses:5},{no:98,name:"Al-Bayyinah",verses:8},{no:99,name:"Az-Zalzalah",verses:8},
+            {no:100,name:"Al-'Adiyat",verses:11},{no:101,name:"Al-Qari'ah",verses:11},{no:102,name:"At-Takatsur",verses:8},
+            {no:103,name:"Al-'Asr",verses:3},{no:104,name:"Al-Humazah",verses:9},{no:105,name:"Al-Fil",verses:5},
+            {no:106,name:"Quraisy",verses:4},{no:107,name:"Al-Ma'un",verses:7},{no:108,name:"Al-Kautsar",verses:3},
+            {no:109,name:"Al-Kafirun",verses:6},{no:110,name:"An-Nasr",verses:3},{no:111,name:"Al-Lahab",verses:5},
+            {no:112,name:"Al-Ikhlas",verses:4},{no:113,name:"Al-Falaq",verses:5},{no:114,name:"An-Nas",verses:6}
+        ];
+
+        const JUZ_MAPPING = {
+            1: [1, 2], 2: [2], 3: [2, 3], 4: [3, 4], 5: [4], 6: [4, 5], 7: [5, 6], 8: [6, 7], 9: [7, 8], 10: [8, 9],
+            11: [9, 10, 11], 12: [11, 12], 13: [12, 13, 14], 14: [15, 16], 15: [17, 18], 16: [18, 19, 20], 17: [21, 22],
+            18: [23, 24, 25], 19: [25, 26, 27], 20: [27, 28, 29], 21: [29, 30, 31, 32, 33], 22: [33, 34, 35, 36],
+            23: [36, 37, 38, 39], 24: [39, 40, 41], 25: [41, 42, 43, 44, 45], 26: [46, 47, 48, 49, 50, 51],
+            27: [51, 52, 53, 54, 55, 56, 57], 28: [58, 59, 60, 61, 62, 63, 64, 65, 66],
+            29: [67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77],
+            30: Array.from({length: 37}, (_, i) => i + 78)
+        };
+
+        let currentStudent = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let audioBase64 = null;
+        let recordTimerInterval = null;
+        let recordStartTime = 0;
+        let userLogs = [];
+
+        function checkSession() {
+            const session = localStorage.getItem('current_student');
+            if (session) {
+                currentStudent = JSON.parse(session);
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard-screen').classList.remove('hidden');
+                initSelectors();
+                initSurahChangeHandler();
+                render();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('dashboard-screen').classList.add('hidden');
+            }
+        }
+
+        async function handleLogin() {
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
+            const loginError = document.getElementById('login-error');
+            const loginErrorText = document.getElementById('login-error-text');
+            const spinner = document.getElementById('login-spinner');
+            
+            if (!usernameInput || !passwordInput) {
+                loginErrorText.innerText = "Username dan password tidak boleh kosong!";
+                loginError.classList.remove('hidden');
+                return;
+            }
+            if (!document.getElementById('login-school-select').value) {
+                loginErrorText.innerText = "Silakan pilih sekolah terlebih dahulu!";
+                loginError.classList.remove('hidden');
+                return;
+            }
+
+            loginError.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            try {
+                const res = await fetch(`${API}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usernameInput, password: passwordInput, school_code: document.getElementById('login-school-select').value })
+                });
+
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || "Gagal masuk");
+                }
+
+                localStorage.setItem('current_student', JSON.stringify(data.student));
+                if (data.token) localStorage.setItem('student_token', data.token);
+                if (data.student && data.student.target_juz) localStorage.setItem('target_juz', data.student.target_juz);
+                checkSession();
+
+            } catch (err) {
+                loginErrorText.innerText = err.message;
+                loginError.classList.remove('hidden');
+            } finally {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('current_student');
+            localStorage.removeItem('student_token');
+            currentStudent = null;
+            location.reload();
+        }
+
+        function initSelectors() {
+            const targetSelect = document.getElementById('target-juz');
+            const setorSelect = document.getElementById('setor-juz');
+            
+            targetSelect.innerHTML = '';
+            setorSelect.innerHTML = '';
+            
+            for (let i = 1; i <= 30; i++) {
+                targetSelect.innerHTML += `<option value="${i}">Juz ${i}</option>`;
+                setorSelect.innerHTML += `<option value="${i}">Juz ${i}</option>`;
+            }
+            
+            let target = localStorage.getItem('target_juz');
+            if (!target) {
+                target = "30";
+                localStorage.setItem('target_juz', target);
+            }
+            targetSelect.value = target;
+            setorSelect.value = target;
+            document.getElementById('display-target-juz').innerText = target;
+            document.getElementById('display-max-verses').innerText = JUZ_VERSES[target];
+            
+            updateSurahDropdown();
+        }
+
+        function updateSurahDropdown() {
+            const selectedJuz = parseInt(document.getElementById('setor-juz').value);
+            const select = document.getElementById('surah-select');
+            select.innerHTML = '<option value="">Pilih Surah</option>';
+            
+            const allowedSurahNumbers = JUZ_MAPPING[selectedJuz] || [];
+            const filteredSurahs = QURAN_SURAHS.filter(s => allowedSurahNumbers.includes(s.no));
+            
+            filteredSurahs.forEach(s => {
+                select.innerHTML += `<option value="${s.name}" data-verses="${s.verses}">${s.no}. ${s.name} (${s.verses} ayat)</option>`;
+            });
+
+            const startInput = document.getElementById('ayat-start');
+            const endInput = document.getElementById('ayat-end');
+            startInput.value = "";
+            endInput.value = "";
+            startInput.placeholder = "1";
+            endInput.placeholder = "10";
+        }
+
+        function initSurahChangeHandler() {
+            const select = document.getElementById('surah-select');
+            select.addEventListener('change', (e) => {
+                const selectedOption = e.target.options[e.target.selectedIndex];
+                const verses = selectedOption.getAttribute('data-verses');
+                
+                const startInput = document.getElementById('ayat-start');
+                const endInput = document.getElementById('ayat-end');
+                
+                if (verses) {
+                    const maxVal = parseInt(verses);
+                    startInput.max = maxVal;
+                    endInput.max = maxVal;
+                    startInput.value = "1";
+                    endInput.value = maxVal;
+                    startInput.placeholder = "1";
+                    endInput.placeholder = maxVal;
+                } else {
+                    startInput.value = "";
+                    endInput.value = "";
+                    startInput.placeholder = "1";
+                    endInput.placeholder = "10";
+                }
+            });
+        }
+
+        function changeTargetJuz() {
+            const selected = document.getElementById('target-juz').value;
+            localStorage.setItem('target_juz', selected);
+            document.getElementById('display-target-juz').innerText = selected;
+            document.getElementById('display-max-verses').innerText = JUZ_VERSES[selected];
+            document.getElementById('setor-juz').value = selected;
+            updateSurahDropdown();
+            render();
+            fetch(`${API}/student/target-juz`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'x-student-token': localStorage.getItem('student_token') || '' },
+                body: JSON.stringify({ target_juz: selected })
+            }).catch(err => console.error('Gagal simpan target juz', err));
+        }
+
+        function toggleRiwayat() {
+            const logs = document.getElementById('logs');
+            const chevron = document.getElementById('riwayat-chevron');
+            logs.classList.toggle('hidden');
+            if (chevron) chevron.style.transform = logs.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        function openInputModal() {
+            document.getElementById('modal-input').classList.remove('hidden');
+            updateSurahDropdown();
+        }
+
+        function closeInputModal() {
+            document.getElementById('modal-input').classList.add('hidden');
+            deleteRecording();
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Detect supported mimeType across Chrome, Firefox, and Safari/iOS
+                let options = {};
+                let recordedMimeType = 'audio/webm';
+                
+                if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported) {
+                    if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                        options = { mimeType: 'audio/webm;codecs=opus' };
+                        recordedMimeType = 'audio/webm;codecs=opus';
+                    } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+                        options = { mimeType: 'audio/webm' };
+                        recordedMimeType = 'audio/webm';
+                    } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                        options = { mimeType: 'audio/mp4' };
+                        recordedMimeType = 'audio/mp4';
+                    } else if (MediaRecorder.isTypeSupported('audio/aac')) {
+                        options = { mimeType: 'audio/aac' };
+                        recordedMimeType = 'audio/aac';
+                    }
+                }
+                
+                mediaRecorder = new MediaRecorder(stream, options);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data && event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const mime = mediaRecorder.mimeType || recordedMimeType || 'audio/webm';
+                    const audioBlob = new Blob(audioChunks, { type: mime });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    const previewPlayer = document.getElementById('audio-preview');
+                    previewPlayer.src = audioUrl;
+                    
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = () => {
+                        audioBase64 = reader.result;
+                    };
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    document.getElementById('record-state-active').classList.add('hidden');
+                    document.getElementById('record-state-preview').classList.remove('hidden');
+                };
+
+                mediaRecorder.start();
+                recordStartTime = Date.now();
+                updateRecordTimer();
+                recordTimerInterval = setInterval(updateRecordTimer, 1000);
+                
+                document.getElementById('record-state-idle').classList.add('hidden');
+                document.getElementById('record-state-active').classList.remove('hidden');
+            } catch (err) {
+                console.error("Gagal akses mic", err);
+                let msg = "";
+                if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+                    msg = "Izin mikrofon ditolak atau diblokir. Mohon izinkan mikrofon di setelan browser/HP Anda.";
+                } else if (err.name === "NotReadableError" || err.name === "TrackStartError") {
+                    msg = "Mikrofon sedang dipakai aplikasi lain (misal WhatsApp/Zoom/Perekam Layar). Tutup aplikasi tersebut lalu coba lagi.";
+                } else {
+                    msg = "Gagal mengakses mikrofon (" + (err.message || err.name) + "). Mohon beri izin akses di browser Anda.";
+                }
+                alert(msg);
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                clearInterval(recordTimerInterval);
+            }
+        }
+
+        function deleteRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            clearInterval(recordTimerInterval);
+            audioChunks = [];
+            audioBase64 = null;
+            document.getElementById('audio-preview').src = '';
+            
+            document.getElementById('record-state-preview').classList.add('hidden');
+            document.getElementById('record-state-active').classList.add('hidden');
+            document.getElementById('record-state-idle').classList.remove('hidden');
+        }
+
+        function updateRecordTimer() {
+            const elapsed = Math.floor((Date.now() - recordStartTime) / 1000);
+            const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const secs = String(elapsed % 60).padStart(2, '0');
+            document.getElementById('record-timer').innerText = `${mins}:${secs}`;
+        }
+
+        async function addLog() {
+            const surah = document.getElementById('surah-select').value;
+            const start = parseInt(document.getElementById('ayat-start').value);
+            const end = parseInt(document.getElementById('ayat-end').value);
+            const juz = parseInt(document.getElementById('setor-juz').value);
+            
+            if(!surah || isNaN(start) || isNaN(end) || start <= 0 || end <= 0 || start > end) {
+                alert('Silakan pilih surah dan isi rentang ayat dengan benar!');
+                return;
+            }
+            
+            document.getElementById('btn-submit-text').innerText = "Mengirim...";
+            document.getElementById('btn-submit-spinner').classList.remove('hidden');
+            
+            const payload = { 
+                student_id: currentStudent.unique_id, 
+                school_id: currentStudent.school_id,
+                class_id: currentStudent.class_id,
+                surah, 
+                ayat_start: start, 
+                ayat_end: end, 
+                jumlah_ayat: (end - start) + 1, 
+                tgl: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                audio_base64: audioBase64,
+                juz: juz
+            };
+            
+            try {
+                const res = await fetch(`${API}/logs`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json', 'x-student-token': localStorage.getItem('student_token') || '' }, 
+                    body: JSON.stringify(payload) 
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw new Error(data.error || ('Server error HTTP ' + res.status));
+                }
+                
+                document.getElementById('surah-select').value = '';
+                document.getElementById('ayat-start').value = '';
+                document.getElementById('ayat-end').value = '';
+                
+                closeInputModal();
+                render();
+            } catch (err) {
+                console.error("Gagal menambahkan log", err);
+                alert("Gagal mengirim setoran: " + (err.message || ''));
+            } finally {
+                document.getElementById('btn-submit-text').innerText = "Kirim Setoran";
+                document.getElementById('btn-submit-spinner').classList.add('hidden');
+            }
+        }
+
+        async function deleteMyLog(logId) {
+            if (!confirm("Hapus setoran ini?")) return;
+            var sid = currentStudent ? currentStudent.unique_id : "";
+            try {
+                const res = await fetch(`${API}/logs/${logId}`, { method: "DELETE", headers: { 'x-student-token': localStorage.getItem('student_token') || '' } });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Gagal menghapus log");
+                render();
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        function calculateStreak(logs) {
+            if (!logs || logs.length === 0) return 0;
+            const dates = [...new Set(logs.map(l => l.tgl))];
+            let streak = 0;
+            const today = new Date();
+            
+            for (let i = 0; i < 30; i++) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                if (dates.includes(dateStr)) {
+                    streak++;
+                } else if (i === 0) {
+                    continue; // allow today if not submitted yet
+                } else {
+                    break;
+                }
+            }
+            return streak;
+        }
+
+        function shareToWhatsApp() {
+            if (!currentStudent) return;
+            const currentTargetJuz = parseInt(localStorage.getItem('target_juz') || "30");
+            const uniqueCount = document.getElementById('stat-unique').innerText;
+            const totalCount = document.getElementById('stat-total').innerText;
+            const pct = document.getElementById('target-percentage').innerText;
+            const streak = document.getElementById('streak-count').innerText;
+            
+            const message = `*Laporan Murajaah Santri - Murajaah Harian*\n\n` +
+                `👤 *Nama*: ${currentStudent.name}\n` +
+                `🏫 *Sekolah*: ${currentStudent.school}\n` +
+                `📖 *Target Juz*: Juz ${currentTargetJuz}\n` +
+                `🎯 *Progress Mutqin*: ${uniqueCount} / ${JUZ_VERSES[currentTargetJuz]} Ayat (${pct})\n` +
+                `📊 *Total Setoran*: ${totalCount} Ayat\n` +
+                `🔥 *Streak*: ${streak}\n\n` +
+                `Alhamdulillah, mohon doa & bimbingannya selalu. 🤲✨`;
+                
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        async function render() {
+            if (!currentStudent) return;
+            
+            document.getElementById('display-name').innerText = currentStudent.name;
+            const schoolLabel = currentStudent.school || "Umum";
+            const classLabel = currentStudent.class_name ? ` • ${currentStudent.class_name}` : "";
+            document.getElementById('display-school').innerText = `${schoolLabel}${classLabel}`;
+            
+            const currentTargetJuz = parseInt(localStorage.getItem('target_juz') || "30");
+            
+            try {
+                const res = await fetch(`${API}/logs/${currentStudent.unique_id}`, { headers: { 'x-student-token': localStorage.getItem('student_token') || '' } });
+                userLogs = await res.json();
+                
+                // Calculate Streak
+                const streak = calculateStreak(userLogs);
+                document.getElementById('streak-count').innerText = `${streak} Hari`;
+
+                // Calculate Mutqin Check (Unique Verses) & Total Verses
+                const uniqueVersesSet = new Set();
+                let totalTargetJuzVerses = 0;
+                
+                const logsContainer = document.getElementById('logs');
+                
+                if (userLogs.length === 0) {
+                    logsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-book-open" style="font-size:30px;margin-bottom:12px;color:#047857;opacity:.4"></i>
+                            <h4 style="font-weight:700;color:#334155;margin-bottom:4px">Belum Ada Setoran Murajaah</h4>
+                            <p class="muted">Klik tombol "+ Setor Murajaah" untuk menambahkan setoran pertama Anda.</p>
+                        </div>
+                    `;
+                } else {
+                    var surahMap = {};
+                    userLogs.forEach(function(l){
+                        var k = l.surah || "Tanpa Nama";
+                        if (!surahMap[k]) surahMap[k] = {surah:k, ayat:0, count:0};
+                        surahMap[k].ayat += l.jumlah_ayat || 0;
+                        surahMap[k].count++;
+                    });
+
+                    var surahList = document.getElementById("surah-progress-list");
+                    if (surahList) {
+                        var items = Object.values(surahMap);
+                        surahList.innerHTML = items.length ? items.map(function(s){
+                            return '<div class="surah-row">'+
+                                '<span class="surah-name">'+s.surah+'</span>'+
+                                '<span class="surah-count">'+s.ayat+' ayat ('+s.count+'x)</span>'+
+                                '</div>';
+                        }).join("") : '<p class="muted">Belum ada setoran</p>';
+                    }
+
+                    logsContainer.innerHTML = userLogs.map(l => {
+                        const itemJuz = l.juz ? parseInt(l.juz) : 30;
+                        
+                        if (itemJuz === currentTargetJuz) {
+                            totalTargetJuzVerses += l.jumlah_ayat;
+                            for (let a = l.ayat_start; a <= l.ayat_end; a++) {
+                                uniqueVersesSet.add(`${l.surah}:${a}`);
+                            }
+                        }
+                        
+                        // Grade Badge & Note rendering
+                        let gradeBadge = '';
+                        if (l.grade) {
+                            if (l.grade.includes('Mumtaz')) {
+                                gradeBadge = `<span class="badge badge-mumtaz"><i class="fas fa-star" style="color:#f59e0b;margin-right:4px"></i>${escapeHtml(l.grade)}</span>`;
+                            } else if (l.grade.includes('Jayyid Jiddan')) {
+                                gradeBadge = `<span class="badge badge-jayyid"><i class="fas fa-check-circle" style="margin-right:4px"></i>${escapeHtml(l.grade)}</span>`;
+                            } else if (l.grade.includes('Perlu Mengulang')) {
+                                gradeBadge = `<span class="badge badge-ulang"><i class="fas fa-redo" style="margin-right:4px"></i>${escapeHtml(l.grade)}</span>`;
+                            } else {
+                                gradeBadge = `<span class="badge badge-neutral">${escapeHtml(l.grade)}</span>`;
+                            }
+                        } else {
+                            gradeBadge = `<span class="badge badge-wait"><i class="fas fa-clock" style="margin-right:4px"></i>Menunggu Penilaian</span>`;
+                        }
+
+                        const ustadzNote = l.note ? `
+                            <div class="note-box">
+                                <i class="fas fa-comment-dots" style="color:#b45309;margin-top:2px"></i>
+                                <div>
+                                    <span style="font-weight:700;display:block;font-size:10px;text-transform:uppercase;color:#b45309">Catatan Ustadz:</span>
+                                    <span>${escapeHtml(l.note)}</span>
+                                </div>
+                            </div>
+                        ` : '';
+
+                        return `
+                            <div class="log-card">
+                                <div class="log-head">
+                                    <div>
+                                        <div class="log-title-row">
+                                            <h4 class="log-surah">${escapeHtml(l.surah)}</h4>
+                                            <span class="juz-chip">Juz ${itemJuz}</span>
+                                            ${gradeBadge}
+                                        </div>
+                                        <p class="log-meta">Ayat ${l.ayat_start} - ${l.ayat_end} (${l.jumlah_ayat} Ayat)</p>
+                                    </div>
+                                    <div class="log-right">
+                                        <span class="log-date">${escapeHtml(l.tgl)}</span>
+                                        <button onclick="deleteMyLog(${l.id})" class="delete-link no-print">
+                                            <i class="fas fa-trash-alt" style="font-size:9px"></i> Hapus
+                                        </button>
+                                    </div>
+                                </div>
+
+                                ${l.audio_path ? `
+                                    <div class="audio-row">
+                                        <i class="fas fa-volume-up" style="color:#047857;padding-left:4px"></i>
+                                        <audio src="${l.audio_path}" controls class="audio-player"></audio>
+                                    </div>
+                                ` : ''}
+
+                                ${ustadzNote}
+                            </div>
+                        `;
+                    }).join('');
+                }
+                
+                const uniqueCount = uniqueVersesSet.size;
+                document.getElementById('stat-unique').innerText = uniqueCount;
+                document.getElementById('stat-total').innerText = totalTargetJuzVerses;
+                
+                const maxVerses = JUZ_VERSES[currentTargetJuz];
+                const percentage = Math.min(Math.round((uniqueCount / maxVerses) * 100), 100);
+                document.getElementById('target-percentage').innerText = `${percentage}%`;
+                document.getElementById('progress-bar').style.width = `${percentage}%`;
+                
+            } catch(e) {
+                console.error("Gagal memuat log", e);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function getSchoolCode() {
+            const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+            return path || null;
+        }
+
+        async function loadSchoolContext() {
+            const code = getSchoolCode();
+            const formWrap = document.getElementById('login-form-wrap');
+            const picker = document.getElementById('school-picker');
+            // Always show the login form (dropdown-based school selection)
+            if (formWrap) formWrap.classList.remove('hidden');
+            if (picker) picker.classList.add('hidden');
+
+            const select = document.getElementById('login-school-select');
+            try {
+                const res = await fetch('/api/schools/public');
+                const schools = await res.json();
+                if (select) {
+                    select.innerHTML = '<option value="">-- Pilih Sekolah --</option>';
+                    schools.forEach(function(s) {
+                        const opt = document.createElement('option');
+                        opt.value = s.code;
+                        opt.textContent = s.name;
+                        if (code && s.code.toUpperCase() === code.toUpperCase()) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                }
+                if (code) {
+                    const school = schools.find(function(s) { return s.code.toUpperCase() === code.toUpperCase(); });
+                    if (school) document.getElementById('login-school-name').innerText = school.name;
+                } else {
+                    document.getElementById('login-school-name').innerText = 'Pilih sekolah Anda untuk masuk';
+                }
+            } catch (e) {}
+        }
+
+        function togglePengelola() {
+            const menu = document.getElementById('pengelola-menu');
+            const btn = document.getElementById('pengelola-toggle');
+            if (!menu || !btn) return;
+            const hidden = menu.classList.toggle('hidden');
+            btn.setAttribute('aria-expanded', String(!hidden));
+        }
+
+        window.onload = function() {
+            checkSession();
+            loadSchoolContext();
+        };
+    </script>
+<footer style="text-align:center;padding:24px 16px 40px;color:#94a3b8;font-size:12px;font-family:Outfit,sans-serif">
+    Murajaah Harian &copy; 2026 &mdash; Developed &amp; Supported by <span style="color:#065f46;font-weight:700">Jadda.app</span>
+</footer>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}</script>
+</body>
+</html>

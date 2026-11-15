@@ -21,8 +21,8 @@ app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self'");
+    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(self), camera=()');
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; media-src 'self' data: blob:; connect-src 'self'");
     next();
 });
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -848,12 +848,21 @@ app.get('/api/admin/all-logs', requireAdminAuth, (req, res) => {
     });
 });
 
+// Dedicated routes for interactive demo & student app
+app.get(['/demo', '/demo.html', '/app', '/portal'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'demo.html'));
+});
+
 // Serve school-specific login page (SPA) for known school codes
 app.get('/:code', (req, res, next) => {
     const code = (req.params.code || '').toUpperCase();
+    const reserved = ['DEMO', 'APP', 'PORTAL', 'MASUK', 'SANTRI', 'ADMIN', 'SCHOOL-ADMIN', 'SUPERADMIN', 'API', 'UPLOADS', 'ICONS', 'FAVICON.PNG', 'MANIFEST.JSON'];
+    if (reserved.includes(code)) {
+        return next();
+    }
     db.get(`SELECT id FROM schools WHERE UPPER(code) = ?`, [code], (err, row) => {
         if (err) return res.status(500).send(err.message);
-        if (row) return res.sendFile(path.join(__dirname, 'public', 'index.html'));
+        if (row) return res.sendFile(path.join(__dirname, 'public', 'demo.html'));
         next();
     });
 });
